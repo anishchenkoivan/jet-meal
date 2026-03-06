@@ -1,0 +1,13 @@
+.history
+.gitignore
+.vscode/
+.idea/
+
+.cache/
+dist/
+
+
+scripts/
+node_modules/
+
+.DS_Store
