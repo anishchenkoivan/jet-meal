@@ -3,7 +3,6 @@ use axum::Json;
 use axum::response::{IntoResponse, Response};
 use serde::Serialize;
 
-// Unsure if it's a good way to fix the return type or if the return type should be fixed at all
 pub struct JsonResponse<T: Serialize> {
     body: T,
     status: StatusCode

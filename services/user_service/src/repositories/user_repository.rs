@@ -31,8 +31,6 @@ impl UserRepository for PostgresUserRepository {
     async fn create_user(&self, name: &str) -> Result<User, RepositoryError> {
         let id = Uuid::new_v4();
 
-        // Can do it with query_file_as! macro
-        // Could also run query validation at runtime
         let user = sqlx::query_as!(
             User,
             "INSERT INTO users (id, name) VALUES ($1, $2) RETURNING id, name",

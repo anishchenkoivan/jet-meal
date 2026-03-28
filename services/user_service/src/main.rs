@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use sqlx::postgres::PgPoolOptions;
+use crate::config::AppConfig;
 use crate::repositories::user_repository::PostgresUserRepository;
 use crate::routes::create_router;
 use crate::services::user_service::UserService;
@@ -13,18 +14,19 @@ pub mod repositories;
 pub mod models;
 pub mod errors;
 mod state;
+mod config;
 
 #[tokio::main]
 async fn main() {
-    // TODO: remove unwraps
-    let database_url = std::env::var("DATABASE_URL").unwrap();
+    let config = AppConfig::new("config/config.toml");
 
-    // TODO: add config struct
+    let server_config = config.server;
+    let database_config = config.database;
 
     // TODO: optionally move database setup away from main
     let pool = PgPoolOptions::new()
-        .max_connections(10)
-        .connect(&database_url)
+        .max_connections(database_config.max_connections)
+        .connect(&database_config.url)
         .await.unwrap();
 
     let user_repo = Arc::new(PostgresUserRepository::new(pool.clone()));
@@ -37,6 +39,6 @@ async fn main() {
 
     let app = create_router(app_state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind(server_config.bind_address()).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
