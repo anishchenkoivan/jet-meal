@@ -11,3 +11,6 @@ scripts/
 node_modules/
 
 .DS_Store
+
+libraries/cpp/penguin_malloc/build*
+**/compile_commands.json
