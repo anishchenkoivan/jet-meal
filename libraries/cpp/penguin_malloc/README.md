@@ -1,4 +1,4 @@
-### Penguin malloc - blazyngly fast memory safe allocator from penguin OS
+### Penguin malloc - blazyngly fast memory safe allocator ported to userspace from penguin OS
 
 #### Adding to your service:
 
@@ -11,3 +11,5 @@ target_link_libraries(your_target penguin_malloc)
 
   mkdir build && cd build
   cmake .. -DBUILD_TESTS=ON
+  make
+  ./penguin_malloc_tests
