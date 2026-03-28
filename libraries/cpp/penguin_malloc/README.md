@@ -9,7 +9,7 @@ target_link_libraries(your_target penguin_malloc)
 
 #### Running tests
 
-  mkdir build && cd build
-  cmake .. -DBUILD_TESTS=ON
-  make
-  ./penguin_malloc_tests
+    mkdir build && cd build
+    cmake .. -DBUILD_TESTS=ON
+    make
+    ./penguin_malloc_tests
