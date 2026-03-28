@@ -11,3 +11,5 @@ scripts/
 node_modules/
 
 .DS_Store
+
+services/shdb/build*
