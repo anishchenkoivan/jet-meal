@@ -74,7 +74,7 @@ int main() {
           for (const auto &row : rowset.GetRows()) {
             rows_list.push_back(row_to_json(row));
           }
-          result = std::move(rows_list);
+          result["data"] = std::move(rows_list);
 
           return crow::response(200, result.dump());
         } catch (const std::exception &e) {

@@ -37,12 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Row'
-              example:
-                - ["Alice", 25]
-                - ["Bob", 30]
+                $ref: '#/components/schemas/DbResponse'
         '400':
           description: Bad request – missing or empty X-DB-Name header
           content:
@@ -60,6 +55,28 @@ paths:
 
 components:
   schemas:
+    DbResponse:
+      type: object
+      additionalFields: false
+      required:
+        - data
+      schema:
+        data:
+          $ref: '#/components/schemas/RowSet'
+      example:
+        data:
+          - ["Alice", 25]
+          - ["Bob", 30]
+
+    RowSet:
+      type: array
+      description: A set of rows
+      items:
+        $ref: '#/components/schemas/Row'
+      example:
+        - ["Alice", 25]
+        - ["Bob", 30]
+
     Row:
       type: array
       description: A row of results, where each cell can be a string, number, boolean, or null.
@@ -69,4 +86,5 @@ components:
           - type: number
           - type: boolean
           - type: 'null'
-      example: ["Alice", 25, true, null]
+      example: null
+
