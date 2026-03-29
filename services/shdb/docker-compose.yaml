@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  shdb:
+    build: .
+    environment:
+      - SHDB_FRAMES=1000
+    ports:
+      - "8080:8080"

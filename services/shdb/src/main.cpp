@@ -1,64 +1,87 @@
+#include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
+#include <crow.h>
+#include <variant>
+
+#include "config.h"
+#include "crow/json.h"
 #include "db.h"
-#include "row.h"
 #include "interpreter.h"
+#include "row.h"
 
-static void PrintUsage(const char* argv0) {
-    std::cerr << "Usage: " << argv0 << " --db <path> --frames <count>\n";
+crow::json::wvalue row_to_json(const shdb::Row &row) {
+  std::vector<crow::json::wvalue> arr;
+
+  for (size_t i = 0; i < row.size(); ++i) {
+    std::visit(
+        [&arr](const auto &value) {
+          using Type = std::remove_cvref_t<decltype(value)>;
+
+          if constexpr (std::is_same_v<Type, shdb::Null>) {
+            arr.push_back(nullptr);
+          } else {
+            arr.push_back(value);
+          }
+        },
+        row[i]);
+  }
+
+  return arr;
 }
 
-int main(int argc, char* argv[]) {
-    std::string db_path;
-    int frame_count = 0;
+size_t GetFrameCountSetting() {
+  const char *frames_env = std::getenv(kFrameCountEnv);
+  if (!frames_env) {
+    std::cerr << "Error: SHDB_FRAMES environment variable not set.\n";
+    std::exit(1);
+  }
+  return std::stoi(frames_env);
+}
 
-    for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
-        if (arg == "--db" && i + 1 < argc) {
-            db_path = argv[++i];
-        } else if (arg == "--frames" && i + 1 < argc) {
-            frame_count = std::stoi(argv[++i]);
-        } else {
-            PrintUsage(argv[0]);
-            return 1;
+size_t GetListenPort() {
+  const char *port_env = std::getenv(kPortEnv);
+  if (!port_env) {
+    return kDefaultPort;
+  }
+  return std::stoi(port_env);
+}
+
+int main() {
+  size_t frame_count = GetFrameCountSetting();
+  crow::SimpleApp app;
+
+  CROW_ROUTE(app, "/sql-query")
+      .methods(crow::HTTPMethod::POST)([frame_count](const crow::request &req) {
+        auto db_path_it = req.headers.find("X-DB-Name");
+        if (db_path_it == req.headers.end() || db_path_it->second.empty()) {
+          return crow::response(400, "Missing or empty X-DB-Name header");
         }
-    }
+        std::string db_path = db_path_it->second;
 
-    if (db_path.empty() || frame_count <= 0) {
-        PrintUsage(argv[0]);
-        return 1;
-    }
+        const auto &query = req.body;
 
-    auto db = shdb::Connect(db_path, frame_count);
-    shdb::Interpreter interpreter(db);
-
-    std::string line;
-    while (std::cout << "shdb> ", std::getline(std::cin, line)) {
-        if (line.empty()) {
-            continue;
-        }
         try {
-            auto rowset = interpreter.Execute(line);
-            const auto& schema = rowset.GetSchema();
-            if (schema) {
-                bool first = true;
-                for (const auto& col : *schema) {
-                    if (!first) std::cout << "\t";
-                    std::cout << col.name;
-                    first = false;
-                }
-                if (!schema->empty()) std::cout << "\n";
-            }
-            for (const auto& row : rowset.GetRows()) {
-                std::cout << shdb::ToString(row) << "\n";
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << "\n";
+          auto db = shdb::Connect(db_path, frame_count);
+          shdb::Interpreter interpreter(db);
+          auto rowset = interpreter.Execute(query);
+
+          crow::json::wvalue result;
+
+          std::vector<crow::json::wvalue> rows_list;
+          for (const auto &row : rowset.GetRows()) {
+            rows_list.push_back(row_to_json(row));
+          }
+          result = std::move(rows_list);
+
+          return crow::response(200, result.dump());
+        } catch (const std::exception &e) {
+          return crow::response(500,
+                                std::string("Database error: ") + e.what());
         }
-    }
+      });
 
-    std::cout << "\n";
-    return 0;
+  app.port(GetListenPort()).multithreaded().run();
 }
-
