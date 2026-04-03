@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <mutex>
 #include <string>
 
 #include <crow.h>
@@ -52,9 +53,10 @@ size_t GetListenPort() {
 int main() {
   size_t frame_count = GetFrameCountSetting();
   crow::SimpleApp app;
+  std::mutex gil;
 
   CROW_ROUTE(app, "/sql-query")
-      .methods(crow::HTTPMethod::POST)([frame_count](const crow::request &req) {
+      .methods(crow::HTTPMethod::POST)([&](const crow::request &req) {
         auto db_path_it = req.headers.find("X-DB-Name");
         if (db_path_it == req.headers.end() || db_path_it->second.empty()) {
           return crow::response(400, "Missing or empty X-DB-Name header");
@@ -66,7 +68,10 @@ int main() {
         try {
           auto db = shdb::Connect(db_path, frame_count);
           shdb::Interpreter interpreter(db);
+
+          gil.lock();
           auto rowset = interpreter.Execute(query);
+          gil.unlock();
 
           crow::json::wvalue result;
 
