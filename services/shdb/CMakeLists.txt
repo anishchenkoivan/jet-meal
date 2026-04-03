@@ -21,8 +21,7 @@ target_link_options(shdb PRIVATE -no-pie)
 # SHDB blob configuration
 #
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
-  set(SHDB_CORE_BLOB
-      "${CMAKE_SOURCE_DIR}/blob/libshdb_core_x86_64.o")
+  set(SHDB_CORE_BLOB "${CMAKE_SOURCE_DIR}/blob/libshdb_core_x86_64.a")
 else()
   message(FATAL_ERROR "Not shdb blob for arch.")
 endif()
