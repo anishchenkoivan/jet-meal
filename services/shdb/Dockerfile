@@ -20,5 +20,6 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --para
 FROM ubuntu:25.10
 
 COPY --from=builder /app/build/bin/shdb /usr/local/bin/shdb
+RUN mkdir -p /var/lib/shdb/data
 
 CMD ["/usr/local/bin/shdb"]

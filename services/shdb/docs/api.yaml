@@ -10,7 +10,7 @@ paths:
     post:
       summary: Execute an SQL query
       description: |
-        Executes the provided SQL query against the database specified in the `X-DB-Name` header.
+        Executes the provided SQL query against the database identified by the `X-DB-Name` header.
         The response is a JSON array where each element corresponds to a row in the result set,
         and each row is an array of values (strings, numbers, booleans, or nulls).
       operationId: executeQuery
@@ -20,8 +20,11 @@ paths:
           required: true
           schema:
             type: string
-          description: Path to the database file (e.g., "/data/mydb.db")
-          example: "/var/lib/db/example.db"
+            pattern: '^[A-Za-z0-9_]+$'
+            minLength: 1
+          description: |
+            Database name. Must consist only of letters (A-Z, a-z), digits (0-9), and underscores (_).
+          example: "my_database_123"
       requestBody:
         required: true
         content:
@@ -39,12 +42,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/DbResponse'
         '400':
-          description: Bad request – missing or empty X-DB-Name header
+          description: Bad request – missing, empty, or invalid X-DB-Name header (contains disallowed characters)
           content:
             text/plain:
               schema:
                 type: string
-              example: "Missing or empty X-DB-Name header"
+              example: "Invalid X-DB-Name header: must contain only letters, digits, and underscores"
         '500':
           description: Database error (e.g., invalid query, file not found, internal error)
           content:
@@ -57,10 +60,10 @@ components:
   schemas:
     DbResponse:
       type: object
-      additionalFields: false
+      additionalProperties: false
       required:
         - data
-      schema:
+      properties:
         data:
           $ref: '#/components/schemas/RowSet'
       example:
@@ -86,5 +89,3 @@ components:
           - type: number
           - type: boolean
           - type: 'null'
-      example: null
-

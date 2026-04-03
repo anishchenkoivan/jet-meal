@@ -1,17 +1,19 @@
-#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <map>
 
 #include <crow.h>
-#include <variant>
 
 #include "config.h"
 #include "crow/json.h"
 #include "db.h"
 #include "interpreter.h"
 #include "row.h"
+#include "rowset.h"
+
+namespace {
 
 crow::json::wvalue row_to_json(const shdb::Row &row) {
   std::vector<crow::json::wvalue> arr;
@@ -50,10 +52,49 @@ size_t GetListenPort() {
   return std::stoi(port_env);
 }
 
+std::string GetDataPath() {
+  const char *data_path = std::getenv(kDataPathEnv);
+  if (!data_path) {
+    return kDefaultDataPath;
+  }
+  return data_path;
+}
+
+bool IsValidDbName(const std::string &name) {
+  for (char c : name) {
+    bool isAllowed = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+                     (c >= '0' && c <= '9') || c == '_';
+    if (!isAllowed) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::string GetDbPath(const std::string &name) {
+  return GetDataPath() + "/" + name;
+}
+
+class DbLocks {
+public:
+  std::lock_guard<std::mutex> LockDb(const std::string &name) {
+    std::lock_guard<std::mutex> operation_lock(hashmap_lock_);
+    std::mutex &mtx = db_name_to_lock[name];
+    return std::lock_guard<std::mutex>(mtx);
+  }
+
+private:
+  std::mutex hashmap_lock_;
+  std::map<std::string, std::mutex> db_name_to_lock;
+};
+
+} // namespace
+
 int main() {
   size_t frame_count = GetFrameCountSetting();
   crow::SimpleApp app;
-  std::mutex gil;
+  DbLocks locks;
 
   CROW_ROUTE(app, "/sql-query")
       .methods(crow::HTTPMethod::POST)([&](const crow::request &req) {
@@ -61,7 +102,14 @@ int main() {
         if (db_path_it == req.headers.end() || db_path_it->second.empty()) {
           return crow::response(400, "Missing or empty X-DB-Name header");
         }
-        std::string db_path = db_path_it->second;
+
+        std::string db_name = db_path_it->second;
+
+        if (!IsValidDbName(db_name)) {
+          return crow::response(400, "Invalid db name in X-DB-Name header");
+        }
+
+        std::string db_path = GetDbPath(db_name);
 
         const auto &query = req.body;
 
@@ -69,9 +117,11 @@ int main() {
           auto db = shdb::Connect(db_path, frame_count);
           shdb::Interpreter interpreter(db);
 
-          gil.lock();
-          auto rowset = interpreter.Execute(query);
-          gil.unlock();
+          shdb::RowSet rowset;
+          {
+            auto db_lock = locks.LockDb(db_name);
+            rowset = interpreter.Execute(query);
+          }
 
           crow::json::wvalue result;
 
