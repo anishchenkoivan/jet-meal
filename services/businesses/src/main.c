@@ -1,17 +1,22 @@
-#include "main.h"
+#include "http.h"
 
-int main(int argc, char const *argv[]) {
-  /* accept command line arguments and setup default values, see "cli.c" */
-  initialize_cli(argc, argv);
+static void on_request(http_s *request);
 
-  /* initialize HTTP service, see "http_service.h" */
-  initialize_http_service();
+// These will contain pre-allocated values that we will use often
+FIOBJ HTTP_HEADER_X_DATA;
 
-  /* start facil */
-  fio_start(.threads = fio_cli_get_i("-t"), .workers = fio_cli_get_i("-w"));
+int main(void) {
+  HTTP_HEADER_X_DATA = fiobj_str_new("X-Data", 6);
+  http_listen("8080", NULL, .on_request = on_request, .log = 1);
+  fio_start(.threads = 1);
+  fiobj_free(HTTP_HEADER_X_DATA);
+}
 
-  /* cleanup CLI, see "cli.c" */
-  free_cli();
-
-  return 0;
+static void on_request(http_s *request) {
+  http_set_cookie(request, .name = "my_cookie", .name_len = 9, .value = "data",
+                  .value_len = 4);
+  http_set_header(request, HTTP_HEADER_CONTENT_TYPE,
+                  http_mimetype_find("txt", 3));
+  http_set_header(request, HTTP_HEADER_X_DATA, fiobj_str_new("my data", 7));
+  http_send_body(request, "Hello World!\r\n", 14);
 }
