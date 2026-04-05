@@ -7,7 +7,7 @@ namespace shdb {
 
 class Database;
 
-std::shared_ptr<Database> Connect(const std::filesystem::path &path,
+std::shared_ptr<Database> Connect(const std::filesystem::path& path,
                                   int frame_count);
 
-} // namespace shdb
+}  // namespace shdb

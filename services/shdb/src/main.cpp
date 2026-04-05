@@ -1,10 +1,10 @@
+#include <crow.h>
+
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <string>
-#include <map>
-
-#include <crow.h>
 
 #include "config.h"
 #include "crow/json.h"
@@ -15,12 +15,12 @@
 
 namespace {
 
-crow::json::wvalue row_to_json(const shdb::Row &row) {
+crow::json::wvalue RowToJson(const shdb::Row& row) {
   std::vector<crow::json::wvalue> arr;
 
   for (size_t i = 0; i < row.size(); ++i) {
     std::visit(
-        [&arr](const auto &value) {
+        [&arr](const auto& value) {
           using Type = std::remove_cvref_t<decltype(value)>;
 
           if constexpr (std::is_same_v<Type, shdb::Null>) {
@@ -36,7 +36,7 @@ crow::json::wvalue row_to_json(const shdb::Row &row) {
 }
 
 size_t GetFrameCountSetting() {
-  const char *frames_env = std::getenv(kFrameCountEnv);
+  const char* frames_env = std::getenv(kFrameCountEnv);
   if (!frames_env) {
     std::cerr << "Error: SHDB_FRAMES environment variable not set.\n";
     std::exit(1);
@@ -45,7 +45,7 @@ size_t GetFrameCountSetting() {
 }
 
 size_t GetListenPort() {
-  const char *port_env = std::getenv(kPortEnv);
+  const char* port_env = std::getenv(kPortEnv);
   if (!port_env) {
     return kDefaultPort;
   }
@@ -53,18 +53,26 @@ size_t GetListenPort() {
 }
 
 std::string GetDataPath() {
-  const char *data_path = std::getenv(kDataPathEnv);
+  const char* data_path = std::getenv(kDataPathEnv);
   if (!data_path) {
     return kDefaultDataPath;
   }
   return data_path;
 }
 
-bool IsValidDbName(const std::string &name) {
+bool IsGilEnabled() {
+  const char* gil_enabled = std::getenv(kEnableGilEnv);
+  if (gil_enabled == nullptr) {
+    return kDefaultEnableGil;
+  }
+  return std::stoi(gil_enabled);
+}
+
+bool IsValidDbName(const std::string& name) {
   for (char c : name) {
-    bool isAllowed = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-                     (c >= '0' && c <= '9') || c == '_';
-    if (!isAllowed) {
+    bool is_allowed = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+                      (c >= '0' && c <= '9') || c == '_';
+    if (!is_allowed) {
       return false;
     }
   }
@@ -72,24 +80,24 @@ bool IsValidDbName(const std::string &name) {
   return true;
 }
 
-std::string GetDbPath(const std::string &name) {
+std::string GetDbPath(const std::string& name) {
   return GetDataPath() + "/" + name;
 }
 
 class DbLocks {
-public:
-  std::lock_guard<std::mutex> LockDb(const std::string &name) {
+ public:
+  std::lock_guard<std::mutex> LockDb(const std::string& name) {
     std::lock_guard<std::mutex> operation_lock(hashmap_lock_);
-    std::mutex &mtx = db_name_to_lock[name];
+    std::mutex& mtx = db_name_to_lock_[name];
     return std::lock_guard<std::mutex>(mtx);
   }
 
-private:
+ private:
   std::mutex hashmap_lock_;
-  std::map<std::string, std::mutex> db_name_to_lock;
+  std::map<std::string, std::mutex> db_name_to_lock_;
 };
 
-} // namespace
+}  // namespace
 
 int main() {
   size_t frame_count = GetFrameCountSetting();
@@ -97,7 +105,7 @@ int main() {
   DbLocks locks;
 
   CROW_ROUTE(app, "/sql-query")
-      .methods(crow::HTTPMethod::POST)([&](const crow::request &req) {
+      .methods(crow::HTTPMethod::POST)([&](const crow::request& req) {
         auto db_path_it = req.headers.find("X-DB-Name");
         if (db_path_it == req.headers.end() || db_path_it->second.empty()) {
           return crow::response(400, "Missing or empty X-DB-Name header");
@@ -111,7 +119,7 @@ int main() {
 
         std::string db_path = GetDbPath(db_name);
 
-        const auto &query = req.body;
+        const auto& query = req.body;
 
         try {
           auto db = shdb::Connect(db_path, frame_count);
@@ -126,13 +134,13 @@ int main() {
           crow::json::wvalue result;
 
           std::vector<crow::json::wvalue> rows_list;
-          for (const auto &row : rowset.GetRows()) {
-            rows_list.push_back(row_to_json(row));
+          for (const auto& row : rowset.GetRows()) {
+            rows_list.push_back(RowToJson(row));
           }
           result["data"] = std::move(rows_list);
 
           return crow::response(200, result.dump());
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
           return crow::response(500,
                                 std::string("Database error: ") + e.what());
         }

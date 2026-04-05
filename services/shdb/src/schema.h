@@ -20,9 +20,9 @@ using Types = std::vector<Type>;
 struct ColumnSchema {
   ColumnSchema() = default;
   ColumnSchema(std::string name, Type type, uint32_t length = 0);
-  ColumnSchema(Type type, uint32_t length = 0); /// NOLINT
+  ColumnSchema(Type type, uint32_t length = 0);  /// NOLINT
 
-  bool operator==(const ColumnSchema &other) const;
+  bool operator==(const ColumnSchema& other) const;
 
   std::string name;
   Type type;
@@ -32,6 +32,6 @@ struct ColumnSchema {
 using Schema = std::vector<ColumnSchema>;
 using SchemaPtr = std::shared_ptr<Schema>;
 
-std::string ToString(const Schema &schema);
+std::string ToString(const Schema& schema);
 
-} // namespace shdb
+}  // namespace shdb
