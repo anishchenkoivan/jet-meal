@@ -1,0 +1,3 @@
+[submodule "services/businesses/contrib/facil.io"]
+	path = services/businesses/contrib/facil.io
+	url = https://github.com/boazsegev/facil.io.git

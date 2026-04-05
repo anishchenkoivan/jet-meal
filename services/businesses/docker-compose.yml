@@ -1,0 +1,9 @@
+services:
+  businesses-service:
+    container_name: jet_meal_businesses
+    build: .
+    restart: unless-stopped
+    environment:
+      - BUSINESSES_PORT=3000
+    ports:
+      - "8080:8080"
