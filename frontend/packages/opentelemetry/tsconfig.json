@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.esm-package.json",
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+}

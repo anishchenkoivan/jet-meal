@@ -1,0 +1,17 @@
+{
+  "name": "jet-meal-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tsc": "pnpm -r run tsc",
+    "lint": "biome check .",
+    "lint:write": "biome check --write .",
+    "build": "pnpm -r run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "typescript-plugin-css-modules": "catalog:"
+  }
+}

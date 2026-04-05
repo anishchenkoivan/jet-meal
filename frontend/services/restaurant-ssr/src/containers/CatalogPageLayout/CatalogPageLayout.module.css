@@ -1,0 +1,40 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-inline: 20px;
+  height: auto;
+  min-height: 64px;
+  line-height: 1.3;
+  flex-wrap: wrap;
+  background: var(--ant-color-bg-container, #fff);
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+.logoLink {
+  color: inherit;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoLink:hover {
+  color: inherit;
+}
+
+.nav {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.contentInner {
+  max-width: 1400px;
+  margin-inline: auto;
+  width: 100%;
+  box-sizing: border-box;
+}

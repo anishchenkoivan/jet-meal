@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.checks.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+
+    "jsx": "preserve",
+    "lib": ["ESNext"],
+
+    "isolatedModules": true
+  },
+  "ts-node": {
+    "experimentalResolver": true,
+    "swc": true
+  }
+}
