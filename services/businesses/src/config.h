@@ -1,6 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define DEFAULT_PORT 3000
+// TODO: config from env
+#define DEFAULT_PORT "8080"
+#define DEFAULT_THREADS 10
 
-#endif  // #ifndef CONFIG_H
+#define MAX_HANDLERS 1000
+
+#endif // #ifndef CONFIG_H

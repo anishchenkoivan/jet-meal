@@ -1,22 +1,31 @@
+#include "config.h"
+
+#include "dispatch.h"
 #include "http.h"
 
-static void on_request(http_s *request);
+FIOBJ g_handlers;
 
-// These will contain pre-allocated values that we will use often
+static void on_request_hello_post(http_s *request) {
+  http_send_body(request, "Hello World, POST!\r\n", 18);
+}
+
+static void on_request_hello_get(http_s *request) {
+  http_send_body(request, "Hello World, GET!\r\n", 17);
+}
+
+static void on_request_v1_hello_post(http_s *request) {
+  http_send_body(request, "Hello World, v1 POST!\r\n", 20);
+}
+
 FIOBJ HTTP_HEADER_X_DATA;
 
 int main(void) {
-  HTTP_HEADER_X_DATA = fiobj_str_new("X-Data", 6);
-  http_listen("8080", NULL, .on_request = on_request, .log = 1);
-  fio_start(.threads = 1);
+  DispatchRegister(on_request_hello_post, "/hello", HTTP_POST);
+  DispatchRegister(on_request_hello_get, "/hello", HTTP_GET);
+  DispatchRegister(on_request_v1_hello_post, "/v1/hello", HTTP_POST);
+
+  http_listen(DEFAULT_PORT, NULL, .on_request = DispatchOnRequest, .log = 1);
+  fio_start(.threads = DEFAULT_THREADS);
   fiobj_free(HTTP_HEADER_X_DATA);
 }
 
-static void on_request(http_s *request) {
-  http_set_cookie(request, .name = "my_cookie", .name_len = 9, .value = "data",
-                  .value_len = 4);
-  http_set_header(request, HTTP_HEADER_CONTENT_TYPE,
-                  http_mimetype_find("txt", 3));
-  http_set_header(request, HTTP_HEADER_X_DATA, fiobj_str_new("my data", 7));
-  http_send_body(request, "Hello World!\r\n", 14);
-}
