@@ -8,7 +8,6 @@ set(CMAKE_C_EXTENSIONS OFF)
 # Add POSIX feature test macro (2008 edition is common)
 add_compile_definitions(_POSIX_C_SOURCE=200809L)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../libraries/c/facil.io ${CMAKE_CURRENT_BINARY_DIR}/facil.io)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../libraries/c/facil-io-router ${CMAKE_CURRENT_BINARY_DIR}/facil-io-router)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

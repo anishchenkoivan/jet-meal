@@ -55,14 +55,16 @@ static size_t fio_router_new_or_existent_callback_index(const char* path) {
         g_handlers_buffer[g_handlers_count].on_request[i] = NULL;
     }
 
-    g_handlers_count += 1;
+    ++g_handlers_count;
     return g_handlers_count - 1;
 }
 
-static void fio_router_on_method_not_found(http_s* request) {
-    static const char* kNotFound = "Not Found";
+static void fio_router_on_route_not_found(http_s* request) {
     http_send_error(request, 404);
-    http_send_body(request, kNotFound, strlen(kNotFound));
+}
+
+static void fio_router_on_method_not_allowed(http_s* request) {
+    http_send_error(request, 405);
 }
 
 void fio_router_register_callback(void (*callback)(http_s*), const char* path,
@@ -77,14 +79,16 @@ void fio_router_register_callback(void (*callback)(http_s*), const char* path,
 
 void fio_router_on_request_route(http_s* request) {
     if (FIOBJ_IS_NULL(g_di.handlers)) {
-        fio_router_on_method_not_found(request);
+        // Internal service error, not initialized yet
+        http_send_error(request, 500);
         return;
     }
 
     FIOBJ fiobj_handler_idx = fiobj_hash_get(g_di.handlers, request->path);
 
     if (fiobj_handler_idx == FIOBJ_INVALID) {
-        fio_router_on_method_not_found(request);
+        // Route not found
+        http_send_error(request, 404);
         return;
     }
 
@@ -100,7 +104,8 @@ void fio_router_on_request_route(http_s* request) {
         if (fiobj_iseq(fiobj_method_name, request->method)) {
             fiobj_free(fiobj_method_name);
             if (handler->on_request[i] == NULL) {
-                fio_router_on_method_not_found(request);
+                // Method not allowed
+                http_send_error(request, 405);
                 return;
             }
             handler->on_request[i](request);

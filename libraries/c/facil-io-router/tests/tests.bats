@@ -2,7 +2,7 @@
 
 setup_file() {
   mkdir -p build
-  cmake -S . -B build
+  cmake -S . -B build -DBUILD_SAMPLE_SERVICE=1
   make -C build
   ./build/bin/facil-io-router-sample-service &
   sleep 1
@@ -37,12 +37,12 @@ teardown_file() {
   [ "$result" == "Not Found" ]
 }
 
-@test "non existent method return code" {
+@test "invalid method return code" {
   result="$(curl -o /dev/null -s -w '%{http_code}' http://localhost:8080/hello -X PATCH)"
-  [ "$result" == "404" ]
+  [ "$result" == "405" ]
 }
 
-@test "non existent method error message" {
+@test "invalid method error message" {
   result="$(curl localhost:8080/hello -X PATCH)"
-  [ "$result" == "Not Found" ]
+  [ "$result" == "Method Not Allowed" ]
 }
