@@ -1,3 +1,6 @@
-[submodule "services/businesses/contrib/facil.io"]
-	path = services/businesses/contrib/facil.io
+[submodule "libraries/c/facil.io"]
+	path = libraries/c/facil.io
 	url = https://github.com/boazsegev/facil.io.git
+[submodule "libraries/bash/bats-core"]
+	path = libraries/bash/bats-core
+	url = https://github.com/bats-core/bats-core

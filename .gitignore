@@ -13,6 +13,7 @@ node_modules/
 .DS_Store
 
 libraries/cpp/penguin_malloc/build*
+libraries/c/facil-io-router/build*
 services/shdb/build*
 services/businesses/build*
 **/compile_commands.json

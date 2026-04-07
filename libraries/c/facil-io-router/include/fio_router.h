@@ -1,5 +1,5 @@
-#ifndef DISPATCH_H
-#define DISPATCH_H
+#ifndef FIO_ROUTER_H
+#define FIO_ROUTER_H
 
 #include "fiobj_hash.h"
 #include "http.h"
@@ -23,8 +23,8 @@ static const char *http_method_strings[] = {
   "HEAD"
 };
 
-void DispatchRegister(void (*callback)(http_s *), const char *path, http_method_t method);
+void fio_router_register_callback(void (*callback)(http_s *), const char *path, http_method_t method);
 
-void DispatchOnRequest(http_s *request);
+void fio_router_on_request_route(http_s *request);
 
-#endif // #ifndef DISPATCH_H
+#endif // #ifndef FIO_ROUTER_H
