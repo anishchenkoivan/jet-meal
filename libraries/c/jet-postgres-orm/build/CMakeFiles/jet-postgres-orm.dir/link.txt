@@ -1,0 +1,2 @@
+/usr/bin/ar qc libjet-postgres-orm.a "CMakeFiles/jet-postgres-orm.dir/src/jet_postgres_orm.c.o"
+/usr/bin/ranlib libjet-postgres-orm.a

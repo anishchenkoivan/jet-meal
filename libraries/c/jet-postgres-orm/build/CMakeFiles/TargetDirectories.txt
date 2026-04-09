@@ -1,0 +1,3 @@
+/home/ivan/Projects/jet-meal/libraries/c/jet-postgres-orm/build/CMakeFiles/jet-postgres-orm.dir
+/home/ivan/Projects/jet-meal/libraries/c/jet-postgres-orm/build/CMakeFiles/edit_cache.dir
+/home/ivan/Projects/jet-meal/libraries/c/jet-postgres-orm/build/CMakeFiles/rebuild_cache.dir
