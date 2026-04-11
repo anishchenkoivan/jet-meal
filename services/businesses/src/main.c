@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include "codegen_api.h"
+
 #include "fio_router.h"
 #include "http.h"
 

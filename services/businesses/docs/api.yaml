@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  title: Crow SQL Database API
+  description: API for executing SQL queries against a database file using a custom database engine.
+  version: 1.0.0
+servers:
+  - url: http://shdb:8080
+paths:
+  /sql-query:
+    post:
+      summary: Execute an SQL query
+      description: |
+        Executes the provided SQL query against the database specified in the `X-DB-Name` header.
+        The response is a JSON array where each element corresponds to a row in the result set,
+        and each row is an array of values (strings, numbers, booleans, or nulls).
+      operationId: executeQuery
+      parameters:
+        - name: X-DB-Name
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Path to the database file (e.g., "/data/mydb.db")
+          example: "/var/lib/db/example.db"
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: SQL query to execute
+              example: "SELECT name, age FROM users WHERE age > 18"
+
+      responses:
+        '200':
+          description: Successful query execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DbResponse'
+        '400':
+          description: Bad request – missing or empty X-DB-Name header
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "Missing or empty X-DB-Name header"
+        '500':
+          description: Database error (e.g., invalid query, file not found, internal error)
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "Database error: no such table: users"
+
+components:
+  schemas:
+    DbResponse:
+      type: object
+      additionalFields: false
+      required:
+        - data
+      schema:
+        data:
+          $ref: '#/components/schemas/RowSet'
+      example:
+        data:
+          - ["Alice", 25]
+          - ["Bob", 30]
+
+    RowSet:
+      type: array
+      description: A set of rows
+      items:
+        $ref: '#/components/schemas/Row'
+      example:
+        - ["Alice", 25]
+        - ["Bob", 30]
+
+    Row:
+      type: array
+      description: A row of results, where each cell can be a string, number, boolean, or null.
+      items:
+        $ref: '#/components/schemas/Value'
+      example: null
+
+    Value:
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+        - type: 'null'
+
