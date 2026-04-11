@@ -34,3 +34,14 @@ static FIOBJ api_gen_boolean_serialize_to_fiobj(bool val) {
 static void api_gen_boolean_cleanup(bool val) {
 }
 
+static void* api_gen_unknown_parse_from_fiobj(FIOBJ val) {
+  return NULL;
+}
+
+static FIOBJ api_gen_unknown_serialize_to_fiobj(void* val) {
+  return fiobj_null();
+}
+
+static void api_gen_unknown_cleanup(void*) {
+}
+

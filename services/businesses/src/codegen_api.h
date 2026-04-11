@@ -10,94 +10,117 @@
 
 #include "fiobj.h"
 
-typedef enum api_gen_value_enum_e {
-  ONEOF_VALUE_STRING,
-  ONEOF_VALUE_NUMBER,
-  ONEOF_VALUE_BOOLEAN,
-  ONEOF_VALUE_NULL,
-} api_gen_value_enum_t;
+typedef struct api_gen_meal_s {
+  const char* mealName;
+  const char* mealDescription;
+  const char* mealPictureUrl;
+} api_gen_meal_t;
 
-typedef union api_gen_value_union_u {
-  const char* oneof_string;
-  int64_t oneof_number;
-  bool oneof_boolean;
-  void* oneof_null;
-} api_gen_value_union_t;
-
-typedef struct api_gen_value_s {
-  api_gen_value_enum_t discriminator;
-  api_gen_value_union_t value;
-} api_gen_value_t;
-
-typedef struct api_gen_row_s {
-  api_gen_value_t* buffer;
+typedef struct api_gen_meals_list_s {
+  api_gen_meal_t* buffer;
   size_t size;
-} api_gen_row_t;
+} api_gen_meals_list_t;
 
-typedef struct api_gen_row_set_s {
-  api_gen_row_t* buffer;
-  size_t size;
-} api_gen_row_set_t;
+typedef struct api_gen_menu_s {
+  api_gen_meals_list_t meals;
+} api_gen_menu_t;
 
-typedef struct api_gen_db_response_s {
-  api_gen_row_set_t data;
-} api_gen_db_response_t;
+typedef struct api_gen_business_s {
+  const char* businessName;
+  const char* ownerUserId;
+  const char* description;
+  api_gen_menu_t menu;
+  const char* businessLogoUrl;
+} api_gen_business_t;
 
-////////////////////////////////////////////////////////////////////////////////
-//// Helper functions
-////////////////////////////////////////////////////////////////////////////////
+typedef struct api_gen_v1_add_meal_to_menu_response_s {
+  api_gen_menu_t menu;
+} api_gen_v1_add_meal_to_menu_response_t;
 
-api_gen_value_t api_gen_value_parse_from_fiobj(FIOBJ);
+typedef struct api_gen_v1_add_meal_to_menu_request_s {
+  api_gen_meal_t meal;
+} api_gen_v1_add_meal_to_menu_request_t;
 
-typedef enum api_gen_value_enum_e {
-  ONEOF_VALUE_STRING,
-  ONEOF_VALUE_NUMBER,
-  ONEOF_VALUE_BOOLEAN,
-  ONEOF_VALUE_NULL,
-} api_gen_value_enum_t;
+typedef struct api_gen_v1_update_business_response_s {
+  api_gen_business_t business;
+} api_gen_v1_update_business_response_t;
 
-typedef union api_gen_value_union_u {
-  const char* oneof_string;
-  int64_t oneof_number;
-  bool oneof_boolean;
-  void* oneof_null;
-} api_gen_value_union_t;
+typedef struct api_gen_v1_update_business_request_s {
+  const char* businessName;
+  const char* ownerUserId;
+  const char* description;
+  const char* businessLogoUrl;
+} api_gen_v1_update_business_request_t;
 
-typedef struct api_gen_value_s {
-  api_gen_value_enum_t discriminator;
-  api_gen_value_union_t value;
-} api_gen_value_t;
+typedef struct api_gen_v1_create_business_response_s {
+  api_gen_business_t business;
+} api_gen_v1_create_business_response_t;
 
-FIOBJ api_gen_value_serialize_to_fiobj(api_gen_value_t);
+typedef struct api_gen_v1_create_business_request_s {
+  const char* businessName;
+  const char* ownerUserId;
+  const char* description;
+  const char* businessLogoUrl;
+} api_gen_v1_create_business_request_t;
 
-void api_gen_value_cleanup(api_gen_value_t);
+FIOBJ api_gen_meal_serialize_to_fiobj(api_gen_meal_t);
 
-api_gen_row_t api_gen_row_parse_from_fiobj(FIOBJ);
+FIOBJ api_gen_meals_list_serialize_to_fiobj(api_gen_meals_list_t);
 
-typedef struct api_gen_row_s {
-  api_gen_value_t* buffer;
-  size_t size;
-} api_gen_row_t;
+FIOBJ api_gen_menu_serialize_to_fiobj(api_gen_menu_t);
 
-FIOBJ api_gen_row_serialize_to_fiobj(api_gen_row_t);
+FIOBJ api_gen_business_serialize_to_fiobj(api_gen_business_t);
 
-void api_gen_row_cleanup(api_gen_row_t);
+FIOBJ api_gen_v1_add_meal_to_menu_response_serialize_to_fiobj(api_gen_v1_add_meal_to_menu_response_t);
 
-api_gen_row_set_t api_gen_row_set_parse_from_fiobj(FIOBJ);
+FIOBJ api_gen_v1_add_meal_to_menu_request_serialize_to_fiobj(api_gen_v1_add_meal_to_menu_request_t);
 
-typedef struct api_gen_row_set_s {
-  api_gen_row_t* buffer;
-  size_t size;
-} api_gen_row_set_t;
+FIOBJ api_gen_v1_update_business_response_serialize_to_fiobj(api_gen_v1_update_business_response_t);
 
-FIOBJ api_gen_row_set_serialize_to_fiobj(api_gen_row_set_t);
+FIOBJ api_gen_v1_update_business_request_serialize_to_fiobj(api_gen_v1_update_business_request_t);
 
-void api_gen_row_set_cleanup(api_gen_row_set_t);
+FIOBJ api_gen_v1_create_business_response_serialize_to_fiobj(api_gen_v1_create_business_response_t);
 
-api_gen_db_response_t api_gen_db_response_parse_from_fiobj(FIOBJ);
+FIOBJ api_gen_v1_create_business_request_serialize_to_fiobj(api_gen_v1_create_business_request_t);
 
-FIOBJ api_gen_db_response_serialize_to_fiobj(api_gen_db_response_t);
+api_gen_meal_t api_gen_meal_parse_from_fiobj(FIOBJ);
 
-void api_gen_db_response_cleanup(api_gen_db_response_t);
+api_gen_meals_list_t api_gen_meals_list_parse_from_fiobj(FIOBJ);
+
+api_gen_menu_t api_gen_menu_parse_from_fiobj(FIOBJ);
+
+api_gen_business_t api_gen_business_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_add_meal_to_menu_response_t api_gen_v1_add_meal_to_menu_response_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_add_meal_to_menu_request_t api_gen_v1_add_meal_to_menu_request_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_update_business_response_t api_gen_v1_update_business_response_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_update_business_request_t api_gen_v1_update_business_request_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_create_business_response_t api_gen_v1_create_business_response_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_create_business_request_t api_gen_v1_create_business_request_parse_from_fiobj(FIOBJ);
+
+void api_gen_meal_cleanup(api_gen_meal_t);
+
+void api_gen_meals_list_cleanup(api_gen_meals_list_t);
+
+void api_gen_menu_cleanup(api_gen_menu_t);
+
+void api_gen_business_cleanup(api_gen_business_t);
+
+void api_gen_v1_add_meal_to_menu_response_cleanup(api_gen_v1_add_meal_to_menu_response_t);
+
+void api_gen_v1_add_meal_to_menu_request_cleanup(api_gen_v1_add_meal_to_menu_request_t);
+
+void api_gen_v1_update_business_response_cleanup(api_gen_v1_update_business_response_t);
+
+void api_gen_v1_update_business_request_cleanup(api_gen_v1_update_business_request_t);
+
+void api_gen_v1_create_business_response_cleanup(api_gen_v1_create_business_response_t);
+
+void api_gen_v1_create_business_request_cleanup(api_gen_v1_create_business_request_t);
 
 #endif // #ifndef GENERATED_OPENAPI_CODEGEN_API_H

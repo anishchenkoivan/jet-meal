@@ -16,3 +16,4 @@ libraries/c/facil-io-router/build*
 services/shdb/build*
 services/businesses/build*
 **/compile_commands.json
+**/__pycache__/
