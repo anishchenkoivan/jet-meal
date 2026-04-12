@@ -1,8 +1,14 @@
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use serde_json::json;
+use serde::Serialize;
 use thiserror::Error;
+use utoipa::ToSchema;
+
+#[derive(Serialize, ToSchema)]
+pub struct ErrorResponse {
+    pub error: String,
+}
 
 // Use this as a base api error and support From trait for all domain errors
 
@@ -21,7 +27,7 @@ impl IntoResponse for ApiError {
             ApiError::InternalServerError(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
         };
 
-        let body = Json(json!({ "error": message }));
+        let body = Json(ErrorResponse{error: message});
         (status, body).into_response()
     }
 }

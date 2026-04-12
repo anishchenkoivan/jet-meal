@@ -1,20 +1,10 @@
 use std::sync::Arc;
 use sqlx::postgres::PgPoolOptions;
-use crate::config::AppConfig;
-use crate::repositories::user_repository::PostgresUserRepository;
-use crate::routes::create_router;
-use crate::services::user_service::UserService;
-use crate::state::AppState;
-
-pub mod routes;
-pub mod handlers;
-pub mod dto;
-pub mod services;
-pub mod repositories;
-pub mod models;
-pub mod errors;
-mod state;
-mod config;
+use user_service::config::AppConfig;
+use user_service::repositories::user_repository::PostgresUserRepository;
+use user_service::routes::create_router;
+use user_service::services::user_service::UserService;
+use user_service::state::AppState;
 
 #[tokio::main]
 async fn main() {

@@ -1,0 +1,4 @@
+[alias]
+openapi = "run --bin openapi_gen"
+build-openapi = "!cargo openapi && cargo build"
+check-openapi = "!cargo openapi && cargo check"
