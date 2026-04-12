@@ -1,6 +1,6 @@
 use std::sync::Arc;
-use sqlx::postgres::PgPoolOptions;
 use user_service::config::AppConfig;
+use user_service::database::setup_database;
 use user_service::repositories::user_repository::PostgresUserRepository;
 use user_service::routes::create_router;
 use user_service::services::user_service::UserService;
@@ -13,11 +13,7 @@ async fn main() {
     let server_config = config.server;
     let database_config = config.database;
 
-    // TODO: optionally move database setup away from main
-    let pool = PgPoolOptions::new()
-        .max_connections(database_config.max_connections)
-        .connect(&database_config.url)
-        .await.unwrap();
+    let pool = setup_database(database_config).await;
 
     let user_repo = Arc::new(PostgresUserRepository::new(pool.clone()));
     let user_service = Arc::new(UserService::new(user_repo));

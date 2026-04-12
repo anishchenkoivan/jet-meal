@@ -14,13 +14,22 @@ impl UserService {
         let user: User = self.user_repo.get_user(id).await?.ok_or(DomainError::NotFound("User not found".to_string()))?;
         Ok(UserDto{
             id: user.id,
-            name: user.name,
+            name: user.username,
         })
     }
 
     pub async fn create_user(&self, user_data: UserUpdateRequest) -> Result<UserCreatedResponse, DomainError> {
         // TODO: add proper error handling here
-        let user = self.user_repo.create_user(&user_data.name).await?;
+        // let user = self.user_repo.create_user(&user_data.name).await?;
+        let user = User{
+            id: uuid::Uuid::new_v4(),
+            username: user_data.name,
+            email: None,
+            telegram: None,
+            max: None,
+            password_hash: "this is a password hash".to_string(),
+        };
+        self.user_repo.create_user(&user).await?;
         Ok(UserCreatedResponse{
             id: user.id,
         })

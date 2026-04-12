@@ -18,3 +18,5 @@ utoipa = { version = "5.4.0", features = ["axum_extras", "uuid"] }
 utoipa-axum = "0.2.0"
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 serde_yaml = "0.9"
+
+chrono = "0.4.44"

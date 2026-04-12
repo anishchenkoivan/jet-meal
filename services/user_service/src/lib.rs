@@ -8,3 +8,4 @@ pub mod errors;
 pub mod openapi;
 pub mod state;
 pub mod config;
+pub mod database;
