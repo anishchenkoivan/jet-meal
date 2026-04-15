@@ -7,7 +7,6 @@
 dist/
 
 
-scripts/
 node_modules/
 
 .DS_Store
@@ -18,3 +17,4 @@ libraries/c/jetenv/build*
 services/shdb/build*
 services/businesses/build*
 **/compile_commands.json
+**/__pycache__/
