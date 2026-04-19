@@ -51,7 +51,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/RefreshTokenRequest'
         required: true
       responses:
         '200':
@@ -173,6 +173,13 @@ components:
       properties:
         access_token:
           type: string
+        refresh_token:
+          type: string
+    RefreshTokenRequest:
+      type: object
+      required:
+      - refresh_token
+      properties:
         refresh_token:
           type: string
     RefreshTokenResponse:

@@ -27,7 +27,7 @@ pub async fn login(State(app_state): State<AppState>, Json(payload): Json<LoginR
 #[utoipa::path(
     post,
     path = "/auth/refresh",
-    request_body = LoginRequest,
+    request_body = RefreshTokenRequest,
     responses(
         (status = 200, description = "User created successfully", body = RefreshTokenResponse),
         (status = 400, description = "Invalid request body", body = ErrorResponse),

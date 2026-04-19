@@ -95,8 +95,7 @@ impl AuthService {
             iat: now.timestamp() as usize,
         };
 
-        let secret = std::env::var("JWT_SECRET")
-            .unwrap_or_else(|_| "dev-jwt-secret".to_string());
+        let secret = self.security_config.jwt_secret.clone();
 
         encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_bytes()))
             .map_err(|e| DomainError::Internal(format!("JWT encode failed: {e}")))

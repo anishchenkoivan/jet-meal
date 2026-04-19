@@ -9,4 +9,4 @@ max_connections = 10
 [security]
 access_token_ttl_minutes = 15
 refresh_token_ttl_days = 30
-jwt_secret = "secret secret"
+jwt_secret = "secret-secret"

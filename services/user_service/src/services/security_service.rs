@@ -1,7 +1,7 @@
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
-use rand::Rng;
+use rand::RngExt;
 use rand::distr::Alphanumeric;
 use crate::errors::domain_error::DomainError;
 
