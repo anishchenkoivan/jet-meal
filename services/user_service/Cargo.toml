@@ -11,7 +11,7 @@ serde_json = "1.0"
 uuid = { version = "1.22.0", features = ["serde", "v4"] }
 thiserror = "2.0.18"
 async-trait = "0.1.89"
-sqlx = { version = "0.8", features = ["runtime-tokio-native-tls", "postgres", "uuid"] }
+sqlx = { version = "0.8", features = ["runtime-tokio-native-tls", "postgres", "uuid", "chrono"] }
 config = "0.15.22"
 
 utoipa = { version = "5.4.0", features = ["axum_extras", "uuid"] }
@@ -20,3 +20,6 @@ utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 serde_yaml = "0.9"
 
 chrono = "0.4.44"
+argon2 = "0.5.3"
+jsonwebtoken = "10.1.0"
+rand = "0.9.2"

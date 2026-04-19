@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use uuid::Uuid;
 use crate::dto::response::JsonResponse;
-use crate::dto::user_requests::UserUpdateRequest;
+use crate::dto::user_requests::UserCreateRequest;
 use crate::dto::user_responses::{UserCreatedResponse, UserDto};
 use crate::errors::api_error::{ApiError, ErrorResponse};
 use crate::state::AppState;
@@ -29,7 +29,7 @@ pub async fn get_user_by_id(State(app_state): State<AppState>, Path(id): Path<Uu
 #[utoipa::path(
     post,
     path = "/users/create",
-    request_body = UserUpdateRequest,
+    request_body = UserCreateRequest,
     responses(
         (status = 201, description = "User created successfully", body = UserCreatedResponse),
         (status = 400, description = "Invalid request body", body = ErrorResponse),
@@ -38,7 +38,7 @@ pub async fn get_user_by_id(State(app_state): State<AppState>, Path(id): Path<Uu
     ),
     tag = "users"
 )]
-pub async fn create_user(State(app_state): State<AppState>, Json(payload): Json<UserUpdateRequest>) -> Result<JsonResponse<UserCreatedResponse>, ApiError> {
+pub async fn create_user(State(app_state): State<AppState>, Json(payload): Json<UserCreateRequest>) -> Result<JsonResponse<UserCreatedResponse>, ApiError> {
     let response = app_state.user_service.create_user(payload).await?;
     Ok(JsonResponse::new(response, StatusCode::CREATED))
 }

@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 use sqlx::FromRow;
 use uuid::Uuid;
 
@@ -8,16 +8,15 @@ pub struct User {
     pub username: String,
     pub email: Option<String>,
     pub telegram: Option<String>,
-    pub max: Option<String>,
     pub password_hash: String,
 }
 
 #[derive(Debug, Clone, FromRow)]
 pub struct RefreshToken {
     pub id: Uuid,
-    user_id: Uuid,
-    token_hash: String,
-    expires_at: DateTime<Utc>,
-    create_at: DateTime<Utc>,
-    revoked: bool,
+    pub user_id: Uuid,
+    pub token_hash: String,
+    pub expires_at: NaiveDateTime,
+    pub create_at: NaiveDateTime,
+    pub revoked: bool,
 }

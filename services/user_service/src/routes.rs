@@ -10,10 +10,12 @@ use crate::state::AppState;
 
 pub mod user_routes;
 mod openapi_routes;
+pub mod auth_routes;
 
 pub fn create_router(state: AppState) -> Router {
     let router = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(user_openapi_router())
+        .merge(auth_routes::auth_openapi_router())
         .route("/api-docs/openapi.yaml", get(openapi_yaml))
         .with_state(state);
 

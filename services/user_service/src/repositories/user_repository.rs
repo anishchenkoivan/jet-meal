@@ -26,19 +26,30 @@ impl UserRepository for PostgresUserRepository {
         Ok(user)
     }
 
-    async fn create_user(&self, user: &User) -> Result<User, RepositoryError> {
+    async fn get_user_by_username(&self, username: &str) -> Result<Option<User>, RepositoryError> {
         let user = sqlx::query_as::<_, User>(
+            "SELECT * FROM users WHERE username = $1"
+        )
+            .bind(username)
+            .fetch_optional(&self.pool)
+            .await?;
+        Ok(user)
+    }
+
+    async fn create_user(&self, user: &User) -> Result<bool, RepositoryError> {
+        let result = sqlx::query(
             "INSERT INTO users
-                (id, username, email, telegram, max, password_hash)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id, name")
+                (id, username, email, telegram, password_hash)
+                VALUES ($1, $2, $3, $4, $5)"
+        )
             .bind(&user.id)
             .bind(&user.username)
             .bind(&user.email)
             .bind(&user.telegram)
-            .bind(&user.max)
             .bind(&user.password_hash)
-            .fetch_one(&self.pool).await?;
-        Ok(user)
+            .execute(&self.pool)
+            .await?;
+
+        Ok(result.rows_affected() == 1)
     }
 }

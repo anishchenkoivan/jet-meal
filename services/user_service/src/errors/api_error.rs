@@ -18,6 +18,8 @@ pub enum ApiError {
     NotFound(String),
     #[error("Internal Server Error: {0}")]
     InternalServerError(String),
+    #[error("Access Denied: {0}")]
+    AccessDenied(String),
 }
 
 impl IntoResponse for ApiError {
@@ -25,6 +27,7 @@ impl IntoResponse for ApiError {
         let (status, message) = match self {
             ApiError::NotFound(_) => (StatusCode::NOT_FOUND, self.to_string()),
             ApiError::InternalServerError(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
+            ApiError::AccessDenied(_) => (StatusCode::FORBIDDEN, self.to_string()),
         };
 
         let body = Json(ErrorResponse{error: message});

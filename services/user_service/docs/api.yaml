@@ -15,7 +15,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: '#/components/schemas/UserCreateRequest'
         required: true
       responses:
         '201':
@@ -83,6 +83,24 @@ components:
       properties:
         error:
           type: string
+    UserCreateRequest:
+      type: object
+      required:
+      - name
+      - password
+      properties:
+        email:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        password:
+          type: string
+        telegram:
+          type:
+          - string
+          - 'null'
     UserCreatedResponse:
       type: object
       required:
@@ -100,13 +118,6 @@ components:
         id:
           type: string
           format: uuid
-        name:
-          type: string
-    UserUpdateRequest:
-      type: object
-      required:
-      - name
-      properties:
         name:
           type: string
 tags:

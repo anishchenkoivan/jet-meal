@@ -4,7 +4,7 @@ use std::path::Path;
 use utoipa::OpenApi;
 use utoipa::openapi::OpenApi as OpenApiSpec;
 use utoipa_axum::router::OpenApiRouter;
-
+use crate::routes::auth_routes::auth_openapi_router;
 use crate::routes::user_routes::user_openapi_router;
 
 #[derive(OpenApi)]
@@ -18,6 +18,7 @@ pub struct ApiDoc;
 fn build_openapi() -> OpenApiSpec {
     OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(user_openapi_router())
+        .merge(auth_openapi_router())
         .into_openapi()
 }
 
