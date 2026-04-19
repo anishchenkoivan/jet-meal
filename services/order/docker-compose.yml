@@ -1,0 +1,9 @@
+services:
+  order:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jet_meal_order
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
