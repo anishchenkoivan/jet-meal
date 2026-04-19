@@ -5,6 +5,7 @@ use serde::Deserialize;
 pub struct AppConfig {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
+    pub security: SecurityConfig,
 }
 
 impl AppConfig {
@@ -32,4 +33,11 @@ impl ServerConfig {
 pub struct DatabaseConfig {
     pub url: String,
     pub max_connections: u32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SecurityConfig {
+    pub access_token_ttl_minutes: i64,
+    pub refresh_token_ttl_days: i64,
+    pub jwt_secret: String,
 }

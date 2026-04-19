@@ -3,6 +3,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use crate::config::SecurityConfig;
 use crate::dto::auth_requests::{LoginRequest, RefreshTokenRequest};
 use crate::dto::auth_responses::{LoginResponse, RefreshTokenResponse};
 use crate::errors::domain_error::DomainError;
@@ -10,9 +11,6 @@ use crate::models::RefreshToken;
 use crate::repositories::repository_traits::RefreshTokenRepository;
 use crate::services::security_service::SecurityService;
 use crate::services::user_service::UserService;
-
-const ACCESS_TOKEN_TTL_MINUTES: i64 = 15;
-const REFRESH_TOKEN_TTL_DAYS: i64 = 30;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct AccessTokenClaims {
@@ -25,6 +23,7 @@ pub struct AuthService {
     token_repo: Arc<dyn RefreshTokenRepository>,
     user_service: Arc<UserService>,
     security_service: Arc<SecurityService>,
+    security_config: SecurityConfig,
 }
 
 impl AuthService {
@@ -43,7 +42,7 @@ impl AuthService {
             id: refresh_id,
             user_id: user.id,
             token_hash: self.security_service.hash_password(&refresh_secret)?,
-            expires_at: (Utc::now() + Duration::days(REFRESH_TOKEN_TTL_DAYS)).naive_utc(),
+            expires_at: (Utc::now() + Duration::days(self.security_config.refresh_token_ttl_days)).naive_utc(),
             create_at: Utc::now().naive_utc(),
             revoked: false,
         };
@@ -89,7 +88,7 @@ impl AuthService {
 
     async fn issue_jwt(&self, user_id: Uuid) -> Result<String, DomainError> {
         let now = Utc::now();
-        let exp = (now + Duration::minutes(ACCESS_TOKEN_TTL_MINUTES)).timestamp() as usize;
+        let exp = (now + Duration::minutes(self.security_config.access_token_ttl_minutes)).timestamp() as usize;
         let claims = AccessTokenClaims {
             sub: user_id.to_string(),
             exp,
@@ -105,11 +104,16 @@ impl AuthService {
 }
 
 impl AuthService {
-    pub fn new(token_repo: Arc<dyn RefreshTokenRepository>, user_service: Arc<UserService>) -> Self {
+    pub fn new(
+        token_repo: Arc<dyn RefreshTokenRepository>,
+        user_service: Arc<UserService>,
+        security_config: SecurityConfig
+    ) -> Self {
         Self {
             token_repo,
             user_service,
             security_service: Arc::new(SecurityService::new()),
+            security_config,
         }
     }
 }

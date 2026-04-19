@@ -10,7 +10,8 @@ use crate::routes::user_routes::user_openapi_router;
 #[derive(OpenApi)]
 #[openapi(
     tags(
-        (name = "users", description = "User management endpoints")
+        (name = "users", description = "User management endpoints"),
+        (name = "auth", description = "Authentication endpoints")
     )
 )]
 pub struct ApiDoc;

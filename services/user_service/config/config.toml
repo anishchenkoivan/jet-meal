@@ -5,3 +5,8 @@ port = 8080
 [database]
 url = "postgresql://user:password@localhost/user_service_db"
 max_connections = 10
+
+[security]
+access_token_ttl_minutes = 15
+refresh_token_ttl_days = 30
+jwt_secret = "secret secret"

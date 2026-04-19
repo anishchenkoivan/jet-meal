@@ -20,7 +20,7 @@ async fn main() {
     let user_repo = Arc::new(PostgresUserRepository::new(pool.clone()));
     let user_service = Arc::new(UserService::new(user_repo));
     let refresh_token_repo = Arc::new(PostgresRefreshTokenRepository::new(pool.clone()));
-    let auth_service = Arc::new(AuthService::new(refresh_token_repo, user_service.clone()));
+    let auth_service = Arc::new(AuthService::new(refresh_token_repo, user_service.clone(), config.security));
 
     let app_state = AppState {
         db_pool: pool,
