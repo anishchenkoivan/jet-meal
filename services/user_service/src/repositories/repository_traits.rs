@@ -1,13 +1,13 @@
 use async_trait::async_trait;
 use uuid::Uuid;
 use crate::errors::repository_error::RepositoryError;
-use crate::models::{RefreshToken, User};
+use crate::models::{RefreshToken, UserModel};
 
 #[async_trait]
 pub trait UserRepository: Send + Sync {
-    async fn get_user(&self, id: Uuid) -> Result<Option<User>, RepositoryError>;
-    async fn get_user_by_username(&self, username: &str) -> Result<Option<User>, RepositoryError>;
-    async fn create_user(&self, user: &User) -> Result<bool, RepositoryError>;
+    async fn get_user(&self, id: Uuid) -> Result<Option<UserModel>, RepositoryError>;
+    async fn get_user_by_username(&self, username: &str) -> Result<Option<UserModel>, RepositoryError>;
+    async fn create_user(&self, user: &UserModel) -> Result<bool, RepositoryError>;
 }
 
 #[async_trait]

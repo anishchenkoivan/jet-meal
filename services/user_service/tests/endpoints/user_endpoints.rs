@@ -12,10 +12,12 @@ async fn create_user_endpoint_creates_new_user() {
         .client
         .post(format!("{}/users/create", app.base_url))
         .json(&json!({
-            "name": username,
-            "email": "new-user@example.com",
-            "telegram": "new_user_tg",
-            "password": "s3cret",
+            "username": username,
+            "notification_context": {
+                "email": "new-user@example.com",
+                "telegram": "new_user_tg"
+            },
+            "password": "s3cret"
         }))
         .send()
         .await
@@ -54,5 +56,5 @@ async fn get_user_by_id_endpoint_returns_created_user() {
         .expect("get user response is not valid json");
 
     assert_eq!(body["id"].as_str(), Some(user_id.as_str()));
-    assert_eq!(body["name"].as_str(), Some(username.as_str()));
+    assert_eq!(body["username"].as_str(), Some(username.as_str()));
 }

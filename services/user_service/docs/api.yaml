@@ -133,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDto'
+                $ref: '#/components/schemas/User'
         '404':
           description: User not found
           content:
@@ -175,6 +175,17 @@ components:
           type: string
         refresh_token:
           type: string
+    NotificationContext:
+      type: object
+      properties:
+        email:
+          type:
+          - string
+          - 'null'
+        telegram:
+          type:
+          - string
+          - 'null'
     RefreshTokenRequest:
       type: object
       required:
@@ -189,24 +200,33 @@ components:
       properties:
         access_token:
           type: string
+    User:
+      type: object
+      required:
+      - id
+      - username
+      - notification_context
+      properties:
+        id:
+          type: string
+          format: uuid
+        notification_context:
+          $ref: '#/components/schemas/NotificationContext'
+        username:
+          type: string
     UserCreateRequest:
       type: object
       required:
-      - name
+      - username
+      - notification_context
       - password
       properties:
-        email:
-          type:
-          - string
-          - 'null'
-        name:
-          type: string
+        notification_context:
+          $ref: '#/components/schemas/NotificationContext'
         password:
           type: string
-        telegram:
-          type:
-          - string
-          - 'null'
+        username:
+          type: string
     UserCreatedResponse:
       type: object
       required:
@@ -215,17 +235,6 @@ components:
         id:
           type: string
           format: uuid
-    UserDto:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
 tags:
 - name: users
   description: User management endpoints

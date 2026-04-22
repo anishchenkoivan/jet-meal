@@ -4,7 +4,7 @@ use axum::Json;
 use uuid::Uuid;
 use crate::dto::response::JsonResponse;
 use crate::dto::user_requests::UserCreateRequest;
-use crate::dto::user_responses::{UserCreatedResponse, UserDto};
+use crate::dto::user_responses::{UserCreatedResponse, User};
 use crate::errors::api_error::{ApiError, ErrorResponse};
 use crate::state::AppState;
 
@@ -15,13 +15,13 @@ use crate::state::AppState;
         ("id" = Uuid, Path, description = "User's unique identifier")
     ),
     responses(
-        (status = 200, description = "User found successfully", body = UserDto),
+        (status = 200, description = "User found successfully", body = User),
         (status = 404, description = "User not found", body = ErrorResponse),
         (status = 500, description = "Internal server error", body = ErrorResponse)
     ),
     tag = "users"
 )]
-pub async fn get_user_by_id(State(app_state): State<AppState>, Path(id): Path<Uuid>) -> Result<JsonResponse<UserDto>, ApiError> {
+pub async fn get_user_by_id(State(app_state): State<AppState>, Path(id): Path<Uuid>) -> Result<JsonResponse<User>, ApiError> {
     let user_dto = app_state.user_service.get_user_by_id(id).await?;
     Ok(JsonResponse::new(user_dto, StatusCode::OK))
 }

@@ -1,10 +1,10 @@
 use serde::Deserialize;
+use crate::models::NotificationContext;
 use utoipa::ToSchema;
 
 #[derive(Deserialize, ToSchema)]
 pub struct UserCreateRequest {
-    pub name: String,
-    pub email: Option<String>,
-    pub telegram: Option<String>,
+    pub username: String,
+    pub notification_context: NotificationContext,
     pub password: String,
 }

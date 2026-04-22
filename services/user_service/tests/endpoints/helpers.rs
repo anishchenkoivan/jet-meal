@@ -11,10 +11,12 @@ pub async fn create_user(app: &TestApp, username: &str, password: &str) -> Strin
         .client
         .post(format!("{}/users/create", app.base_url))
         .json(&json!({
-            "name": username,
-            "email": format!("{username}@example.com"),
-            "telegram": format!("tg_{username}"),
-            "password": password,
+            "username": username,
+            "notification_context": {
+                "email": format!("{username}@example.com"),
+                "telegram": format!("tg_{username}")
+            },
+            "password": password
         }))
         .send()
         .await

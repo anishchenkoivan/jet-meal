@@ -2,12 +2,17 @@ use chrono::NaiveDateTime;
 use sqlx::FromRow;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, FromRow)]
-pub struct User {
-    pub id: Uuid,
-    pub username: String,
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct NotificationContext {
     pub email: Option<String>,
     pub telegram: Option<String>,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct UserModel {
+    pub id: Uuid,
+    pub username: String,
+    pub notification_context: NotificationContext,
     pub password_hash: String,
 }
 
