@@ -1,20 +1,12 @@
 use std::sync::Arc;
-use sqlx::postgres::PgPoolOptions;
-use crate::config::AppConfig;
-use crate::repositories::user_repository::PostgresUserRepository;
-use crate::routes::create_router;
-use crate::services::user_service::UserService;
-use crate::state::AppState;
-
-pub mod routes;
-pub mod handlers;
-pub mod dto;
-pub mod services;
-pub mod repositories;
-pub mod models;
-pub mod errors;
-mod state;
-mod config;
+use user_service::config::AppConfig;
+use user_service::database::setup_database;
+use user_service::repositories::refresh_token_repository::PostgresRefreshTokenRepository;
+use user_service::repositories::user_repository::PostgresUserRepository;
+use user_service::routes::create_router;
+use user_service::services::auth_service::AuthService;
+use user_service::services::user_service::UserService;
+use user_service::state::AppState;
 
 #[tokio::main]
 async fn main() {
@@ -23,18 +15,17 @@ async fn main() {
     let server_config = config.server;
     let database_config = config.database;
 
-    // TODO: optionally move database setup away from main
-    let pool = PgPoolOptions::new()
-        .max_connections(database_config.max_connections)
-        .connect(&database_config.url)
-        .await.unwrap();
+    let pool = setup_database(database_config).await;
 
     let user_repo = Arc::new(PostgresUserRepository::new(pool.clone()));
     let user_service = Arc::new(UserService::new(user_repo));
+    let refresh_token_repo = Arc::new(PostgresRefreshTokenRepository::new(pool.clone()));
+    let auth_service = Arc::new(AuthService::new(refresh_token_repo, user_service.clone(), config.security));
 
     let app_state = AppState {
         db_pool: pool,
         user_service,
+        auth_service,
     };
 
     let app = create_router(app_state);

@@ -9,12 +9,15 @@ pub enum DomainError {
     AlreadyExists(String),
     #[error("Internal error: {0}")]
     Internal(String),
+    #[error("Access error: {0}")]
+    AccessError(String),
 }
 
 impl From<DomainError> for ApiError {
     fn from(err: DomainError) -> Self {
         match err {
             DomainError::NotFound(_) => ApiError::NotFound(err.to_string()),
+            DomainError::AccessError(_) => ApiError::AccessDenied(err.to_string()),
             _ => ApiError::InternalServerError(err.to_string()),
         }
     }

@@ -1,13 +1,16 @@
 use serde::Serialize;
+use crate::models::NotificationContext;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Serialize)]
-pub struct UserDto {
+#[derive(Serialize, ToSchema)]
+pub struct User {
     pub id: Uuid,
-    pub name: String
+    pub username: String,
+    pub notification_context: NotificationContext,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct UserCreatedResponse {
     pub id: Uuid
 }

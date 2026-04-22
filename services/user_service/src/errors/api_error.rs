@@ -1,8 +1,14 @@
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use serde_json::json;
+use serde::Serialize;
 use thiserror::Error;
+use utoipa::ToSchema;
+
+#[derive(Serialize, ToSchema)]
+pub struct ErrorResponse {
+    pub error: String,
+}
 
 // Use this as a base api error and support From trait for all domain errors
 
@@ -12,6 +18,8 @@ pub enum ApiError {
     NotFound(String),
     #[error("Internal Server Error: {0}")]
     InternalServerError(String),
+    #[error("Access Denied: {0}")]
+    AccessDenied(String),
 }
 
 impl IntoResponse for ApiError {
@@ -19,9 +27,10 @@ impl IntoResponse for ApiError {
         let (status, message) = match self {
             ApiError::NotFound(_) => (StatusCode::NOT_FOUND, self.to_string()),
             ApiError::InternalServerError(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
+            ApiError::AccessDenied(_) => (StatusCode::FORBIDDEN, self.to_string()),
         };
 
-        let body = Json(json!({ "error": message }));
+        let body = Json(ErrorResponse{error: message});
         (status, body).into_response()
     }
 }
