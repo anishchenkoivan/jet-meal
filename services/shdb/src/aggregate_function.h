@@ -4,4 +4,4 @@ namespace shdb {
 
 class AggregateFunctionFactory;
 
-} // namespace shdb
+}  // namespace shdb
