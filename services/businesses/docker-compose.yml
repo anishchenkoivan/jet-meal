@@ -1,9 +1,30 @@
 services:
-  businesses-service:
-    container_name: jet_meal_businesses
-    build: .
+  postgres:
+    image: postgres:16-alpine
+    container_name: jet_meal_postgres
     restart: unless-stopped
     environment:
-      - BUSINESSES_PORT=3000
+      POSTGRES_USER: jetmeal
+      POSTGRES_PASSWORD: jetmealpass
+      POSTGRES_DB: jetmeal_businesses
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  businesses-service:
+    container_name: jet_meal_businesses
+    depends_on:
+      - postgres
+    build:
+      context: ../..
+      dockerfile: services/businesses/Dockerfile
+    restart: unless-stopped
+    environment:
+      BUSINESSES_PORT: 8080
+      BUSINESSES_POSTGRES_DSN: "postgres://jetmeal:jetmealpass@postgres:5432/jetmeal_businesses?sslmode=disable"
     ports:
       - "8080:8080"
+
+volumes:
+  postgres_data:
