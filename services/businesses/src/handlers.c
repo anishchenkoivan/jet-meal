@@ -48,12 +48,14 @@ void init_handlers_global_state() {
 void v1_create_business_callback(http_s *request) {
   if (!FIOBJ_TYPE_IS(request->body, FIOBJ_T_DATA)) {
     http_send_error(request, HTTP_INVALID_REQUEST);
+    return;
   }
 
   FIOBJ body = request_body_to_hashmap(request->body);
 
   api_gen_v1_create_business_request_t request_body =
       api_gen_v1_create_business_request_parse_from_fiobj(body);
+  fiobj_free(body);
 
   api_gen_business_t new_business = {
       .businessName = request_body.businessName,
@@ -65,6 +67,8 @@ void v1_create_business_callback(http_s *request) {
   assert(g_business_repository.vtable.insert_business != NULL);
   size_t id = g_business_repository.vtable.insert_business(
       (void *)&g_business_repository, &new_business);
+
+  api_gen_v1_create_business_request_cleanup(request_body);
 
   if (id == -1) {
     http_send_error(request, HTTP_INTERNAL_SERVER_ERROR);
@@ -80,19 +84,20 @@ void v1_create_business_callback(http_s *request) {
 
   write_fiobj_response(request, response_fiobj);
 
-  api_gen_v1_create_business_request_cleanup(request_body);
   api_gen_v1_create_business_response_cleanup(response);
 }
 
 void v1_update_business_callback(http_s *request) {
   if (!FIOBJ_TYPE_IS(request->body, FIOBJ_T_DATA)) {
     http_send_error(request, HTTP_INVALID_REQUEST);
+    return;
   }
 
   FIOBJ body = request_body_to_hashmap(request->body);
 
   api_gen_v1_update_business_request_t request_body =
       api_gen_v1_update_business_request_parse_from_fiobj(body);
+  fiobj_free(body);
 
   api_gen_business_t new_business = {
       .businessName = request_body.businessName,
@@ -124,12 +129,14 @@ void v1_update_business_callback(http_s *request) {
 void v1_delete_business_callback(http_s *request) {
   if (!FIOBJ_TYPE_IS(request->body, FIOBJ_T_DATA)) {
     http_send_error(request, HTTP_INVALID_REQUEST);
+    return;
   }
 
   FIOBJ body = request_body_to_hashmap(request->body);
 
   api_gen_v1_delete_business_request_t request_body =
       api_gen_v1_delete_business_request_parse_from_fiobj(body);
+  fiobj_free(body);
 
   assert(g_business_repository.vtable.delete_business != NULL);
 
@@ -153,24 +160,26 @@ void v1_delete_business_callback(http_s *request) {
 void v1_get_business_callback(http_s *request) {
   if (!FIOBJ_TYPE_IS(request->body, FIOBJ_T_DATA)) {
     http_send_error(request, HTTP_INVALID_REQUEST);
+    return;
   }
 
   FIOBJ body = request_body_to_hashmap(request->body);
 
   api_gen_v1_get_business_request_t request_body =
       api_gen_v1_get_business_request_parse_from_fiobj(body);
+  fiobj_free(body);
 
   assert(g_business_repository.vtable.get_business != NULL);
 
   api_gen_business_t business = g_business_repository.vtable.get_business(
       (void *)&g_business_repository, atoi(request_body.businessId));
 
+  api_gen_v1_get_business_request_cleanup(request_body);
+
   if (business.businessId == NULL) {
     http_send_error(request, HTTP_NOT_FOUND);
     return;
   }
-
-  api_gen_v1_get_business_request_cleanup(request_body);
 
   api_gen_v1_get_business_response_t response;
   response.business = business;
@@ -179,4 +188,6 @@ void v1_get_business_callback(http_s *request) {
       api_gen_v1_get_business_response_serialize_to_fiobj(response);
 
   write_fiobj_response(request, response_fiobj);
+
+  api_gen_v1_get_business_response_cleanup(response);
 }

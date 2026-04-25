@@ -84,6 +84,7 @@ size_t update_business(void *self, size_t business_id,
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "UPDATE business failed: %s\n", PQerrorMessage(conn));
+    PQclear(res);
     return DB_ERROR;
   }
 
@@ -108,6 +109,7 @@ size_t delete_business(void *self, size_t business_id) {
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "DELETE business failed: %s\n", PQerrorMessage(conn));
+    PQclear(res);
     return DB_ERROR;
   }
 
@@ -202,6 +204,7 @@ size_t delete_meal(void *self, size_t business_id, size_t meal_id) {
 
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "DELETE meal failed: %s\n", PQerrorMessage(conn));
+    PQclear(res);
     return false;
   }
   PQclear(res);
@@ -234,8 +237,10 @@ void postgres_aply_migration(const char *dsn) {
                                  NULL, FORMAT_BIN);
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
       fprintf(stderr, "Failed to apply migration v%d\n", version + 1);
+      PQclear(res);
       abort();
     }
+    PQclear(res);
   }
 
   PQfinish(conn);
