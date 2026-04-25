@@ -1,0 +1,541 @@
+scalar DateTime
+scalar Decimal
+scalar URL
+
+# -----------------------------------------------------------------------------
+# Common enumerations
+# -----------------------------------------------------------------------------
+
+enum UserRole {
+  CUSTOMER
+  COURIER
+  RESTAURANT_OWNER
+  ADMIN
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PLACED
+  ACCEPTED_BY_RESTAURANT
+  PREPARING
+  READY_FOR_PICKUP
+  COURIER_ASSIGNED
+  COURIER_EN_ROUTE
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CARD
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+enum NotificationChannel {
+  PUSH
+  SMS
+  EMAIL
+}
+
+enum NotificationKind {
+  ORDER_CREATED
+  PAYMENT_SUCCEEDED
+  PAYMENT_FAILED
+  COURIER_DISPATCHED
+  ORDER_DELIVERED
+  ORDER_CANCELLED
+  RESTAURANT_MESSAGE
+  SYSTEM
+}
+
+enum CuisineType {
+  ITALIAN
+  ASIAN
+  FAST_FOOD
+  HEALTHY
+  DESSERT
+  OTHER
+}
+
+# -----------------------------------------------------------------------------
+# Pagination
+# -----------------------------------------------------------------------------
+
+input PageInput {
+  first: Int = 20
+  after: String
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+# -----------------------------------------------------------------------------
+# GEO
+# -----------------------------------------------------------------------------
+
+type GeoPoint {
+  lat: Float!
+  lon: Float!
+}
+
+type Address {
+  id: ID!
+  label: String
+  formattedLine: String!
+  point: GeoPoint!
+  building: String
+  apartment: String
+  entrance: String
+  floor: String
+  deliveryInstructions: String
+  isDefault: Boolean!
+}
+
+input AddressInput {
+  label: String
+  formattedLine: String!
+  lat: Float!
+  lon: Float!
+  building: String
+  apartment: String
+  entrance: String
+  floor: String
+  deliveryInstructions: String
+  isDefault: Boolean
+}
+
+type Money {
+  amount: Decimal!
+  currency: String!
+}
+
+type DeliveryEstimate {
+  distanceMeters: Int!
+  durationSeconds: Int!
+  routePolyline: String
+  suggestedDeliveryFee: Money
+}
+
+input DeliveryEstimateInput {
+  restaurantId: ID!
+  deliveryPoint: GeoPointInput!
+}
+
+input GeoPointInput {
+  lat: Float!
+  lon: Float!
+}
+
+# -----------------------------------------------------------------------------
+# User
+# -----------------------------------------------------------------------------
+
+type User {
+  id: ID!
+  role: UserRole!
+  phone: String
+  email: String
+  displayName: String
+  roles: [UserRole!]!
+  addresses: [Address!]!
+  createdAt: DateTime!
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String
+  expiresAt: DateTime!
+  user: User!
+}
+
+input SignInInput {
+  channel: String!
+  credential: String!
+  secret: String
+}
+
+# -----------------------------------------------------------------------------
+# Restaurant
+# -----------------------------------------------------------------------------
+
+type Restaurant {
+  id: ID!
+  name: String!
+  description: String
+  cuisines: [String!]!
+  rating: Float
+  reviewCount: Int
+  heroImageUrl: URL
+  location: GeoPoint!
+  isOpen: Boolean!
+  minOrderAmount: Money
+  prepTimeMinutes: Int
+}
+
+type MenuCategory {
+  id: ID!
+  name: String!
+  sortOrder: Int!
+  items: [MenuItem!]!
+}
+
+type MenuItem {
+  id: ID!
+  restaurantId: ID!
+  categoryId: ID!
+  name: String!
+  description: String
+  price: Money!
+  imageUrl: URL
+  isAvailable: Boolean!
+  ingredients: [String!]
+  allergens: [String!]
+  tags: [String!]!
+  calories: Int
+}
+
+type Menu {
+  restaurantId: ID!
+  categories: [MenuCategory!]!
+  updatedAt: DateTime!
+}
+
+input RestaurantSearchInput {
+  near: GeoPointInput!
+  radiusMeters: Int = 5000
+  cuisines: [CuisineType!]
+  query: String
+  onlyOpen: Boolean = true
+  page: PageInput
+}
+
+type RestaurantEdge {
+  cursor: String!
+  node: Restaurant!
+  distanceMeters: Int
+}
+
+type RestaurantConnection {
+  edges: [RestaurantEdge!]!
+  pageInfo: PageInfo!
+}
+
+# -----------------------------------------------------------------------------
+# Cart
+# -----------------------------------------------------------------------------
+
+type CartLine {
+  id: ID!
+  menuItemId: ID!
+  nameSnapshot: String!
+  unitPrice: Money!
+  quantity: Int!
+  note: String
+}
+
+type Cart {
+  id: ID!
+  restaurantId: ID
+  lines: [CartLine!]!
+  subtotal: Money!
+  deliveryFee: Money
+  currency: String!
+  notes: String
+  updatedAt: DateTime!
+}
+
+input AddCartLineInput {
+  cartId: ID
+  restaurantId: ID!
+  menuItemId: ID!
+  quantity: Int!
+  note: String
+}
+
+input UpdateCartLineInput {
+  cartId: ID!
+  lineId: ID!
+  quantity: Int!
+  note: String
+}
+
+input RemoveCartLineInput {
+  cartId: ID!
+  lineId: ID!
+}
+
+# -----------------------------------------------------------------------------
+# Order
+# -----------------------------------------------------------------------------
+
+type OrderLine {
+  id: ID!
+  menuItemId: ID!
+  name: String!
+  quantity: Int!
+  unitPrice: Money!
+  lineTotal: Money!
+  note: String
+}
+
+type OrderTotals {
+  subtotal: Money!
+  deliveryFee: Money!
+  serviceFee: Money
+  discount: Money
+  total: Money!
+}
+
+type OrderTimelineEvent {
+  status: OrderStatus!
+  at: DateTime!
+  actorRole: UserRole
+  message: String
+}
+
+type Order {
+  id: ID!
+  number: String!
+  status: OrderStatus!
+  customerId: ID!
+  restaurantId: ID!
+  courierId: ID
+  lines: [OrderLine!]!
+  deliveryAddress: Address!
+  totals: OrderTotals!
+  payment: Payment
+  timeline: [OrderTimelineEvent!]!
+  createdAt: DateTime!
+  estimatedDeliveryAt: DateTime
+}
+
+input OrderFilter {
+  statuses: [OrderStatus!]
+  restaurantId: ID
+  from: DateTime
+  to: DateTime
+}
+
+type OrderEdge {
+  cursor: String!
+  node: Order!
+}
+
+type OrderConnection {
+  edges: [OrderEdge!]!
+  pageInfo: PageInfo!
+}
+
+input CheckoutInput {
+  cartId: ID!
+  deliveryAddressId: ID
+  newDeliveryAddress: AddressInput
+  paymentMethod: PaymentMethod!
+  paymentInstrumentId: String
+}
+
+# -----------------------------------------------------------------------------
+# Payment
+# -----------------------------------------------------------------------------
+
+type Payment {
+  id: ID!
+  orderId: ID!
+  status: PaymentStatus!
+  method: PaymentMethod!
+  amount: Money!
+  externalReference: String
+  updatedAt: DateTime!
+}
+
+type PaymentIntent {
+  id: ID!
+  orderId: ID!
+  paymentLink: URL
+  status: PaymentStatus!
+  amount: Money!
+}
+
+input ConfirmPaymentInput {
+  paymentIntentId: ID!
+  providerPayload: String
+}
+
+# -----------------------------------------------------------------------------
+# Tracking
+# -----------------------------------------------------------------------------
+
+type CourierTrackPoint {
+  point: GeoPoint!
+  headingDegrees: Float
+  speedKmh: Float
+  recordedAt: DateTime!
+}
+
+type OrderTracking {
+  orderId: ID!
+  courierId: ID
+  lastKnown: CourierTrackPoint
+  recentTrail: [CourierTrackPoint!]!
+  etaSeconds: Int
+}
+
+input ReportLocationInput {
+  orderId: ID
+  point: GeoPointInput!
+  headingDegrees: Float
+  speedKmh: Float
+}
+
+# -----------------------------------------------------------------------------
+# Notification
+# -----------------------------------------------------------------------------
+
+type Notification {
+  id: ID!
+  kind: NotificationKind!
+  title: String!
+  body: String
+  orderId: ID
+  read: Boolean!
+  createdAt: DateTime!
+  channels: [NotificationChannel!]!
+}
+
+type NotificationEdge {
+  cursor: String!
+  node: Notification!
+}
+
+type NotificationConnection {
+  edges: [NotificationEdge!]!
+  pageInfo: PageInfo!
+}
+
+# -----------------------------------------------------------------------------
+# Catalog
+# -----------------------------------------------------------------------------
+
+type SearchSuggestion {
+  text: String!
+  type: String!
+  restaurantId: ID
+  menuItemId: ID
+}
+
+input RecommendationInput {
+  near: GeoPointInput!
+  limit: Int = 10
+}
+
+# -----------------------------------------------------------------------------
+# Errors
+# -----------------------------------------------------------------------------
+
+type UserError {
+  code: String!
+  message: String!
+  field: String
+}
+
+type CheckoutPayload {
+  order: Order
+  paymentIntent: PaymentIntent
+  errors: [UserError!]!
+}
+
+type MutationPayload {
+  ok: Boolean!
+  errors: [UserError!]!
+}
+
+# -----------------------------------------------------------------------------
+# Query
+# -----------------------------------------------------------------------------
+
+type Query {
+  me: User
+
+  restaurant(id: ID!): Restaurant
+  restaurantSearch(input: RestaurantSearchInput!): RestaurantConnection!
+  menu(restaurantId: ID!): Menu!
+  searchSuggestions(query: String!, near: GeoPointInput): [SearchSuggestion!]!
+  recommendedForYou(input: RecommendationInput!): [MenuItem!]!
+
+  deliveryEstimate(input: DeliveryEstimateInput!): DeliveryEstimate!
+
+  cart(id: ID): Cart
+
+  order(id: ID!): Order
+  myOrders(filter: OrderFilter, page: PageInput): OrderConnection!
+  courierOrders(page: PageInput): OrderConnection!
+  restaurantOrders(restaurantId: ID!, filter: OrderFilter, page: PageInput): OrderConnection!
+
+  orderTracking(orderId: ID!): OrderTracking
+
+  myNotifications(page: PageInput, unreadOnly: Boolean): NotificationConnection!
+
+  paymentForOrder(orderId: ID!): Payment
+}
+
+# -----------------------------------------------------------------------------
+# Mutation
+# -----------------------------------------------------------------------------
+
+type Mutation {
+  # Auth
+  signIn(input: SignInInput!): AuthPayload
+  signOut: MutationPayload!
+  refreshSession(refreshToken: String!): AuthPayload
+
+  # Address
+  createAddress(input: AddressInput!): Address!
+  updateAddress(id: ID!, input: AddressInput!): Address!
+  deleteAddress(id: ID!): MutationPayload!
+
+  # Cart
+  addCartLine(input: AddCartLineInput!): Cart!
+  updateCartLine(input: UpdateCartLineInput!): Cart!
+  removeCartLine(input: RemoveCartLineInput!): Cart!
+  clearCart(cartId: ID): MutationPayload!
+
+  # Orders
+  checkout(input: CheckoutInput!): CheckoutPayload!
+  cancelOrder(orderId: ID!, reason: String): MutationPayload!
+
+  # Actions
+  restaurantUpdateOrderStatus(orderId: ID!, status: OrderStatus!): Order!
+  courierMarkDelivered(orderId: ID!): Order!
+  reportCourierLocation(input: ReportLocationInput!): MutationPayload!
+
+  # Payment
+  confirmPayment(input: ConfirmPaymentInput!): Payment!
+
+  # Restaurant admin
+  setMenuItemAvailability(restaurantId: ID!, menuItemId: ID!, available: Boolean!): MenuItem!
+  updateRestaurantProfile(restaurantId: ID!, name: String, description: String, heroImageUrl: URL): Restaurant!
+
+  # Notifications
+  markNotificationRead(id: ID!): MutationPayload!
+  markAllNotificationsRead: MutationPayload!
+}
+
+# -----------------------------------------------------------------------------
+# Schema
+# -----------------------------------------------------------------------------
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
