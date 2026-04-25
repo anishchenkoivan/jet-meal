@@ -10,6 +10,8 @@
 
 void init_handlers_global_state();
 
+void healthcheck_callback(http_s* request);
+
 void v1_create_business_callback(http_s *request);
 
 void v1_update_business_callback(http_s *request);
