@@ -45,6 +45,11 @@ void init_handlers_global_state() {
   g_meals_repository = init_postgres_meals_repository(get_postgres_dsn());
 }
 
+void healthcheck_callback(http_s *request) {
+  static const char *response = "OK";
+  http_send_body(request, (void *)response, strlen(response));
+}
+
 void v1_create_business_callback(http_s *request) {
   if (!FIOBJ_TYPE_IS(request->body, FIOBJ_T_DATA)) {
     http_send_error(request, HTTP_INVALID_REQUEST);

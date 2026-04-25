@@ -11,6 +11,6 @@ JETENV_REGISTER_STRING(get_postgres_dsn, "BUSINESSES_POSTGRES_DSN", NULL);
 
 #define LOG_LEVEL FIO_LOG_LEVEL_INFO
 
-#define ID_LEN 20 // max size_t str len
+#define ID_LEN 21 // max size_t str len
 
 #endif // #ifndef CONFIG_H

@@ -11,6 +11,8 @@ int main(void) {
   postgres_aply_migration(get_postgres_dsn());
   init_handlers_global_state();
 
+  fio_router_register_callback(healthcheck_callback, "/health", HTTP_GET);
+
   fio_router_register_callback(v1_create_business_callback, "/v1/business", HTTP_POST);
   fio_router_register_callback(v1_update_business_callback, "/v1/business", HTTP_PUT);
   fio_router_register_callback(v1_delete_business_callback, "/v1/business", HTTP_DELETE);
