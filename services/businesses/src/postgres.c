@@ -17,12 +17,25 @@ static PGconn *init_postgres_conn(const char *dsn) {
   }
 
   PGconn *conn = PQconnectdb(dsn);
-  if (PQstatus(conn) != CONNECTION_OK) {
-    fprintf(stderr, "Connection to database failed: %s\n",
+  int retries = 0;
+
+  while (PQstatus(conn) != CONNECTION_OK &&
+         retries < get_postgres_con_retries()) {
+    fprintf(stderr, "Connection attempt %d failed: %s\n", retries + 1,
             PQerrorMessage(conn));
+    PQfinish(conn);
+    sleep(get_postgres_con_retry_delay_sec());
+    conn = PQconnectdb(dsn);
+    retries++;
+  }
+
+  if (PQstatus(conn) != CONNECTION_OK) {
+    fprintf(stderr, "Connection to database failed after %d retries: %s\n",
+            get_postgres_con_retry_delay_sec(), PQerrorMessage(conn));
     PQfinish(conn);
     abort();
   }
+
   return conn;
 }
 

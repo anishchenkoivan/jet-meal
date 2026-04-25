@@ -34,7 +34,7 @@ get_v1_business_status() {
 setup_file() {
   docker compose -f tests/docker-compose.yml up --build -d > /dev/null
 
-  retries=20
+  retries=120
   while [ "$(healthcheck_status)" != "200" ] && [ $retries -gt 0 ]; do
     sleep 0.5
     retries=$((retries - 1))
