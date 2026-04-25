@@ -22,7 +22,6 @@ services:
       dockerfile: services/businesses/Dockerfile
       args:
         SANITIZER: 1
-    restart: unless-stopped
     environment:
       BUSINESSES_PORT: 18080
       BUSINESSES_POSTGRES_DSN: "postgres://jetmeal:jetmealpass@postgres:5432/jetmeal_businesses?sslmode=disable"
