@@ -149,11 +149,11 @@ api_gen_business_t get_business(void *self, size_t business_id) {
 
   api_gen_business_t business;
 
-  business.businessId = PQgetvalue(res, 0, 0);
-  business.businessName = PQgetvalue(res, 0, 1);
-  business.ownerUserId = PQgetvalue(res, 0, 2);
-  business.description = PQgetvalue(res, 0, 3);
-  business.businessLogoUrl = PQgetvalue(res, 0, 4);
+  business.businessId = strdup(PQgetvalue(res, 0, 0));
+  business.businessName = strdup(PQgetvalue(res, 0, 1));
+  business.ownerUserId = strdup(PQgetvalue(res, 0, 2));
+  business.description = strdup(PQgetvalue(res, 0, 3));
+  business.businessLogoUrl = strdup(PQgetvalue(res, 0, 4));
 
   PQclear(res);
   return business;

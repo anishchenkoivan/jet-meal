@@ -5,6 +5,8 @@ FROM ubuntu:latest AS builder
 
 RUN apt-get update && apt-get install -y cmake gcc libpq-dev
 
+ARG SANITIZER
+
 WORKDIR /build
 
 COPY libraries /build/libraries
@@ -12,12 +14,15 @@ COPY services/businesses /build/services/businesses
 
 WORKDIR /build/services/businesses
 
-RUN rm -rf build && mkdir -p build && cmake -B build && make -C build
+RUN rm -rf build && mkdir -p build && \
+    cmake -B build -DENABLE_SANITIZER=${SANITIZER} && \
+    make -C build
 
 # ---- Runtime Stage ----
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y libpq-dev
+RUN apt-get update && apt-get install -y libpq-dev libasan8 libubsan1; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /build/services/businesses/build/bin/businesses-service /usr/local/bin/
 

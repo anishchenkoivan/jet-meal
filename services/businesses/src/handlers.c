@@ -68,12 +68,13 @@ void v1_create_business_callback(http_s *request) {
 
   if (id == -1) {
     http_send_error(request, HTTP_INTERNAL_SERVER_ERROR);
+    return;
   }
 
   char str_id[ID_LEN];
   snprintf(str_id, sizeof(str_id), "%zu", id);
 
-  api_gen_v1_create_business_response_t response = {str_id};
+  api_gen_v1_create_business_response_t response = {strdup(str_id)};
   FIOBJ response_fiobj =
       api_gen_v1_create_business_response_serialize_to_fiobj(response);
 

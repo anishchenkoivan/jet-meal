@@ -3,7 +3,7 @@
 #include "codegen_api.h"
 
 static const char* api_gen_string_parse_from_fiobj(FIOBJ val) {
-  return fiobj_obj2cstr(val).data;
+  return strdup(fiobj_obj2cstr(val).data);
 }
 
 static FIOBJ api_gen_string_serialize_to_fiobj(const char* val) {
@@ -11,6 +11,7 @@ static FIOBJ api_gen_string_serialize_to_fiobj(const char* val) {
 }
 
 static void api_gen_string_cleanup(const char* val) {
+  free((void*)val);
 }
 
 static int64_t api_gen_number_parse_from_fiobj(FIOBJ val) {

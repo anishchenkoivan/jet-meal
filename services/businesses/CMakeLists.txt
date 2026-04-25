@@ -17,6 +17,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(ENABLE_SANITIZER "Enable AddressSanitizer + UndefinedBehaviorSanitizer" OFF)
+
 file(GLOB SOURCES src/*.c)
 file(GLOB HEADERS src/*.h)
 
@@ -32,3 +35,13 @@ target_include_directories(businesses-service
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/../../libraries/c/jetenv/include
 )
+
+if(ENABLE_SANITIZER)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(businesses-service PRIVATE -fsanitize=address,undefined -g -O1)
+        target_link_options(businesses-service PRIVATE -fsanitize=address,undefined)
+        message(STATUS "Sanitizer enabled (ASan + UBSan)")
+    else()
+        message(WARNING "Sanitizer not supported with compiler ${CMAKE_C_COMPILER_ID}")
+    endif()
+endif()

@@ -1,0 +1,5 @@
+services:
+  businesses-service:
+    build:
+      args:
+        SANITIZER: 1
