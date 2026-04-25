@@ -1,0 +1,33 @@
+name: Check businesses codegen is up to date
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'services/businesses/**'
+      - 'scripts/openapi-c-gen/**'
+  push:
+    branches: [ main ]
+    paths:
+      - 'services/businesses/**'
+      - 'scripts/openapi-c-gen/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Verify codegen is up to date
+        run: |
+          make -C services/businesses codegen
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Code generation produced diff. Please run 'make -C services/businesses codegen' locally and commit the generated files."
+            git status --porcelain
+            exit 1
+          else
+            echo "Codegen is up to date."
+          fi

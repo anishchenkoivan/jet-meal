@@ -3,7 +3,7 @@
 #include "codegen_api.h"
 
 static const char* api_gen_string_parse_from_fiobj(FIOBJ val) {
-  return fiobj_obj2cstr(val).data;
+  return strdup(fiobj_obj2cstr(val).data);
 }
 
 static FIOBJ api_gen_string_serialize_to_fiobj(const char* val) {
@@ -91,6 +91,11 @@ FIOBJ api_gen_menu_serialize_to_fiobj(api_gen_menu_t val) {
 FIOBJ api_gen_business_serialize_to_fiobj(api_gen_business_t val) {
   FIOBJ res = fiobj_hash_new2(5);
   {
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessId);
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    fiobj_hash_set(res, key, obj);
+  }
+  {
     FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessName);
     FIOBJ key = fiobj_str_new("businessName", /*key len*/12);
     fiobj_hash_set(res, key, obj);
@@ -103,11 +108,6 @@ FIOBJ api_gen_business_serialize_to_fiobj(api_gen_business_t val) {
   {
     FIOBJ obj = api_gen_string_serialize_to_fiobj(val.description);
     FIOBJ key = fiobj_str_new("description", /*key len*/11);
-    fiobj_hash_set(res, key, obj);
-  }
-  {
-    FIOBJ obj = api_gen_menu_serialize_to_fiobj(val.menu);
-    FIOBJ key = fiobj_str_new("menu", /*key len*/4);
     fiobj_hash_set(res, key, obj);
   }
   {
@@ -138,7 +138,7 @@ FIOBJ api_gen_v1_add_meal_to_menu_request_serialize_to_fiobj(api_gen_v1_add_meal
   return res;
 }
 
-FIOBJ api_gen_v1_update_business_response_serialize_to_fiobj(api_gen_v1_update_business_response_t val) {
+FIOBJ api_gen_v1_get_business_response_serialize_to_fiobj(api_gen_v1_get_business_response_t val) {
   FIOBJ res = fiobj_hash_new2(1);
   {
     FIOBJ obj = api_gen_business_serialize_to_fiobj(val.business);
@@ -148,8 +148,33 @@ FIOBJ api_gen_v1_update_business_response_serialize_to_fiobj(api_gen_v1_update_b
   return res;
 }
 
+FIOBJ api_gen_v1_get_business_request_serialize_to_fiobj(api_gen_v1_get_business_request_t val) {
+  FIOBJ res = fiobj_hash_new2(1);
+  {
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessId);
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    fiobj_hash_set(res, key, obj);
+  }
+  return res;
+}
+
+FIOBJ api_gen_v1_delete_business_request_serialize_to_fiobj(api_gen_v1_delete_business_request_t val) {
+  FIOBJ res = fiobj_hash_new2(1);
+  {
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessId);
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    fiobj_hash_set(res, key, obj);
+  }
+  return res;
+}
+
 FIOBJ api_gen_v1_update_business_request_serialize_to_fiobj(api_gen_v1_update_business_request_t val) {
-  FIOBJ res = fiobj_hash_new2(4);
+  FIOBJ res = fiobj_hash_new2(5);
+  {
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessId);
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    fiobj_hash_set(res, key, obj);
+  }
   {
     FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessName);
     FIOBJ key = fiobj_str_new("businessName", /*key len*/12);
@@ -176,8 +201,8 @@ FIOBJ api_gen_v1_update_business_request_serialize_to_fiobj(api_gen_v1_update_bu
 FIOBJ api_gen_v1_create_business_response_serialize_to_fiobj(api_gen_v1_create_business_response_t val) {
   FIOBJ res = fiobj_hash_new2(1);
   {
-    FIOBJ obj = api_gen_business_serialize_to_fiobj(val.business);
-    FIOBJ key = fiobj_str_new("business", /*key len*/8);
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.business_id);
+    FIOBJ key = fiobj_str_new("business_id", /*key len*/11);
     fiobj_hash_set(res, key, obj);
   }
   return res;
@@ -251,6 +276,11 @@ api_gen_menu_t api_gen_menu_parse_from_fiobj(FIOBJ val) {
 api_gen_business_t api_gen_business_parse_from_fiobj(FIOBJ val) {
   api_gen_business_t res;
   {
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    FIOBJ field = fiobj_hash_get(val, key);
+    res.businessId = api_gen_string_parse_from_fiobj(field);
+  }
+  {
     FIOBJ key = fiobj_str_new("businessName", /*key len*/12);
     FIOBJ field = fiobj_hash_get(val, key);
     res.businessName = api_gen_string_parse_from_fiobj(field);
@@ -264,11 +294,6 @@ api_gen_business_t api_gen_business_parse_from_fiobj(FIOBJ val) {
     FIOBJ key = fiobj_str_new("description", /*key len*/11);
     FIOBJ field = fiobj_hash_get(val, key);
     res.description = api_gen_string_parse_from_fiobj(field);
-  }
-  {
-    FIOBJ key = fiobj_str_new("menu", /*key len*/4);
-    FIOBJ field = fiobj_hash_get(val, key);
-    res.menu = api_gen_menu_parse_from_fiobj(field);
   }
   {
     FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
@@ -298,8 +323,8 @@ api_gen_v1_add_meal_to_menu_request_t api_gen_v1_add_meal_to_menu_request_parse_
   return res;
 }
 
-api_gen_v1_update_business_response_t api_gen_v1_update_business_response_parse_from_fiobj(FIOBJ val) {
-  api_gen_v1_update_business_response_t res;
+api_gen_v1_get_business_response_t api_gen_v1_get_business_response_parse_from_fiobj(FIOBJ val) {
+  api_gen_v1_get_business_response_t res;
   {
     FIOBJ key = fiobj_str_new("business", /*key len*/8);
     FIOBJ field = fiobj_hash_get(val, key);
@@ -308,8 +333,33 @@ api_gen_v1_update_business_response_t api_gen_v1_update_business_response_parse_
   return res;
 }
 
+api_gen_v1_get_business_request_t api_gen_v1_get_business_request_parse_from_fiobj(FIOBJ val) {
+  api_gen_v1_get_business_request_t res;
+  {
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    FIOBJ field = fiobj_hash_get(val, key);
+    res.businessId = api_gen_string_parse_from_fiobj(field);
+  }
+  return res;
+}
+
+api_gen_v1_delete_business_request_t api_gen_v1_delete_business_request_parse_from_fiobj(FIOBJ val) {
+  api_gen_v1_delete_business_request_t res;
+  {
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    FIOBJ field = fiobj_hash_get(val, key);
+    res.businessId = api_gen_string_parse_from_fiobj(field);
+  }
+  return res;
+}
+
 api_gen_v1_update_business_request_t api_gen_v1_update_business_request_parse_from_fiobj(FIOBJ val) {
   api_gen_v1_update_business_request_t res;
+  {
+    FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
+    FIOBJ field = fiobj_hash_get(val, key);
+    res.businessId = api_gen_string_parse_from_fiobj(field);
+  }
   {
     FIOBJ key = fiobj_str_new("businessName", /*key len*/12);
     FIOBJ field = fiobj_hash_get(val, key);
@@ -336,9 +386,9 @@ api_gen_v1_update_business_request_t api_gen_v1_update_business_request_parse_fr
 api_gen_v1_create_business_response_t api_gen_v1_create_business_response_parse_from_fiobj(FIOBJ val) {
   api_gen_v1_create_business_response_t res;
   {
-    FIOBJ key = fiobj_str_new("business", /*key len*/8);
+    FIOBJ key = fiobj_str_new("business_id", /*key len*/11);
     FIOBJ field = fiobj_hash_get(val, key);
-    res.business = api_gen_business_parse_from_fiobj(field);
+    res.business_id = api_gen_string_parse_from_fiobj(field);
   }
   return res;
 }
@@ -383,10 +433,10 @@ void api_gen_menu_cleanup(api_gen_menu_t val) {
 }
 
 void api_gen_business_cleanup(api_gen_business_t val) {
+  api_gen_string_cleanup(val.businessId);
   api_gen_string_cleanup(val.businessName);
   api_gen_string_cleanup(val.ownerUserId);
   api_gen_string_cleanup(val.description);
-  api_gen_menu_cleanup(val.menu);
   api_gen_string_cleanup(val.businessLogoUrl);
 }
 
@@ -398,11 +448,20 @@ void api_gen_v1_add_meal_to_menu_request_cleanup(api_gen_v1_add_meal_to_menu_req
   api_gen_meal_cleanup(val.meal);
 }
 
-void api_gen_v1_update_business_response_cleanup(api_gen_v1_update_business_response_t val) {
+void api_gen_v1_get_business_response_cleanup(api_gen_v1_get_business_response_t val) {
   api_gen_business_cleanup(val.business);
 }
 
+void api_gen_v1_get_business_request_cleanup(api_gen_v1_get_business_request_t val) {
+  api_gen_string_cleanup(val.businessId);
+}
+
+void api_gen_v1_delete_business_request_cleanup(api_gen_v1_delete_business_request_t val) {
+  api_gen_string_cleanup(val.businessId);
+}
+
 void api_gen_v1_update_business_request_cleanup(api_gen_v1_update_business_request_t val) {
+  api_gen_string_cleanup(val.businessId);
   api_gen_string_cleanup(val.businessName);
   api_gen_string_cleanup(val.ownerUserId);
   api_gen_string_cleanup(val.description);
@@ -410,7 +469,7 @@ void api_gen_v1_update_business_request_cleanup(api_gen_v1_update_business_reque
 }
 
 void api_gen_v1_create_business_response_cleanup(api_gen_v1_create_business_response_t val) {
-  api_gen_business_cleanup(val.business);
+  api_gen_string_cleanup(val.business_id);
 }
 
 void api_gen_v1_create_business_request_cleanup(api_gen_v1_create_business_request_t val) {
