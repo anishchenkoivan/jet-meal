@@ -16,5 +16,6 @@ libraries/c/facil-io-router/build*
 libraries/c/jetenv/build*
 services/shdb/build*
 services/businesses/build*
+services/businesses/venv*
 **/compile_commands.json
 **/__pycache__/
