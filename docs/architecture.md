@@ -102,5 +102,3 @@ Errors:
   429 - rate limit exceeded
   503 - order service недоступен
 Подход к версионированию: v1 в URL; при изменении модели пагинации или состава item создаем /api/v2/.
-
-OpenAPI spec: docs/openapi.yaml
