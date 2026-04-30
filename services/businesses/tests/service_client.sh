@@ -24,11 +24,11 @@ delete_v1_business_status() {
 }
 
 get_v1_business() {
-  curl -s -X GET "${BASE_URL}/v1/business" -H "Content-Type: application/json" -d "$1"
+  curl -s "${BASE_URL}/v1/business/get" -X POST -H "Content-Type: application/json" -d "$1"
 }
 
 get_v1_business_status() {
-  curl -s -o /dev/null -w "%{http_code}" -X GET "${BASE_URL}/v1/business" -H "Content-Type: application/json" -d "$1"
+  curl -s -o /dev/null -w "%{http_code}" -X POST "${BASE_URL}/v1/business/get" -H "Content-Type: application/json" -d "$1"
 }
 
 setup_file() {

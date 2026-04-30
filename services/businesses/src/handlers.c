@@ -111,7 +111,7 @@ void v1_update_business_handler(http_s *request) {
       .businessLogoId = request_body.businessLogoId,
   };
 
-  if (g_business_repository.vtable.insert_business != NULL) {
+  if (g_business_repository.vtable.insert_business == NULL) {
     http_send_error(request, HTTP_INTERNAL_SERVER_ERROR);
   }
 
@@ -145,7 +145,9 @@ void v1_delete_business_handler(http_s *request) {
       api_gen_v1_delete_business_request_parse_from_fiobj(body);
   fiobj_free(body);
 
-  assert(g_business_repository.vtable.delete_business != NULL);
+  if (g_business_repository.vtable.delete_business == NULL) {
+    http_send_error(request, HTTP_INTERNAL_SERVER_ERROR);
+  }
 
   size_t rows_deleted = g_business_repository.vtable.delete_business(
       (void *)&g_business_repository, atoi(request_body.businessId));
