@@ -13,7 +13,7 @@
 typedef struct api_gen_meal_s {
   const char* mealName;
   const char* mealDescription;
-  const char* mealPictureUrl;
+  const char* mealPictureId;
 } api_gen_meal_t;
 
 typedef struct api_gen_meals_list_s {
@@ -30,7 +30,7 @@ typedef struct api_gen_business_s {
   const char* businessName;
   const char* ownerUserId;
   const char* description;
-  const char* businessLogoUrl;
+  const char* businessLogoId;
 } api_gen_business_t;
 
 typedef struct api_gen_v1_add_meal_to_menu_response_s {
@@ -58,7 +58,7 @@ typedef struct api_gen_v1_update_business_request_s {
   const char* businessName;
   const char* ownerUserId;
   const char* description;
-  const char* businessLogoUrl;
+  const char* businessLogoId;
 } api_gen_v1_update_business_request_t;
 
 typedef struct api_gen_v1_create_business_response_s {
@@ -69,7 +69,7 @@ typedef struct api_gen_v1_create_business_request_s {
   const char* businessName;
   const char* ownerUserId;
   const char* description;
-  const char* businessLogoUrl;
+  const char* businessLogoId;
 } api_gen_v1_create_business_request_t;
 
 FIOBJ api_gen_meal_serialize_to_fiobj(api_gen_meal_t);

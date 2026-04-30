@@ -55,11 +55,11 @@ static PGconn *meals_repo_get_connection(void *self) {
 
 size_t insert_business(void *self, api_gen_business_t *business) {
   const char *query = "INSERT INTO businesses (business_name, owner_user_id, "
-                      "description, business_logo_url) "
+                      "description, business_logo_id) "
                       "VALUES ($1, $2, $3, $4) RETURNING id";
 
   const char *params[] = {business->businessName, business->ownerUserId,
-                          business->description, business->businessLogoUrl};
+                          business->description, business->businessLogoId};
   PGconn *conn = business_repo_get_connection(self);
 
   PGresult *res =
@@ -81,13 +81,13 @@ size_t update_business(void *self, size_t business_id,
                        api_gen_business_t *business) {
   const char *query =
       "UPDATE businesses SET business_name = $1, owner_user_id = $2, "
-      "description = $3, business_logo_url = $4 WHERE id = $5";
+      "description = $3, business_logo_id = $4 WHERE id = $5";
 
   char id_str[ID_LEN];
   snprintf(id_str, sizeof(id_str), "%zu", business_id);
 
   const char *params[] = {business->businessName, business->ownerUserId,
-                          business->description, business->businessLogoUrl,
+                          business->description, business->businessLogoId,
                           id_str};
 
   PGconn *conn = business_repo_get_connection(self);
@@ -136,7 +136,7 @@ size_t delete_business(void *self, size_t business_id) {
 
 api_gen_business_t get_business(void *self, size_t business_id) {
   const char *query =
-      "SELECT id, business_name, owner_user_id, description, business_logo_url "
+      "SELECT id, business_name, owner_user_id, description, business_logo_id "
       "FROM businesses WHERE id = $1";
 
   char id_str[ID_LEN];
@@ -168,7 +168,7 @@ api_gen_business_t get_business(void *self, size_t business_id) {
   business.businessName = strdup(PQgetvalue(res, 0, 1));
   business.ownerUserId = strdup(PQgetvalue(res, 0, 2));
   business.description = strdup(PQgetvalue(res, 0, 3));
-  business.businessLogoUrl = strdup(PQgetvalue(res, 0, 4));
+  business.businessLogoId = strdup(PQgetvalue(res, 0, 4));
 
   PQclear(res);
   return business;
@@ -176,14 +176,14 @@ api_gen_business_t get_business(void *self, size_t business_id) {
 
 size_t insert_meal(void *self, size_t business_id, api_gen_meal_t *meal) {
   const char *query = "INSERT INTO meals (business_id, meal_name, "
-                      "meal_description, meal_picture_url) "
+                      "meal_description, meal_picture_id) "
                       "VALUES ($1, $2, $3, $4) RETURNING id";
 
   char business_id_str[ID_LEN];
   snprintf(business_id_str, sizeof(business_id_str), "%zu", business_id);
 
   const char *params[] = {business_id_str, meal->mealName,
-                          meal->mealDescription, meal->mealPictureUrl};
+                          meal->mealDescription, meal->mealPictureId};
 
   PGconn *conn = meals_repo_get_connection(self);
   PGresult *res =
@@ -224,7 +224,7 @@ size_t delete_meal(void *self, size_t business_id, size_t meal_id) {
   return true;
 }
 
-void postgres_aply_migration(const char *dsn) {
+static void postgres_apply_migration(const char *dsn) {
   PGconn *conn = init_postgres_conn(dsn);
 
   const char *migrations[] = {"CREATE TABLE IF NOT EXISTS businesses ("
@@ -232,7 +232,7 @@ void postgres_aply_migration(const char *dsn) {
                               "    business_name     TEXT NOT NULL,"
                               "    owner_user_id     TEXT NOT NULL,"
                               "    description       TEXT,"
-                              "    business_logo_url TEXT"
+                              "    business_logo_id TEXT"
                               ");",
 
                               "CREATE TABLE IF NOT EXISTS meals ("
@@ -241,7 +241,7 @@ void postgres_aply_migration(const char *dsn) {
                               "REFERENCES businesses(id) ON DELETE CASCADE,"
                               "    meal_name          TEXT NOT NULL,"
                               "    meal_description   TEXT,"
-                              "    meal_picture_url   TEXT"
+                              "    meal_picture_id   TEXT"
                               ");"};
 
   for (int version = 0; version < sizeof(migrations) / sizeof(const char *);
@@ -276,6 +276,8 @@ void cleanup_postgres_business_repository(
 }
 
 postgres_meals_repository_t init_postgres_meals_repository(const char *dsn) {
+  postgres_apply_migration(dsn);
+
   imeals_repository_vtable_t vtable = {.insert_meal = insert_meal,
                                        .delete_meal = delete_meal};
   postgres_meals_repository_t res = {.vtable = vtable,

@@ -10,14 +10,14 @@
 
 void init_handlers_global_state();
 
-void healthcheck_callback(http_s* request);
+void healthcheck_handler(http_s* request);
 
-void v1_create_business_callback(http_s *request);
+void v1_create_business_handler(http_s *request);
 
-void v1_update_business_callback(http_s *request);
+void v1_update_business_handler(http_s *request);
 
-void v1_delete_business_callback(http_s *request);
+void v1_delete_business_handler(http_s *request);
 
-void v1_get_business_callback(http_s *request);
+void v1_get_business_handler(http_s *request);
 
 #endif // #ifndef HANDLERS_H

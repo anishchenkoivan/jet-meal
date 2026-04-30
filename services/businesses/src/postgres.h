@@ -15,8 +15,6 @@ typedef struct postgres_meals_repository_s {
   PGconn *conn;
 } postgres_meals_repository_t;
 
-void postgres_aply_migration(const char *dsn);
-
 postgres_businesses_repository_t
 init_postgres_businesses_repository(const char *dsn);
 

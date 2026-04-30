@@ -62,8 +62,8 @@ FIOBJ api_gen_meal_serialize_to_fiobj(api_gen_meal_t val) {
     fiobj_hash_set(res, key, obj);
   }
   {
-    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.mealPictureUrl);
-    FIOBJ key = fiobj_str_new("mealPictureUrl", /*key len*/14);
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.mealPictureId);
+    FIOBJ key = fiobj_str_new("mealPictureId", /*key len*/13);
     fiobj_hash_set(res, key, obj);
   }
   return res;
@@ -111,8 +111,8 @@ FIOBJ api_gen_business_serialize_to_fiobj(api_gen_business_t val) {
     fiobj_hash_set(res, key, obj);
   }
   {
-    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessLogoUrl);
-    FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessLogoId);
+    FIOBJ key = fiobj_str_new("businessLogoId", /*key len*/14);
     fiobj_hash_set(res, key, obj);
   }
   return res;
@@ -191,8 +191,8 @@ FIOBJ api_gen_v1_update_business_request_serialize_to_fiobj(api_gen_v1_update_bu
     fiobj_hash_set(res, key, obj);
   }
   {
-    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessLogoUrl);
-    FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessLogoId);
+    FIOBJ key = fiobj_str_new("businessLogoId", /*key len*/14);
     fiobj_hash_set(res, key, obj);
   }
   return res;
@@ -226,8 +226,8 @@ FIOBJ api_gen_v1_create_business_request_serialize_to_fiobj(api_gen_v1_create_bu
     fiobj_hash_set(res, key, obj);
   }
   {
-    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessLogoUrl);
-    FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
+    FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessLogoId);
+    FIOBJ key = fiobj_str_new("businessLogoId", /*key len*/14);
     fiobj_hash_set(res, key, obj);
   }
   return res;
@@ -246,9 +246,9 @@ api_gen_meal_t api_gen_meal_parse_from_fiobj(FIOBJ val) {
     res.mealDescription = api_gen_string_parse_from_fiobj(field);
   }
   {
-    FIOBJ key = fiobj_str_new("mealPictureUrl", /*key len*/14);
+    FIOBJ key = fiobj_str_new("mealPictureId", /*key len*/13);
     FIOBJ field = fiobj_hash_get(val, key);
-    res.mealPictureUrl = api_gen_string_parse_from_fiobj(field);
+    res.mealPictureId = api_gen_string_parse_from_fiobj(field);
   }
   return res;
 }
@@ -296,9 +296,9 @@ api_gen_business_t api_gen_business_parse_from_fiobj(FIOBJ val) {
     res.description = api_gen_string_parse_from_fiobj(field);
   }
   {
-    FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
+    FIOBJ key = fiobj_str_new("businessLogoId", /*key len*/14);
     FIOBJ field = fiobj_hash_get(val, key);
-    res.businessLogoUrl = api_gen_string_parse_from_fiobj(field);
+    res.businessLogoId = api_gen_string_parse_from_fiobj(field);
   }
   return res;
 }
@@ -376,9 +376,9 @@ api_gen_v1_update_business_request_t api_gen_v1_update_business_request_parse_fr
     res.description = api_gen_string_parse_from_fiobj(field);
   }
   {
-    FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
+    FIOBJ key = fiobj_str_new("businessLogoId", /*key len*/14);
     FIOBJ field = fiobj_hash_get(val, key);
-    res.businessLogoUrl = api_gen_string_parse_from_fiobj(field);
+    res.businessLogoId = api_gen_string_parse_from_fiobj(field);
   }
   return res;
 }
@@ -411,9 +411,9 @@ api_gen_v1_create_business_request_t api_gen_v1_create_business_request_parse_fr
     res.description = api_gen_string_parse_from_fiobj(field);
   }
   {
-    FIOBJ key = fiobj_str_new("businessLogoUrl", /*key len*/15);
+    FIOBJ key = fiobj_str_new("businessLogoId", /*key len*/14);
     FIOBJ field = fiobj_hash_get(val, key);
-    res.businessLogoUrl = api_gen_string_parse_from_fiobj(field);
+    res.businessLogoId = api_gen_string_parse_from_fiobj(field);
   }
   return res;
 }
@@ -421,7 +421,7 @@ api_gen_v1_create_business_request_t api_gen_v1_create_business_request_parse_fr
 void api_gen_meal_cleanup(api_gen_meal_t val) {
   api_gen_string_cleanup(val.mealName);
   api_gen_string_cleanup(val.mealDescription);
-  api_gen_string_cleanup(val.mealPictureUrl);
+  api_gen_string_cleanup(val.mealPictureId);
 }
 
 void api_gen_meals_list_cleanup(api_gen_meals_list_t val) {
@@ -437,7 +437,7 @@ void api_gen_business_cleanup(api_gen_business_t val) {
   api_gen_string_cleanup(val.businessName);
   api_gen_string_cleanup(val.ownerUserId);
   api_gen_string_cleanup(val.description);
-  api_gen_string_cleanup(val.businessLogoUrl);
+  api_gen_string_cleanup(val.businessLogoId);
 }
 
 void api_gen_v1_add_meal_to_menu_response_cleanup(api_gen_v1_add_meal_to_menu_response_t val) {
@@ -465,7 +465,7 @@ void api_gen_v1_update_business_request_cleanup(api_gen_v1_update_business_reque
   api_gen_string_cleanup(val.businessName);
   api_gen_string_cleanup(val.ownerUserId);
   api_gen_string_cleanup(val.description);
-  api_gen_string_cleanup(val.businessLogoUrl);
+  api_gen_string_cleanup(val.businessLogoId);
 }
 
 void api_gen_v1_create_business_response_cleanup(api_gen_v1_create_business_response_t val) {
@@ -476,6 +476,6 @@ void api_gen_v1_create_business_request_cleanup(api_gen_v1_create_business_reque
   api_gen_string_cleanup(val.businessName);
   api_gen_string_cleanup(val.ownerUserId);
   api_gen_string_cleanup(val.description);
-  api_gen_string_cleanup(val.businessLogoUrl);
+  api_gen_string_cleanup(val.businessLogoId);
 }
 
