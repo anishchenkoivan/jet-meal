@@ -53,4 +53,12 @@ impl RefreshTokenRepository for PostgresRefreshTokenRepository {
             .await?;
         Ok(())
     }
+
+    async fn revoke_refresh_tokens_for_user(&self, user_id: Uuid) -> Result<(), RepositoryError> {
+        sqlx::query("UPDATE refresh_tokens SET revoked = TRUE WHERE user_id = $1")
+            .bind(user_id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
 }

@@ -95,3 +95,53 @@ async fn refresh_endpoint_returns_new_access_token() {
         .expect("refresh response should contain access_token");
     assert!(!access_token.is_empty(), "refreshed access token should not be empty");
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn update_auth_details_endpoint_returns_new_tokens() {
+    let app = spawn_app().await;
+
+    let username = unique_username();
+    let password = "old-password";
+    let user_id = create_user(&app, &username, password).await;
+
+    let new_password = "new-password";
+    let update_response = app
+        .client
+        .patch(format!("{}/auth/{user_id}/update", app.base_url))
+        .json(&json!({
+            "password": new_password,
+        }))
+        .send()
+        .await
+        .expect("failed to call update auth details endpoint");
+
+    assert_eq!(update_response.status(), reqwest::StatusCode::OK);
+
+    let update_body: Value = update_response
+        .json()
+        .await
+        .expect("update auth response is not valid json");
+
+    let access_token = update_body["access_token"]
+        .as_str()
+        .expect("update auth response should contain access_token");
+    let refresh_token = update_body["refresh_token"]
+        .as_str()
+        .expect("update auth response should contain refresh_token");
+
+    assert!(!access_token.is_empty(), "access_token should not be empty");
+    assert!(!refresh_token.is_empty(), "refresh_token should not be empty");
+
+    let login_response = app
+        .client
+        .post(format!("{}/auth/login", app.base_url))
+        .json(&json!({
+            "username": username,
+            "password": new_password,
+        }))
+        .send()
+        .await
+        .expect("failed to call login endpoint with new password");
+
+    assert_eq!(login_response.status(), reqwest::StatusCode::OK);
+}

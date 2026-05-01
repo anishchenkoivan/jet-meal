@@ -12,10 +12,6 @@ pub async fn create_user(app: &TestApp, username: &str, password: &str) -> Strin
         .post(format!("{}/users/create", app.base_url))
         .json(&json!({
             "username": username,
-            "notification_context": {
-                "email": format!("{username}@example.com"),
-                "telegram": format!("tg_{username}")
-            },
             "password": password
         }))
         .send()

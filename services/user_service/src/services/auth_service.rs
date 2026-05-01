@@ -4,7 +4,7 @@ use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::config::SecurityConfig;
-use crate::dto::auth_requests::{LoginRequest, RefreshTokenRequest};
+use crate::dto::auth_requests::{AuthUpdateRequest, LoginRequest, RefreshTokenRequest};
 use crate::dto::auth_responses::{LoginResponse, RefreshTokenResponse};
 use crate::errors::domain_error::DomainError;
 use crate::models::RefreshToken;
@@ -86,6 +86,15 @@ impl AuthService {
         Ok(RefreshTokenResponse { access_token })
     }
 
+    pub async fn update_auth_details(&self, user_id: Uuid, updated_details: AuthUpdateRequest) -> Result<LoginResponse, DomainError> {
+        let user = self.user_service.update_user_auth(user_id, updated_details.clone()).await?;
+        self.invalidate_all_tokens_for_user(user_id).await?;
+        self.issue_token(LoginRequest{
+            username: user.username,
+            password: updated_details.password,
+        }).await
+    }
+
     async fn issue_jwt(&self, user_id: Uuid) -> Result<String, DomainError> {
         let now = Utc::now();
         let exp = (now + Duration::minutes(self.security_config.access_token_ttl_minutes)).timestamp() as usize;
@@ -99,6 +108,11 @@ impl AuthService {
 
         encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_bytes()))
             .map_err(|e| DomainError::Internal(format!("JWT encode failed: {e}")))
+    }
+
+    async fn invalidate_all_tokens_for_user(&self, user_id: Uuid) -> Result<(), DomainError> {
+        self.token_repo.revoke_refresh_tokens_for_user(user_id).await?;
+        Ok(())
     }
 }
 
