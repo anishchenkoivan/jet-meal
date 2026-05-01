@@ -14,6 +14,7 @@ typedef struct api_gen_meal_s {
   const char* mealName;
   const char* mealDescription;
   const char* mealPictureId;
+  int64_t price;
 } api_gen_meal_t;
 
 typedef struct api_gen_meals_list_s {
@@ -33,13 +34,28 @@ typedef struct api_gen_business_s {
   const char* businessLogoId;
 } api_gen_business_t;
 
+typedef struct api_gen_v1_remove_meal_from_menu_request_s {
+  const char* businessId;
+  const char* mealId;
+} api_gen_v1_remove_meal_from_menu_request_t;
+
 typedef struct api_gen_v1_add_meal_to_menu_response_s {
+  const char* meal_id;
   api_gen_menu_t menu;
 } api_gen_v1_add_meal_to_menu_response_t;
 
 typedef struct api_gen_v1_add_meal_to_menu_request_s {
+  const char* businessId;
   api_gen_meal_t meal;
 } api_gen_v1_add_meal_to_menu_request_t;
+
+typedef struct api_gen_v1_search_meals_response_s {
+  api_gen_meals_list_t meals;
+} api_gen_v1_search_meals_response_t;
+
+typedef struct api_gen_v1_search_meals_request_s {
+  const char* businessId;
+} api_gen_v1_search_meals_request_t;
 
 typedef struct api_gen_v1_get_business_response_s {
   api_gen_business_t business;
@@ -80,9 +96,15 @@ FIOBJ api_gen_menu_serialize_to_fiobj(api_gen_menu_t);
 
 FIOBJ api_gen_business_serialize_to_fiobj(api_gen_business_t);
 
+FIOBJ api_gen_v1_remove_meal_from_menu_request_serialize_to_fiobj(api_gen_v1_remove_meal_from_menu_request_t);
+
 FIOBJ api_gen_v1_add_meal_to_menu_response_serialize_to_fiobj(api_gen_v1_add_meal_to_menu_response_t);
 
 FIOBJ api_gen_v1_add_meal_to_menu_request_serialize_to_fiobj(api_gen_v1_add_meal_to_menu_request_t);
+
+FIOBJ api_gen_v1_search_meals_response_serialize_to_fiobj(api_gen_v1_search_meals_response_t);
+
+FIOBJ api_gen_v1_search_meals_request_serialize_to_fiobj(api_gen_v1_search_meals_request_t);
 
 FIOBJ api_gen_v1_get_business_response_serialize_to_fiobj(api_gen_v1_get_business_response_t);
 
@@ -104,9 +126,15 @@ api_gen_menu_t api_gen_menu_parse_from_fiobj(FIOBJ);
 
 api_gen_business_t api_gen_business_parse_from_fiobj(FIOBJ);
 
+api_gen_v1_remove_meal_from_menu_request_t api_gen_v1_remove_meal_from_menu_request_parse_from_fiobj(FIOBJ);
+
 api_gen_v1_add_meal_to_menu_response_t api_gen_v1_add_meal_to_menu_response_parse_from_fiobj(FIOBJ);
 
 api_gen_v1_add_meal_to_menu_request_t api_gen_v1_add_meal_to_menu_request_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_search_meals_response_t api_gen_v1_search_meals_response_parse_from_fiobj(FIOBJ);
+
+api_gen_v1_search_meals_request_t api_gen_v1_search_meals_request_parse_from_fiobj(FIOBJ);
 
 api_gen_v1_get_business_response_t api_gen_v1_get_business_response_parse_from_fiobj(FIOBJ);
 
@@ -128,9 +156,15 @@ void api_gen_menu_cleanup(api_gen_menu_t);
 
 void api_gen_business_cleanup(api_gen_business_t);
 
+void api_gen_v1_remove_meal_from_menu_request_cleanup(api_gen_v1_remove_meal_from_menu_request_t);
+
 void api_gen_v1_add_meal_to_menu_response_cleanup(api_gen_v1_add_meal_to_menu_response_t);
 
 void api_gen_v1_add_meal_to_menu_request_cleanup(api_gen_v1_add_meal_to_menu_request_t);
+
+void api_gen_v1_search_meals_response_cleanup(api_gen_v1_search_meals_response_t);
+
+void api_gen_v1_search_meals_request_cleanup(api_gen_v1_search_meals_request_t);
 
 void api_gen_v1_get_business_response_cleanup(api_gen_v1_get_business_response_t);
 

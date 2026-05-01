@@ -79,17 +79,30 @@ paths:
         '404':
           description: Business not found
 
+  /v1/meals/search:
+    post:
+      summary: Search meals by business
+      operationId: searchMeals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1SearchMealsRequest'
+      responses:
+        '200':
+          description: List of meals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1SearchMealsResponse'
+        '500':
+          description: Internal server error
+
   /v1/menu/meal:
     post:
       summary: Add a meal to the business menu
       operationId: addMealToMenu
-      parameters:
-        - name: businessId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Unique identifier of the business
       requestBody:
         required: true
         content:
@@ -109,19 +122,12 @@ paths:
     delete:
       summary: Remove a meal from the business menu
       operationId: removeMealFromMenu
-      parameters:
-        - name: businessId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Unique identifier of the business
-        - name: mealId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Unique identifier of the meal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1RemoveMealFromMenuRequest'
       responses:
         '204':
           description: Meal removed successfully
@@ -209,21 +215,59 @@ components:
       required:
         - business
 
+    V1SearchMealsRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: ID of the business to search meals for
+      required:
+        - businessId
+
+    V1SearchMealsResponse:
+      type: object
+      properties:
+        meals:
+          $ref: '#/components/schemas/MealsList'
+      required:
+        - meals
+
     V1AddMealToMenuRequest:
       type: object
       properties:
+        businessId:
+          type: string
+          description: ID of the business to add the meal to
         meal:
           $ref: '#/components/schemas/Meal'
       required:
+        - businessId
         - meal
 
     V1AddMealToMenuResponse:
       type: object
       properties:
+        meal_id:
+          type: string
+          description: ID of the newly created meal
         menu:
           $ref: '#/components/schemas/Menu'
       required:
+        - meal_id
         - menu
+
+    V1RemoveMealFromMenuRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: ID of the business
+        mealId:
+          type: string
+          description: ID of the meal to remove
+      required:
+        - businessId
+        - mealId
 
     Business:
       type: object
@@ -276,8 +320,12 @@ components:
         mealPictureId:
           type: string
           description: Id for meal picture in media service
+        price:
+          type: number
+          description: Price of the meal
       required:
         - mealName
         - mealDescription
         - mealPictureId
+        - price
 

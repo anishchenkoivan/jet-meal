@@ -17,6 +17,11 @@ int main(void) {
   fio_router_register_callback(v1_delete_business_handler, "/v1/business", HTTP_DELETE);
   fio_router_register_callback(v1_get_business_handler, "/v1/business/get", HTTP_POST);
 
+  fio_router_register_callback(v1_search_meals_handler, "/v1/meals/search", HTTP_POST);
+
+  fio_router_register_callback(v1_add_meal_handler, "/v1/menu/meal", HTTP_POST);
+  fio_router_register_callback(v1_delete_meal_handler, "/v1/menu/meal", HTTP_DELETE);
+
   http_listen(get_service_port(), NULL, .on_request = fio_router_on_request_route, .log = LOG_LEVEL);
   fio_start(.threads = get_service_threads());
 }

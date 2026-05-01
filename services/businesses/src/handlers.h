@@ -20,4 +20,10 @@ void v1_delete_business_handler(http_s *request);
 
 void v1_get_business_handler(http_s *request);
 
+void v1_search_meals_handler(http_s *request);
+
+void v1_add_meal_handler(http_s *request);
+
+void v1_delete_meal_handler(http_s *request);
+
 #endif // #ifndef HANDLERS_H

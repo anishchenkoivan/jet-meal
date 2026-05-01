@@ -26,6 +26,9 @@ typedef struct imeals_repository_vtable_s {
 
   // Returns count of affected rows or DB_ERROR
   size_t (*delete_meal)(void *self, size_t business_id, size_t meal_id);
+
+  // On error res.size == DB_ERROR
+  api_gen_meals_list_t (*get_meals_by_business)(void *self, size_t business_id);
 } imeals_repository_vtable_t;
 
 #endif // #ifndef IREPOSITORY_H

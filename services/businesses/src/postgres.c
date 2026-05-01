@@ -176,14 +176,18 @@ api_gen_business_t get_business(void *self, size_t business_id) {
 
 size_t insert_meal(void *self, size_t business_id, api_gen_meal_t *meal) {
   const char *query = "INSERT INTO meals (business_id, meal_name, "
-                      "meal_description, meal_picture_id) "
-                      "VALUES ($1, $2, $3, $4) RETURNING id";
+                      "meal_description, meal_picture_id, price) "
+                      "VALUES ($1, $2, $3, $4, $5) RETURNING id";
 
   char business_id_str[ID_LEN];
   snprintf(business_id_str, sizeof(business_id_str), "%zu", business_id);
 
+  char price_str[32];
+  snprintf(price_str, sizeof(price_str), "%ld", meal->price);
+
   const char *params[] = {business_id_str, meal->mealName,
-                          meal->mealDescription, meal->mealPictureId};
+                          meal->mealDescription, meal->mealPictureId,
+                          price_str};
 
   PGconn *conn = meals_repo_get_connection(self);
   PGresult *res =
@@ -199,6 +203,43 @@ size_t insert_meal(void *self, size_t business_id, api_gen_meal_t *meal) {
   size_t id = (size_t)atol(PQgetvalue(res, 0, 0));
   PQclear(res);
   return id;
+}
+
+api_gen_meals_list_t get_meals_by_business(void *self, size_t business_id) {
+  const char *query =
+      "SELECT meal_name, meal_description, meal_picture_id, price "
+      "FROM meals WHERE business_id = $1";
+
+  char id_str[ID_LEN];
+  snprintf(id_str, sizeof(id_str), "%zu", business_id);
+
+  const char *params[] = {id_str};
+
+  PGconn *conn = meals_repo_get_connection(self);
+  PGresult *res =
+      PQexecParams(conn, query, 1, NULL, params, NULL, NULL, FORMAT_TEXT);
+
+  if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+    fprintf(stderr, "SELECT meals failed: %s\n", PQerrorMessage(conn));
+    PQclear(res);
+    api_gen_meals_list_t err = {.buffer = NULL, .size = DB_ERROR};
+    return err;
+  }
+
+  int nrows = PQntuples(res);
+  api_gen_meals_list_t result;
+  result.size = nrows;
+  result.buffer = malloc(sizeof(api_gen_meal_t) * nrows);
+
+  for (int i = 0; i < nrows; i++) {
+    result.buffer[i].mealName = strdup(PQgetvalue(res, i, 0));
+    result.buffer[i].mealDescription = strdup(PQgetvalue(res, i, 1));
+    result.buffer[i].mealPictureId = strdup(PQgetvalue(res, i, 2));
+    result.buffer[i].price = atol(PQgetvalue(res, i, 3));
+  }
+
+  PQclear(res);
+  return result;
 }
 
 size_t delete_meal(void *self, size_t business_id, size_t meal_id) {
@@ -241,7 +282,8 @@ static void postgres_apply_migration(const char *dsn) {
                               "REFERENCES businesses(id) ON DELETE CASCADE,"
                               "    meal_name          TEXT NOT NULL,"
                               "    meal_description   TEXT,"
-                              "    meal_picture_id   TEXT"
+                              "    meal_picture_id    TEXT,"
+                              "    price              INTEGER NOT NULL"
                               ");"};
 
   for (int version = 0; version < sizeof(migrations) / sizeof(const char *);
@@ -279,7 +321,8 @@ postgres_meals_repository_t init_postgres_meals_repository(const char *dsn) {
   postgres_apply_migration(dsn);
 
   imeals_repository_vtable_t vtable = {.insert_meal = insert_meal,
-                                       .delete_meal = delete_meal};
+                                       .delete_meal = delete_meal,
+                                       .get_meals_by_business = get_meals_by_business};
   postgres_meals_repository_t res = {.vtable = vtable,
                                      .conn = init_postgres_conn(dsn)};
   return res;

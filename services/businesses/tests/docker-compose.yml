@@ -7,8 +7,6 @@ services:
       POSTGRES_USER: jetmeal
       POSTGRES_PASSWORD: jetmealpass
       POSTGRES_DB: jetmeal_businesses
-    ports:
-      - "5432:5432"
     # Non persistent test state
     # volumes:
       # - postgres_data:/var/lib/postgresql/data
@@ -26,7 +24,7 @@ services:
       BUSINESSES_PORT: 18080
       BUSINESSES_POSTGRES_DSN: "postgres://jetmeal:jetmealpass@postgres:5432/jetmeal_businesses?sslmode=disable"
     ports:
-      - "18080:18080"
+      - "127.0.0.1:18080:18080"
 
 volumes:
   postgres_data:
