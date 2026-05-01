@@ -1,5 +1,5 @@
 static const char* api_gen_string_parse_from_fiobj(FIOBJ val) {
-  return fiobj_obj2cstr(val).data;
+  return strdup(fiobj_obj2cstr(val).data);
 }
 
 static FIOBJ api_gen_string_serialize_to_fiobj(const char* val) {

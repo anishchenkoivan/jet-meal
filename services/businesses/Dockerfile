@@ -3,20 +3,28 @@
 # ---- Build Stage ----
 FROM ubuntu:latest AS builder
 
-RUN apt-get update && apt-get install -y cmake gcc
+RUN apt-get update && apt-get install -y cmake gcc libpq-dev
+
+ARG SANITIZER
 
 WORKDIR /build
 
-COPY src /build/src
-COPY contrib /build/contrib
-COPY CMakeLists.txt /build
+COPY libraries /build/libraries
+COPY services/businesses /build/services/businesses
 
-RUN mkdir -p build && cmake -B build && make -C build
+WORKDIR /build/services/businesses
+
+RUN rm -rf build && mkdir -p build && \
+    cmake -B build -DENABLE_SANITIZER=${SANITIZER} && \
+    make -C build
 
 # ---- Runtime Stage ----
 FROM ubuntu:latest
 
-COPY --from=builder /build/build/bin/businesses-service /usr/local/bin/
+RUN apt-get update && apt-get install -y libpq-dev libasan8 libubsan1; \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/services/businesses/build/bin/businesses-service /usr/local/bin/
 
 EXPOSE 3000
 

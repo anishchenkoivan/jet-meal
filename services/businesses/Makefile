@@ -4,4 +4,7 @@ codegen:
 	python3 -m pip install -r ../../scripts/openapi-c-gen/requirements.txt
 	python3 ../../scripts/openapi-c-gen/main.py -i docs/api.yaml -o src/codegen_api
 
-.PHONY: codegen
+tests:
+	../../libraries/bash/bats-core/bin/bats --tap tests/v1_business.bats
+
+.PHONY: codegen tests

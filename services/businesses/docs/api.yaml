@@ -27,17 +27,9 @@ paths:
         '400':
           description: Invalid input
 
-  /v1/businesses/{businessId}:
     put:
       summary: Edit an existing business
       operationId: updateBusiness
-      parameters:
-        - name: businessId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Unique identifier of the business
       requestBody:
         required: true
         content:
@@ -45,32 +37,49 @@ paths:
             schema:
               $ref: '#/components/schemas/V1UpdateBusinessRequest'
       responses:
-        '200':
+        '204':
           description: Business updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/V1UpdateBusinessResponse'
         '404':
           description: Business not found
 
     delete:
       summary: Delete a business
       operationId: deleteBusiness
-      parameters:
-        - name: businessId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Unique identifier of the business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1DeleteBusinessRequest'
       responses:
         '204':
           description: Business deleted successfully
         '404':
           description: Business not found
 
-  /v1/businesses/{businessId}/menu/meals:
+  /v1/businesses/get:
+    post:
+      summary: Get a business
+      operationId: getBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1GetBusinessRequest'
+      responses:
+        '200':
+          description: Business
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GetBusinessResponse'
+        '204':
+          description: Business deleted successfully
+        '404':
+          description: Business not found
+
+  /v1/menu/meal:
     post:
       summary: Add a meal to the business menu
       operationId: addMealToMenu
@@ -97,7 +106,6 @@ paths:
         '404':
           description: Business not found
 
-  /v1/businesses/{businessId}/menu/meals/{mealId}:
     delete:
       summary: Remove a meal from the business menu
       operationId: removeMealFromMenu
@@ -134,7 +142,7 @@ components:
         description:
           type: string
           description: Business description
-        businessLogoUrl:
+        businessLogoId:
           type: string
           format: uri
           description: URL to the business logo
@@ -142,19 +150,22 @@ components:
         - businessName
         - ownerUserId
         - description
-        - businessLogoUrl
+        - businessLogoId
 
     V1CreateBusinessResponse:
       type: object
       properties:
-        business:
-          $ref: '#/components/schemas/Business'
+        business_id:
+          type: string
       required:
-        - business
+        - business_id
 
     V1UpdateBusinessRequest:
       type: object
       properties:
+        businessId:
+          type: string
+          description: Business id
         businessName:
           type: string
           description: Name of the business
@@ -164,13 +175,33 @@ components:
         description:
           type: string
           description: Business description
-        businessLogoUrl:
+        businessLogoId:
           type: string
           format: uri
           description: URL to the business logo
+      required:
+        - businessId
       minProperties: 1
 
-    V1UpdateBusinessResponse:
+    V1DeleteBusinessRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: Business id
+      required:
+        - businessId
+
+    V1GetBusinessRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: Business id
+      required:
+        - businessId
+
+    V1GetBusinessResponse:
       type: object
       properties:
         business:
@@ -197,6 +228,9 @@ components:
     Business:
       type: object
       properties:
+        businessId:
+          type: string
+          description: Business id
         businessName:
           type: string
           description: Name of the business
@@ -206,18 +240,16 @@ components:
         description:
           type: string
           description: Business description
-        menu:
-          $ref: '#/components/schemas/Menu'
-        businessLogoUrl:
+        businessLogoId:
           type: string
-          format: uri
-          description: URL to the business logo
+          description: Id to the business logo in media service
       required:
+        - businessId
         - businessName
         - ownerUserId
         - description
         - menu
-        - businessLogoUrl
+        - businessLogoId
 
     Menu:
       type: object
@@ -241,12 +273,11 @@ components:
         mealDescription:
           type: string
           description: Description of the meal
-        mealPictureUrl:
+        mealPictureId:
           type: string
-          format: uri
-          description: URL to the meal picture
+          description: Id for meal picture in media service
       required:
         - mealName
         - mealDescription
-        - mealPictureUrl
+        - mealPictureId
 
