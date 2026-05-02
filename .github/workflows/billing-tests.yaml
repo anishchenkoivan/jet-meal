@@ -1,4 +1,4 @@
-name: Run tests for businesses service
+name: Run tests for billing service
 
 on:
   pull_request:
