@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  billing:
+    container_name: jetmeal-service-billing
+    build:
+      context: ../..
+      dockerfile: services/billing/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      BILLING_POSTGRES_DSN: "host=postgres port=5432 dbname=billing user=billing password=billing"
+      BILLING_PORT: "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: jetmeal-billing-postgres
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: billing
+      POSTGRES_PASSWORD: billing
+    volumes:
+      - billing_postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U billing -d billing"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  billing_postgres_data:
