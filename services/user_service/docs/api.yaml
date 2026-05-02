@@ -78,6 +78,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /auth/{id}/update:
+    patch:
+      tags:
+      - users
+      operationId: update_auth_details
+      parameters:
+      - name: id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /users/create:
     post:
       tags:
@@ -146,8 +184,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /users/{id}/update:
+    patch:
+      tags:
+      - users
+      operationId: update_user
+      parameters:
+      - name: id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    AuthUpdateRequest:
+      type: object
+      required:
+      - password
+      properties:
+        password:
+          type: string
     ErrorResponse:
       type: object
       required:
@@ -175,17 +258,6 @@ components:
           type: string
         refresh_token:
           type: string
-    NotificationContext:
-      type: object
-      properties:
-        email:
-          type:
-          - string
-          - 'null'
-        telegram:
-          type:
-          - string
-          - 'null'
     RefreshTokenRequest:
       type: object
       required:
@@ -205,24 +277,18 @@ components:
       required:
       - id
       - username
-      - notification_context
       properties:
         id:
           type: string
           format: uuid
-        notification_context:
-          $ref: '#/components/schemas/NotificationContext'
         username:
           type: string
     UserCreateRequest:
       type: object
       required:
       - username
-      - notification_context
       - password
       properties:
-        notification_context:
-          $ref: '#/components/schemas/NotificationContext'
         password:
           type: string
         username:
@@ -235,6 +301,13 @@ components:
         id:
           type: string
           format: uuid
+    UserUpdateRequest:
+      type: object
+      properties:
+        username:
+          type:
+          - string
+          - 'null'
 tags:
 - name: users
   description: User management endpoints
