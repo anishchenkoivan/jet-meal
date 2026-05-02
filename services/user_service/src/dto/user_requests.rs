@@ -10,5 +10,4 @@ pub struct UserCreateRequest {
 #[derive(Deserialize, ToSchema, Clone)]
 pub struct UserUpdateRequest {
     pub username: Option<String>,
-
 }
