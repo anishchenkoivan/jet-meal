@@ -4,7 +4,7 @@
 #include <Poco/Data/Statement.h>
 #include <Poco/Exception.h>
 
-namespace kw     = Poco::Data::Keywords;
+namespace kw = Poco::Data::Keywords;
 namespace models = billing::models;
 
 namespace billing::repository::invoices {
@@ -13,21 +13,21 @@ PgInvoiceRepository::PgInvoiceRepository(Poco::Data::SessionPool& pool)
     : _pool(pool) {}
 
 Invoice PgInvoiceRepository::make_invoice(
-    const std::string& id,       const std::string& order_id,
-    const std::string& user_id,  Poco::Int64 amount_minor,
+    const std::string& id, const std::string& order_id,
+    const std::string& user_id, Poco::Int64 amount_minor,
     const std::string& currency, const std::string& status_str,
     const Poco::DateTime& created_at, const Poco::DateTime& updated_at)
 {
-    Invoice inv;
-    inv.id.parse(id);
-    inv.order_id.parse(order_id);
-    inv.user_id.parse(user_id);
-    inv.amount_minor = amount_minor;
-    inv.currency     = currency;
-    inv.status       = models::invoice_status_from_string(status_str);
-    inv.created_at   = created_at;
-    inv.updated_at   = updated_at;
-    return inv;
+    Invoice invoice;
+    invoice.id.parse(id);
+    invoice.order_id.parse(order_id);
+    invoice.user_id.parse(user_id);
+    invoice.amount_minor = amount_minor;
+    invoice.currency = currency;
+    invoice.status = models::invoice_status_from_string(status_str);
+    invoice.created_at = created_at;
+    invoice.updated_at = updated_at;
+    return invoice;
 }
 
 std::optional<Invoice> PgInvoiceRepository::find_by_id(const Poco::UUID& id) {
@@ -48,8 +48,9 @@ std::optional<Invoice> PgInvoiceRepository::find_by_id(const Poco::UUID& id) {
         kw::limit(1);
 
     try {
-        if (stmt.execute() == 0)
+        if (stmt.execute() == 0) {
             return std::nullopt;
+        }
     } catch (const Poco::Exception& e) {
         throw RepositoryError(e.message());
     }
@@ -122,10 +123,10 @@ std::vector<Invoice> PgInvoiceRepository::find_by_order_id(const Poco::UUID& ord
 Invoice PgInvoiceRepository::create(const Invoice& invoice) {
     auto session = _pool.get();
 
-    std::string id_str       = invoice.id.toString();
+    std::string id_str = invoice.id.toString();
     std::string order_id_str = invoice.order_id.toString();
-    std::string user_id_str  = invoice.user_id.toString();
-    std::string status_str   = models::to_string(invoice.status);
+    std::string user_id_str = invoice.user_id.toString();
+    std::string status_str = models::to_string(invoice.status);
 
     try {
         session << "INSERT INTO invoices "
@@ -145,7 +146,7 @@ Invoice PgInvoiceRepository::create(const Invoice& invoice) {
 bool PgInvoiceRepository::update_status(const Poco::UUID& id, InvoiceStatus status) {
     auto session = _pool.get();
 
-    std::string id_str     = id.toString();
+    std::string id_str = id.toString();
     std::string status_str = models::to_string(status);
 
     Poco::Data::Statement stmt(session);

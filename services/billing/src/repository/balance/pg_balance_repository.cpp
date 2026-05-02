@@ -30,18 +30,19 @@ std::optional<Balance> PgBalanceRepository::get(const Poco::UUID& user_id) {
         kw::limit(1);
 
     try {
-        if (stmt.execute() == 0)
+        if (stmt.execute() == 0) {
             return std::nullopt;
+        }
     } catch (const Poco::Exception& e) {
         throw RepositoryError(e.message());
     }
 
-    Balance b;
-    b.user_id.parse(user_id_str);
-    b.amount_minor = amount_minor;
-    b.currency     = currency;
-    b.updated_at   = updated_at;
-    return b;
+    Balance balance;
+    balance.user_id.parse(user_id_str);
+    balance.amount_minor = amount_minor;
+    balance.currency = currency;
+    balance.updated_at = updated_at;
+    return balance;
 }
 
 Balance PgBalanceRepository::initialize(const Poco::UUID& user_id, const std::string& currency) {
@@ -65,12 +66,12 @@ Balance PgBalanceRepository::initialize(const Poco::UUID& user_id, const std::st
         throw RepositoryError(e.message());
     }
 
-    Balance b;
-    b.user_id.parse(user_id_str);
-    b.amount_minor = amount_minor;
-    b.currency     = currency;
-    b.updated_at   = updated_at;
-    return b;
+    Balance balance;
+    balance.user_id.parse(user_id_str);
+    balance.amount_minor = amount_minor;
+    balance.currency = currency;
+    balance.updated_at = updated_at;
+    return balance;
 }
 
 BalanceTransaction PgBalanceRepository::credit(
@@ -97,13 +98,14 @@ BalanceTransaction PgBalanceRepository::apply(
     auto session = _pool.get();
 
     std::string user_id_str = user_id.toString();
-    std::string kind_str    = models::to_string(kind);
-    Poco::UUID  tx_id       = Poco::UUIDGenerator::defaultGenerator().createRandom();
-    std::string tx_id_str   = tx_id.toString();
+    std::string kind_str = models::to_string(kind);
+    Poco::UUID tx_id = Poco::UUIDGenerator::defaultGenerator().createRandom();
+    std::string tx_id_str = tx_id.toString();
 
     Poco::Nullable<std::string> ref_str;
-    if (reference_id.has_value())
+    if (reference_id.has_value()) {
         ref_str = reference_id->toString();
+    }
 
     Poco::DateTime created_at;
 
@@ -152,15 +154,16 @@ BalanceTransaction PgBalanceRepository::apply(
         throw RepositoryError(e.message());
     }
 
-    BalanceTransaction tx;
-    tx.id.parse(tx_id_str);
-    tx.user_id.parse(user_id_str);
-    tx.amount_minor = signed_delta;
-    tx.kind         = kind;
-    tx.created_at   = created_at;
-    if (reference_id.has_value())
-        tx.reference_id = reference_id;
-    return tx;
+    BalanceTransaction transaction;
+    transaction.id.parse(tx_id_str);
+    transaction.user_id.parse(user_id_str);
+    transaction.amount_minor = signed_delta;
+    transaction.kind = kind;
+    transaction.created_at = created_at;
+    if (reference_id.has_value()) {
+        transaction.reference_id = reference_id;
+    }
+    return transaction;
 }
 
 std::vector<BalanceTransaction> PgBalanceRepository::history(
@@ -169,10 +172,10 @@ std::vector<BalanceTransaction> PgBalanceRepository::history(
     auto session = _pool.get();
 
     std::string user_id_str = user_id.toString();
-    std::vector<std::string>                 ids, user_ids, kinds;
-    std::vector<Poco::Int64>                 amounts;
+    std::vector<std::string> ids, user_ids, kinds;
+    std::vector<Poco::Int64> amounts;
     std::vector<Poco::Nullable<std::string>> ref_ids;
-    std::vector<Poco::DateTime>              created_ats;
+    std::vector<Poco::DateTime> created_ats;
 
     try {
         session << "SELECT id, user_id, amount_minor, kind, reference_id, created_at "
@@ -191,18 +194,18 @@ std::vector<BalanceTransaction> PgBalanceRepository::history(
     std::vector<BalanceTransaction> result;
     result.reserve(ids.size());
     for (std::size_t i = 0; i < ids.size(); ++i) {
-        BalanceTransaction tx;
-        tx.id.parse(ids[i]);
-        tx.user_id.parse(user_ids[i]);
-        tx.amount_minor = amounts[i];
-        tx.kind         = models::transaction_kind_from_string(kinds[i]);
-        tx.created_at   = created_ats[i];
+        BalanceTransaction transaction;
+        transaction.id.parse(ids[i]);
+        transaction.user_id.parse(user_ids[i]);
+        transaction.amount_minor = amounts[i];
+        transaction.kind = models::transaction_kind_from_string(kinds[i]);
+        transaction.created_at = created_ats[i];
         if (!ref_ids[i].isNull()) {
-            Poco::UUID ref;
-            ref.parse(ref_ids[i].value());
-            tx.reference_id = ref;
+            Poco::UUID reference_uuid;
+            reference_uuid.parse(ref_ids[i].value());
+            transaction.reference_id = reference_uuid;
         }
-        result.push_back(std::move(tx));
+        result.push_back(std::move(transaction));
     }
     return result;
 }
