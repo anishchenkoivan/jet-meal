@@ -46,3 +46,8 @@ teardown_file() {
   result="$(curl localhost:8080/hello -X PATCH)"
   [ "$result" == "Method Not Allowed" ]
 }
+
+@test "abort in midleware" {
+  result="$(curl -o /dev/null -s -w '%{http_code}' localhost:8080/hello -H 'x-should-abort: true')"
+  [ "$result" == "401" ]
+}

@@ -1,0 +1,23 @@
+name: Run tests for fio router library
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'libraries/c/facil-io-router/**'
+  push:
+    branches: [ main ]
+    paths:
+      - 'libraries/c/facil-io-router/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Run tests
+        run: make -C libraries/c/facil-io-router tests

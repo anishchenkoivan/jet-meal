@@ -1,8 +1,9 @@
 #ifndef FIO_ROUTER_H
 #define FIO_ROUTER_H
 
-#include "fiobj_hash.h"
 #include "http.h"
+
+#include <stdbool.h>
 
 typedef enum http_method_e {
   HTTP_GET,
@@ -22,6 +23,8 @@ static const char *http_method_strings[] = {
   "PATCH",
   "HEAD"
 };
+
+void fio_router_register_midleware(bool (*callback)(http_s *));
 
 void fio_router_register_callback(void (*callback)(http_s *), const char *path, http_method_t method);
 
