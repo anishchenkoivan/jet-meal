@@ -1,4 +1,6 @@
 #include "fio_router.h"
+#include "fiobj_hash.h"
+#include "fiobject.h"
 #include "http.h"
 #include "fio.h"
 
@@ -18,7 +20,22 @@ static void on_request_v1_hello_post(http_s *request) {
   http_send_body(request, STR_WITH_LEN("v1-hello-POST"));
 }
 
+static bool midleware(http_s *request) {
+  FIOBJ abort_header_key = fiobj_str_new(STR_WITH_LEN("x-should-abort"));
+  FIOBJ abort_header = fiobj_hash_get(request->headers, abort_header_key);
+  bool abort = abort_header != FIOBJ_INVALID && fiobj_is_true(abort_header);
+  fiobj_free(abort_header);
+  fiobj_free(abort_header_key);
+
+  if (abort)
+    http_send_error(request, 401);
+
+  return abort;
+}
+
 int main(void) {
+  fio_router_register_midleware(midleware);
+
   fio_router_register_callback(on_request_hello_post, "/hello", HTTP_POST);
   fio_router_register_callback(on_request_hello_get, "/hello", HTTP_GET);
   fio_router_register_callback(on_request_v1_hello_post, "/v1/hello", HTTP_POST);

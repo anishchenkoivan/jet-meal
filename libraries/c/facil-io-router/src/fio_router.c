@@ -10,6 +10,7 @@
 #include <assert.h>
 
 typedef void (*on_request_callback_t)(http_s* request);
+typedef bool (*midleware_t)(http_s* request);
 
 typedef struct handler_s {
     on_request_callback_t on_request[HTTP_METHODS_COUNT];
@@ -24,6 +25,7 @@ static size_t g_handlers_count = 0;
 static dispatcher_t g_di;
 static pthread_mutex_t g_register_lock;
 static pthread_once_t g_pthread_init_control = PTHREAD_ONCE_INIT;
+static midleware_t g_middleware = NULL;
 
 void check_ok(size_t code) {
     if (code != 0)
@@ -67,6 +69,12 @@ static void fio_router_on_method_not_allowed(http_s* request) {
     http_send_error(request, 405);
 }
 
+void fio_router_register_midleware(bool (*callback)(http_s *)) {
+    pthread_mutex_lock(&g_register_lock);
+    g_middleware = callback;
+    pthread_mutex_unlock(&g_register_lock);
+}
+
 void fio_router_register_callback(void (*callback)(http_s*), const char* path,
                                   http_method_t method) {
     pthread_once(&g_pthread_init_control, fio_router_init_global_dispatcher);
@@ -107,6 +115,11 @@ void fio_router_on_request_route(http_s* request) {
                 // Method not allowed
                 http_send_error(request, 405);
                 return;
+            }
+            if (g_middleware) {
+                bool abort = g_middleware(request);
+                if (abort)
+                    return;
             }
             handler->on_request[i](request);
             return;
