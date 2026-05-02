@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: billing_test_postgres
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: billing
+      POSTGRES_PASSWORD: billing
+    volumes:
+      - ../migrations:/docker-entrypoint-initdb.d
+    # Non persistent test state
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U billing -d billing"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  billing:
+    container_name: billing_test_service
+    build:
+      context: ../../..
+      dockerfile: services/billing/Dockerfile
+    environment:
+      BILLING_POSTGRES_DSN: "host=postgres port=5432 dbname=billing user=billing password=billing"
+      BILLING_PORT: "18081"
+    ports:
+      - "18081:18081"
+    depends_on:
+      postgres:
+        condition: service_healthy

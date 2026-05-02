@@ -1,0 +1,27 @@
+name: Run tests for businesses service
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'services/billing/**'
+      - 'libraries/c/**'
+      - 'libraries/cpp/**'
+  push:
+    branches: [ main ]
+    paths:
+      - 'services/billing/**'
+      - 'libraries/c/**'
+      - 'libraries/cpp/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Run tests
+        run: make -C services/billing tests

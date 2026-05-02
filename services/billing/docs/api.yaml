@@ -1,0 +1,498 @@
+openapi: 3.1.0
+info:
+  title: billing
+  description: ''
+  license:
+    name: ''
+  version: 0.1.0
+paths:
+  /api/v1/invoices:
+    post:
+      tags:
+        - invoices
+      summary: Create an invoice
+      operationId: create_invoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvoiceRequest'
+        required: true
+      responses:
+        '201':
+          description: Invoice created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/invoices/{id}:
+    get:
+      tags:
+        - invoices
+      summary: Get invoice by ID
+      operationId: get_invoice_by_id
+      parameters:
+        - name: id
+          in: path
+          description: Invoice unique identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invoice found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid invoice ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invoice not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/invoices/{id}/pay:
+    post:
+      tags:
+        - invoices
+      summary: Pay an invoice
+      operationId: pay_invoice
+      parameters:
+        - name: id
+          in: path
+          description: Invoice unique identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invoice paid successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid invoice ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invoice not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Insufficient funds or invoice is not in payable state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/invoices/{id}/refund:
+    post:
+      tags:
+      - invoices
+      summary: Refund a paid invoice
+      operationId: refund_invoice
+      parameters:
+      - name: id
+        in: path
+        description: Invoice unique identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Invoice refunded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid invoice ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invoice not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Invoice is not in refundable state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/users/{user_id}/invoices:
+    get:
+      tags:
+      - invoices
+      summary: List invoices for a user
+      operationId: get_user_invoices
+      parameters:
+      - name: user_id
+        in: path
+        description: User unique identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: User invoices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListResponse'
+        '400':
+          description: Invalid user ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/users/{user_id}/balance:
+    get:
+      tags:
+      - balance
+      summary: Get user balance
+      operationId: get_balance
+      parameters:
+      - name: user_id
+        in: path
+        description: User unique identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: User balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        '400':
+          description: Invalid user ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Balance not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/users/{user_id}/balance/deposit:
+    post:
+      tags:
+      - balance
+      summary: Deposit funds to user balance
+      operationId: deposit
+      parameters:
+      - name: user_id
+        in: path
+        description: User unique identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositRequest'
+        required: true
+      responses:
+        '200':
+          description: Updated balance after deposit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        '400':
+          description: Invalid user ID or request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/users/{user_id}/balance/history:
+    get:
+      tags:
+      - balance
+      summary: Get balance transaction history
+      operationId: get_balance_history
+      parameters:
+      - name: user_id
+        in: path
+        description: User unique identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        description: Maximum number of transactions to return (1–200, default 50)
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 50
+      responses:
+        '200':
+          description: Transaction history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+        '400':
+          description: Invalid user ID or limit parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+
+    Invoice:
+      type: object
+      required:
+        - id
+        - order_id
+        - user_id
+        - amount_minor
+        - currency
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          description: Amount in minor currency units (e.g. kopecks for RUB)
+        currency:
+          type: string
+          description: ISO 4217 currency code
+        status:
+          $ref: '#/components/schemas/InvoiceStatus'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    InvoiceStatus:
+      type: string
+      enum:
+      - pending
+      - paid
+      - failed
+      - refunded
+
+    InvoiceListResponse:
+      type: object
+      required:
+      - invoices
+      properties:
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invoice'
+
+    CreateInvoiceRequest:
+      type: object
+      required:
+        - order_id
+        - user_id
+        - amount_minor
+        - currency
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          description: Amount in minor currency units (e.g. kopecks for RUB)
+        currency:
+          type: string
+          description: ISO 4217 currency code
+
+    Balance:
+      type: object
+      required:
+        - user_id
+        - amount_minor
+        - currency
+        - updated_at
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          description: Amount in minor currency units (e.g. kopecks for RUB)
+        currency:
+          type: string
+          description: ISO 4217 currency code
+        updated_at:
+          type: string
+          format: date-time
+
+    DepositRequest:
+      type: object
+      required:
+        - amount_minor
+        - currency
+      properties:
+        amount_minor:
+          type: integer
+          description: Amount in minor currency units (e.g. kopecks for RUB)
+        currency:
+          type: string
+          description: ISO 4217 currency code
+
+    BalanceTransaction:
+      type: object
+      required:
+        - id
+        - user_id
+        - amount_minor
+        - kind
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          description: Signed amount in minor currency units; positive = credit, negative = debit
+        kind:
+          $ref: '#/components/schemas/TransactionKind'
+        reference_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: Invoice ID for charge and refund transactions
+        created_at:
+          type: string
+          format: date-time
+
+    TransactionKind:
+      type: string
+      enum:
+      - deposit
+      - charge
+      - refund
+
+    TransactionListResponse:
+      type: object
+      required:
+      - transactions
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceTransaction'
+tags:
+- name: invoices
+  description: Invoice management endpoints
+- name: balance
+  description: Balance and transaction endpoints
