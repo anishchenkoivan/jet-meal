@@ -20,4 +20,4 @@ jobs:
           submodules: recursive
 
       - name: Run tests
-        run: make -C libraries/facil-io-router tests
+        run: make -C libraries/c/facil-io-router tests
