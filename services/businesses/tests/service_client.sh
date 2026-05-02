@@ -31,12 +31,12 @@ get_v1_business_status() {
   curl -s -o /dev/null -w "%{http_code}" -X POST "${BASE_URL}/v1/business/get" -H "Content-Type: application/json" -d "$1"
 }
 
-post_v1_meals_search() {
-  curl -s -X POST "${BASE_URL}/v1/meals/search" -H "Content-Type: application/json" -d "$1"
+post_v1_meals_list() {
+  curl -s -X POST "${BASE_URL}/v1/meals/list" -H "Content-Type: application/json" -d "$1"
 }
 
-post_v1_meals_search_status() {
-  curl -s -o /dev/null -w "%{http_code}" -X POST "${BASE_URL}/v1/meals/search" -H "Content-Type: application/json" -d "$1"
+post_v1_meals_list_status() {
+  curl -s -o /dev/null -w "%{http_code}" -X POST "${BASE_URL}/v1/meals/list" -H "Content-Type: application/json" -d "$1"
 }
 
 post_v1_menu_meal() {

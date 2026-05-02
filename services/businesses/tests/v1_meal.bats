@@ -35,30 +35,30 @@ SAMPLE_MEAL='{"mealName":"Burger","mealDescription":"A delicious burger","mealPi
   [ "$status" = "404" ]
 }
 
-@test "search meals returns 200" {
+@test "list meals returns 200" {
   id=$(post_v1_business "$SAMPLE_CREATE_BODY" | grep -o '"business_id":"[0-9]*"' | grep -o '[0-9]*')
-  status=$(post_v1_meals_search_status "{\"businessId\":\"$id\"}")
+  status=$(post_v1_meals_list_status "{\"businessId\":\"$id\"}")
   [ "$status" = "200" ]
 }
 
-@test "search meals returns empty list for business with no meals" {
+@test "list meals returns empty list for business with no meals" {
   id=$(post_v1_business "$SAMPLE_CREATE_BODY" | grep -o '"business_id":"[0-9]*"' | grep -o '[0-9]*')
-  response=$(post_v1_meals_search "{\"businessId\":\"$id\"}")
+  response=$(post_v1_meals_list "{\"businessId\":\"$id\"}")
   echo "$response" | grep -q '"meals":\[\]'
 }
 
-@test "search meals returns added meal" {
+@test "list meals returns added meal" {
   id=$(post_v1_business "$SAMPLE_CREATE_BODY" | grep -o '"business_id":"[0-9]*"' | grep -o '[0-9]*')
   post_v1_menu_meal "{\"businessId\":\"$id\",\"meal\":$SAMPLE_MEAL}" > /dev/null
-  response=$(post_v1_meals_search "{\"businessId\":\"$id\"}")
+  response=$(post_v1_meals_list "{\"businessId\":\"$id\"}")
   echo "$response" | grep -q '"mealName":"Burger"'
 }
 
-@test "search meals does not return meals from other businesses" {
+@test "list meals does not return meals from other businesses" {
   id1=$(post_v1_business "$SAMPLE_CREATE_BODY" | grep -o '"business_id":"[0-9]*"' | grep -o '[0-9]*')
   id2=$(post_v1_business "$SAMPLE_CREATE_BODY" | grep -o '"business_id":"[0-9]*"' | grep -o '[0-9]*')
   post_v1_menu_meal "{\"businessId\":\"$id1\",\"meal\":$SAMPLE_MEAL}" > /dev/null
-  response=$(post_v1_meals_search "{\"businessId\":\"$id2\"}")
+  response=$(post_v1_meals_list "{\"businessId\":\"$id2\"}")
   echo "$response" | grep -q '"meals":\[\]'
 }
 

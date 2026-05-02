@@ -79,23 +79,23 @@ paths:
         '404':
           description: Business not found
 
-  /v1/meals/search:
+  /v1/meals/list:
     post:
-      summary: Search meals by business
+      summary: List meals for business
       operationId: searchMeals
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/V1SearchMealsRequest'
+              $ref: '#/components/schemas/V1ListMealsRequest'
       responses:
         '200':
           description: List of meals
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V1SearchMealsResponse'
+                $ref: '#/components/schemas/V1ListMealsResponse'
         '500':
           description: Internal server error
 
@@ -215,7 +215,7 @@ components:
       required:
         - business
 
-    V1SearchMealsRequest:
+    V1ListMealsRequest:
       type: object
       properties:
         businessId:
@@ -224,7 +224,7 @@ components:
       required:
         - businessId
 
-    V1SearchMealsResponse:
+    V1ListMealsResponse:
       type: object
       properties:
         meals:

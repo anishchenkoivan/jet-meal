@@ -49,13 +49,13 @@ typedef struct api_gen_v1_add_meal_to_menu_request_s {
   api_gen_meal_t meal;
 } api_gen_v1_add_meal_to_menu_request_t;
 
-typedef struct api_gen_v1_search_meals_response_s {
+typedef struct api_gen_v1_list_meals_response_s {
   api_gen_meals_list_t meals;
-} api_gen_v1_search_meals_response_t;
+} api_gen_v1_list_meals_response_t;
 
-typedef struct api_gen_v1_search_meals_request_s {
+typedef struct api_gen_v1_list_meals_request_s {
   const char* businessId;
-} api_gen_v1_search_meals_request_t;
+} api_gen_v1_list_meals_request_t;
 
 typedef struct api_gen_v1_get_business_response_s {
   api_gen_business_t business;
@@ -102,9 +102,9 @@ FIOBJ api_gen_v1_add_meal_to_menu_response_serialize_to_fiobj(api_gen_v1_add_mea
 
 FIOBJ api_gen_v1_add_meal_to_menu_request_serialize_to_fiobj(api_gen_v1_add_meal_to_menu_request_t);
 
-FIOBJ api_gen_v1_search_meals_response_serialize_to_fiobj(api_gen_v1_search_meals_response_t);
+FIOBJ api_gen_v1_list_meals_response_serialize_to_fiobj(api_gen_v1_list_meals_response_t);
 
-FIOBJ api_gen_v1_search_meals_request_serialize_to_fiobj(api_gen_v1_search_meals_request_t);
+FIOBJ api_gen_v1_list_meals_request_serialize_to_fiobj(api_gen_v1_list_meals_request_t);
 
 FIOBJ api_gen_v1_get_business_response_serialize_to_fiobj(api_gen_v1_get_business_response_t);
 
@@ -132,9 +132,9 @@ api_gen_v1_add_meal_to_menu_response_t api_gen_v1_add_meal_to_menu_response_pars
 
 api_gen_v1_add_meal_to_menu_request_t api_gen_v1_add_meal_to_menu_request_parse_from_fiobj(FIOBJ);
 
-api_gen_v1_search_meals_response_t api_gen_v1_search_meals_response_parse_from_fiobj(FIOBJ);
+api_gen_v1_list_meals_response_t api_gen_v1_list_meals_response_parse_from_fiobj(FIOBJ);
 
-api_gen_v1_search_meals_request_t api_gen_v1_search_meals_request_parse_from_fiobj(FIOBJ);
+api_gen_v1_list_meals_request_t api_gen_v1_list_meals_request_parse_from_fiobj(FIOBJ);
 
 api_gen_v1_get_business_response_t api_gen_v1_get_business_response_parse_from_fiobj(FIOBJ);
 
@@ -162,9 +162,9 @@ void api_gen_v1_add_meal_to_menu_response_cleanup(api_gen_v1_add_meal_to_menu_re
 
 void api_gen_v1_add_meal_to_menu_request_cleanup(api_gen_v1_add_meal_to_menu_request_t);
 
-void api_gen_v1_search_meals_response_cleanup(api_gen_v1_search_meals_response_t);
+void api_gen_v1_list_meals_response_cleanup(api_gen_v1_list_meals_response_t);
 
-void api_gen_v1_search_meals_request_cleanup(api_gen_v1_search_meals_request_t);
+void api_gen_v1_list_meals_request_cleanup(api_gen_v1_list_meals_request_t);
 
 void api_gen_v1_get_business_response_cleanup(api_gen_v1_get_business_response_t);
 

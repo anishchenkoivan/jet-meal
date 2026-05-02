@@ -168,7 +168,7 @@ FIOBJ api_gen_v1_add_meal_to_menu_request_serialize_to_fiobj(api_gen_v1_add_meal
   return res;
 }
 
-FIOBJ api_gen_v1_search_meals_response_serialize_to_fiobj(api_gen_v1_search_meals_response_t val) {
+FIOBJ api_gen_v1_list_meals_response_serialize_to_fiobj(api_gen_v1_list_meals_response_t val) {
   FIOBJ res = fiobj_hash_new2(1);
   {
     FIOBJ obj = api_gen_meals_list_serialize_to_fiobj(val.meals);
@@ -178,7 +178,7 @@ FIOBJ api_gen_v1_search_meals_response_serialize_to_fiobj(api_gen_v1_search_meal
   return res;
 }
 
-FIOBJ api_gen_v1_search_meals_request_serialize_to_fiobj(api_gen_v1_search_meals_request_t val) {
+FIOBJ api_gen_v1_list_meals_request_serialize_to_fiobj(api_gen_v1_list_meals_request_t val) {
   FIOBJ res = fiobj_hash_new2(1);
   {
     FIOBJ obj = api_gen_string_serialize_to_fiobj(val.businessId);
@@ -403,8 +403,8 @@ api_gen_v1_add_meal_to_menu_request_t api_gen_v1_add_meal_to_menu_request_parse_
   return res;
 }
 
-api_gen_v1_search_meals_response_t api_gen_v1_search_meals_response_parse_from_fiobj(FIOBJ val) {
-  api_gen_v1_search_meals_response_t res;
+api_gen_v1_list_meals_response_t api_gen_v1_list_meals_response_parse_from_fiobj(FIOBJ val) {
+  api_gen_v1_list_meals_response_t res;
   {
     FIOBJ key = fiobj_str_new("meals", /*key len*/5);
     FIOBJ field = fiobj_hash_get(val, key);
@@ -413,8 +413,8 @@ api_gen_v1_search_meals_response_t api_gen_v1_search_meals_response_parse_from_f
   return res;
 }
 
-api_gen_v1_search_meals_request_t api_gen_v1_search_meals_request_parse_from_fiobj(FIOBJ val) {
-  api_gen_v1_search_meals_request_t res;
+api_gen_v1_list_meals_request_t api_gen_v1_list_meals_request_parse_from_fiobj(FIOBJ val) {
+  api_gen_v1_list_meals_request_t res;
   {
     FIOBJ key = fiobj_str_new("businessId", /*key len*/10);
     FIOBJ field = fiobj_hash_get(val, key);
@@ -556,11 +556,11 @@ void api_gen_v1_add_meal_to_menu_request_cleanup(api_gen_v1_add_meal_to_menu_req
   api_gen_meal_cleanup(val.meal);
 }
 
-void api_gen_v1_search_meals_response_cleanup(api_gen_v1_search_meals_response_t val) {
+void api_gen_v1_list_meals_response_cleanup(api_gen_v1_list_meals_response_t val) {
   api_gen_meals_list_cleanup(val.meals);
 }
 
-void api_gen_v1_search_meals_request_cleanup(api_gen_v1_search_meals_request_t val) {
+void api_gen_v1_list_meals_request_cleanup(api_gen_v1_list_meals_request_t val) {
   api_gen_string_cleanup(val.businessId);
 }
 

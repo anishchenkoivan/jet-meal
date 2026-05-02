@@ -166,7 +166,7 @@ void v1_delete_business_handler(http_s *request) {
   }
 }
 
-void v1_search_meals_handler(http_s *request) {
+void v1_list_meals_handler(http_s *request) {
   if (!FIOBJ_TYPE_IS(request->body, FIOBJ_T_DATA)) {
     http_send_error(request, HTTP_INVALID_REQUEST);
     return;
@@ -174,28 +174,28 @@ void v1_search_meals_handler(http_s *request) {
 
   FIOBJ body = request_body_to_hashmap(request->body);
 
-  api_gen_v1_search_meals_request_t request_body =
-      api_gen_v1_search_meals_request_parse_from_fiobj(body);
+  api_gen_v1_list_meals_request_t request_body =
+      api_gen_v1_list_meals_request_parse_from_fiobj(body);
   fiobj_free(body);
 
   assert(g_meals_repository.vtable.get_meals_by_business != NULL);
   api_gen_meals_list_t meals = g_meals_repository.vtable.get_meals_by_business(
       (void *)&g_meals_repository, atoi(request_body.businessId));
 
-  api_gen_v1_search_meals_request_cleanup(request_body);
+  api_gen_v1_list_meals_request_cleanup(request_body);
 
   if (meals.size == DB_ERROR) {
     http_send_error(request, HTTP_INTERNAL_SERVER_ERROR);
     return;
   }
 
-  api_gen_v1_search_meals_response_t response = {.meals = meals};
+  api_gen_v1_list_meals_response_t response = {.meals = meals};
   FIOBJ response_fiobj =
-      api_gen_v1_search_meals_response_serialize_to_fiobj(response);
+      api_gen_v1_list_meals_response_serialize_to_fiobj(response);
 
   write_fiobj_response(request, response_fiobj);
 
-  api_gen_v1_search_meals_response_cleanup(response);
+  api_gen_v1_list_meals_response_cleanup(response);
 }
 
 void v1_add_meal_handler(http_s *request) {

@@ -2,7 +2,6 @@
 
 #include "config.h"
 #include "handlers.h"
-#include "postgres.h"
 
 #include "fio_router.h"
 #include "http.h"
@@ -17,7 +16,7 @@ int main(void) {
   fio_router_register_callback(v1_delete_business_handler, "/v1/business", HTTP_DELETE);
   fio_router_register_callback(v1_get_business_handler, "/v1/business/get", HTTP_POST);
 
-  fio_router_register_callback(v1_search_meals_handler, "/v1/meals/search", HTTP_POST);
+  fio_router_register_callback(v1_list_meals_handler, "/v1/meals/list", HTTP_POST);
 
   fio_router_register_callback(v1_add_meal_handler, "/v1/menu/meal", HTTP_POST);
   fio_router_register_callback(v1_delete_meal_handler, "/v1/menu/meal", HTTP_DELETE);
