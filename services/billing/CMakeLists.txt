@@ -81,10 +81,11 @@ set(ENABLE_SEVENZIP              OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTS                  OFF CACHE BOOL "" FORCE)
 set(BUILD_SAMPLES                OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../libraries/cpp/poco
-    ${CMAKE_BINARY_DIR}/poco_build
-    EXCLUDE_FROM_ALL)
+FetchContent_Declare(
+  poco
+  GIT_REPOSITORY https://github.com/pocoproject/poco.git
+  GIT_TAG        poco-1.15.1-release)
+FetchContent_MakeAvailable(poco)
 
 target_link_libraries(billing PRIVATE
     Poco::Foundation

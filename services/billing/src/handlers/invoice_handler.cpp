@@ -5,7 +5,6 @@
 
 #include <repository/balance/balance_repository.hpp>
 
-namespace models    = billing::models;
 namespace svc       = billing::service;
 namespace bal_repo  = billing::repository::balance;
 
