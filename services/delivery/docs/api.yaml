@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: Order Service
+  description: Order and delivery service
+  version: 1.0.0
+paths:
+  /couriers/register:
+    post:
+      tags:
+        - couriers
+      operationId: register_courier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourierCreateRequest'
+      responses:
+        '201':
+          description: Courier registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
+    put:
+      tags:
+        - couriers
+      operationId: update_courier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourierCreateRequest'
+      responses:
+        '200':
+          description: Courier updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
+
+  /couriers/{id}:
+    get:
+      tags:
+        - couriers
+      operationId: get_courier_by_id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Courier found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courier'
+
+  /couriers/{id}/update-position:
+    post:
+      tags:
+        - couriers
+      operationId: update_courier_position
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Updated courier position
+
+  /order/{id}/fetch-courier:
+    get:
+      tags:
+        - orders
+      operationId: get_courier_for_order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Courier position fetched for the order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourierPositionInfo'
+
+components:
+  schemas:
+    Courier:
+      type: object
+      required:
+        - id
+        - user_id
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+
+    Point:
+      type: object
+      required:
+        - lat
+        - lon
+      properties:
+        lan:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+
+    CourierCreateRequest:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+
+    CourierPositionInfo:
+      type: object
+      required:
+        - position
+      properties:
+        position:
+          $ref: '#/components/schemas/Point'
+        time_remaining_minutes:
+          type: number
+          format: int
