@@ -1,0 +1,344 @@
+openapi: 3.0.3
+info:
+  title: Food Delivery Service - Businesses API
+  version: 1.0.0
+  description: |
+    API for managing businesses and their menus.
+    Supports business creation, editing, deletion, and menu management.
+    Snapshot for order-service OpenAPI codegen; canonical spec lives under services/businesses/docs/api.yaml.
+
+paths:
+  /v1/businesses:
+    post:
+      summary: Create a new business
+      operationId: createBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1CreateBusinessRequest'
+      responses:
+        '201':
+          description: Business created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1CreateBusinessResponse'
+        '400':
+          description: Invalid input
+
+    put:
+      summary: Edit an existing business
+      operationId: updateBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1UpdateBusinessRequest'
+      responses:
+        '204':
+          description: Business updated successfully
+        '404':
+          description: Business not found
+
+    delete:
+      summary: Delete a business
+      operationId: deleteBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1DeleteBusinessRequest'
+      responses:
+        '204':
+          description: Business deleted successfully
+        '404':
+          description: Business not found
+
+  /v1/businesses/get:
+    post:
+      summary: Get a business
+      operationId: getBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1GetBusinessRequest'
+      responses:
+        '200':
+          description: Business
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GetBusinessResponse'
+        '204':
+          description: Business deleted successfully
+        '404':
+          description: Business not found
+
+  /v1/meals/list:
+    post:
+      summary: List meals for business
+      operationId: searchMeals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1ListMealsRequest'
+      responses:
+        '200':
+          description: List of meals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1ListMealsResponse'
+        '500':
+          description: Internal server error
+
+  /v1/menu/meal:
+    post:
+      summary: Add a meal to the business menu
+      operationId: addMealToMenu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1AddMealToMenuRequest'
+      responses:
+        '200':
+          description: Meal added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1AddMealToMenuResponse'
+        '404':
+          description: Business not found
+
+    delete:
+      summary: Remove a meal from the business menu
+      operationId: removeMealFromMenu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1RemoveMealFromMenuRequest'
+      responses:
+        '204':
+          description: Meal removed successfully
+        '404':
+          description: Business or meal not found
+
+components:
+  schemas:
+    V1CreateBusinessRequest:
+      type: object
+      properties:
+        businessName:
+          type: string
+          description: Name of the business
+        ownerUserId:
+          type: string
+          description: ID of the user who owns the business
+        description:
+          type: string
+          description: Business description
+        businessLogoId:
+          type: string
+          format: uri
+          description: URL to the business logo
+      required:
+        - businessName
+        - ownerUserId
+        - description
+        - businessLogoId
+
+    V1CreateBusinessResponse:
+      type: object
+      properties:
+        businessId:
+          type: string
+      required:
+        - businessId
+
+    V1UpdateBusinessRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: Business id
+        businessName:
+          type: string
+          description: Name of the business
+        ownerUserId:
+          type: string
+          description: ID of the user who owns the business
+        description:
+          type: string
+          description: Business description
+        businessLogoId:
+          type: string
+          format: uri
+          description: URL to the business logo
+      required:
+        - businessId
+      minProperties: 1
+
+    V1DeleteBusinessRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: Business id
+      required:
+        - businessId
+
+    V1GetBusinessRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: Business id
+      required:
+        - businessId
+
+    V1GetBusinessResponse:
+      type: object
+      properties:
+        business:
+          $ref: '#/components/schemas/Business'
+      required:
+        - business
+
+    V1ListMealsRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: ID of the business to search meals for
+      required:
+        - businessId
+
+    V1ListMealsResponse:
+      type: object
+      properties:
+        meals:
+          $ref: '#/components/schemas/MealsList'
+      required:
+        - meals
+
+    V1AddMealToMenuRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: ID of the business to add the meal to
+        mealName:
+          type: string
+          description: Name of the meal
+        mealDescription:
+          type: string
+          description: Description of the meal
+        mealPictureId:
+          type: string
+          description: Id for meal picture in media service
+        price:
+          type: number
+          description: Price of the meal
+      required:
+        - businessId
+        - mealName
+        - mealDescription
+        - mealPictureId
+        - price
+
+    V1AddMealToMenuResponse:
+      type: object
+      properties:
+        mealId:
+          type: string
+          description: ID of the newly created meal
+      required:
+        - mealId
+
+    V1RemoveMealFromMenuRequest:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: ID of the business
+        mealId:
+          type: string
+          description: ID of the meal to remove
+      required:
+        - businessId
+        - mealId
+
+    Business:
+      type: object
+      properties:
+        businessId:
+          type: string
+          description: Business id
+        businessName:
+          type: string
+          description: Name of the business
+        ownerUserId:
+          type: string
+          description: ID of the user who owns the business
+        description:
+          type: string
+          description: Business description
+        businessLogoId:
+          type: string
+          description: Id to the business logo in media service
+      required:
+        - businessId
+        - businessName
+        - ownerUserId
+        - description
+        - menu
+        - businessLogoId
+
+    Menu:
+      type: object
+      properties:
+        meals:
+          $ref: '#/components/schemas/MealsList'
+      required:
+        - meals
+
+    MealsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Meal'
+
+    Meal:
+      type: object
+      properties:
+        mealId:
+          type: string
+        mealName:
+          type: string
+          description: Name of the meal
+        mealDescription:
+          type: string
+          description: Description of the meal
+        mealPictureId:
+          type: string
+          description: Id for meal picture in media service
+        price:
+          type: number
+          description: Price of the meal
+      required:
+        - mealId
+        - mealName
+        - mealDescription
+        - mealPictureId
+        - price

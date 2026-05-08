@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: jet-meal
+  labels:
+    app: order-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: order-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: spring.datasource.url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: spring.datasource.username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: spring.datasource.password
+            - name: SPRING_DATA_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: spring.data.redis.host
+            - name: SPRING_DATA_REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: spring.data.redis.port
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: spring.kafka.bootstrap-servers
+            - name: ORDER_KAFKA_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: order.kafka.topic
+            - name: ORDER_CLIENTS_BUSINESSSERVICEURL
+              valueFrom:
+                configMapKeyRef:
+                  name: order-config
+                  key: order.clients.business-service-url
+            - name: SPRING_LIQUIBASE_CHANGE_LOG
+              value: "classpath:db/changelog/db.changelog-master.yaml"
+            - name: SPRING_LIQUIBASE_CLEAR_CHECKSUMS
+              value: "true"
+          resources:
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
+            requests:
+              memory: "384Mi"
+              cpu: "250m"
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
