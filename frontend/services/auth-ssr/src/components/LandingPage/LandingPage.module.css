@@ -1,0 +1,8 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  /* место под фиксированную кнопку «Зарегистрироваться», чтобы не перекрывала FAQ */
+  padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+}

@@ -5,8 +5,8 @@
     "target": "esnext",
     "moduleResolution": "bundler",
 
-    "jsx": "preserve",
-    "lib": ["ESNext"],
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM"],
 
     "isolatedModules": true
   },

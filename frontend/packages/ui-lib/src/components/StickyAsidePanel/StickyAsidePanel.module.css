@@ -1,0 +1,13 @@
+.panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+  border: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  border-radius: var(--ant-border-radius-lg, 8px);
+  background: var(--ant-color-bg-container, #fff);
+  height: var(--page-two-col-aside-max-height, calc(100dvh - 72px));
+  max-height: var(--page-two-col-aside-max-height, calc(100dvh - 72px));
+}

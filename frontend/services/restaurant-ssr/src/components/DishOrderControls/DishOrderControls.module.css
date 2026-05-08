@@ -1,0 +1,25 @@
+.addBtn {
+  font-weight: 600;
+}
+
+.counter {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.removeFromOrderBtn {
+  padding-inline: 6px;
+  min-width: auto;
+}
+
+.qty {
+  min-width: 22px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+}

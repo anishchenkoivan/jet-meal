@@ -6,9 +6,9 @@ import { resourceFromAttributes } from "@opentelemetry/resources";
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
 import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
 import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
-import type { TelemetryOptions } from "../telemetryOptions.js";
-import { resolveNodeOtlpLogsUrl } from "./utils/resolveNodeOtlpLogsUrl.js";
-import { resolveNodeOtlpMetricsUrl } from "./utils/resolveNodeOtlpMetricsUrl.js";
+import type { TelemetryOptions } from "../telemetryOptions";
+import { resolveNodeOtlpLogsUrl } from "./utils/resolveNodeOtlpLogsUrl";
+import { resolveNodeOtlpMetricsUrl } from "./utils/resolveNodeOtlpMetricsUrl";
 import type { NodeTelemetryHandle } from "./registerNodeTelemetry.d";
 
 let registered = false;

@@ -1,0 +1,163 @@
+.card {
+  overflow: hidden;
+}
+
+.cardCompact :global(.ant-card-body) {
+  padding: 12px;
+}
+
+.shellCompact {
+  gap: 10px;
+}
+
+.shellCompact .description {
+  display: none;
+}
+
+.shellCompact .priceLabel {
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+/* Мобилка: превью внутри карточки (та же колонка, что и у карточки ресторана) */
+@media (max-width: 767px) {
+  .media {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.card :global(.ant-card-body) {
+  padding: 16px;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.media {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 767px) {
+  .card :global(.ant-card-body) {
+    padding: 0;
+  }
+
+  .shell {
+    align-items: start;
+    gap: 12px;
+  }
+
+  .body {
+    box-sizing: border-box;
+    flex: 0 1 auto;
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    padding: 12px 16px 16px;
+  }
+
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.main {
+  flex: 0 1 auto;
+}
+
+.description {
+  margin: 0;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.priceLabel {
+  margin: 8px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.moreLink {
+  align-self: flex-start;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ant-color-primary, #1677ff);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.moreLink:hover {
+  color: var(--ant-color-primary-hover, #4096ff);
+}
+
+.moreLink:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 2px;
+}
+
+.moreLink:disabled,
+.moreLink[aria-disabled="true"] {
+  color: var(--ant-color-text-disabled, rgba(0, 0, 0, 0.25));
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    /* Колонка с фото не разрастается на широких экранах: не больше 38% и не больше 480px по ширине */
+    grid-template-columns: minmax(260px, min(38%, 480px)) 1fr;
+    gap: 20px;
+  }
+
+  .media {
+    max-width: min(480px, 100%);
+  }
+
+  .body {
+    min-height: 100%;
+  }
+}

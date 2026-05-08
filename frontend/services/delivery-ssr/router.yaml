@@ -1,0 +1,15 @@
+# Dev routing for @jet-meal/dev-gateway — see frontend/services/dev-gateway
+service:
+  id: delivery-ssr
+  port: 3105
+spawn:
+  cwd: frontend
+  command: pnpm
+  args:
+    - "--filter"
+    - "@jet-meal/delivery-ssr"
+    - "dev"
+routes:
+  - path: /admin/delivery
+  - path: /my/orders
+  - path: /my/order

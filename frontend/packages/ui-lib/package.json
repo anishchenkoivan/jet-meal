@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "dependencies": {
+    "antd": "catalog:",
+    "classnames": "catalog:",
+    "dayjs": "1.11.13"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "storybook:start": "storybook dev -p 6007",
@@ -10,7 +15,7 @@
   },
   "peerDependencies": {
     "@ant-design/icons": "catalog:",
-    "antd": "catalog:",
+    "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
@@ -21,6 +26,7 @@
     "@types/react-dom": "catalog:",
     "antd": "catalog:",
     "classnames": "catalog:",
+    "next": "catalog:",
     "storybook": "catalog:",
     "typescript": "catalog:"
   }

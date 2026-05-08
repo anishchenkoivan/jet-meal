@@ -1,0 +1,11 @@
+.html {
+  background-color: var(--jet-page-bg);
+}
+
+.body {
+  --jet-site-header-height: 64px;
+  font-family: var(--jet-font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.88);
+}

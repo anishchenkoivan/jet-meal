@@ -1,0 +1,38 @@
+.grid {
+  --page-two-col-sticky-top: 68px;
+  --page-two-col-aside-max-height: calc(100dvh - 72px);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+.main {
+  min-width: 0;
+}
+
+.stickySlot {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  .gridWithEndSlot {
+    grid-template-columns: 1fr minmax(260px, 300px);
+    gap: 24px;
+  }
+
+  .gridWithStartSlot {
+    grid-template-columns: minmax(260px, 300px) 1fr;
+    gap: 24px;
+  }
+
+  .stickySlot {
+    display: block;
+    position: sticky;
+    top: var(--page-two-col-sticky-top);
+    align-self: start;
+  }
+}

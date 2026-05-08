@@ -6,8 +6,8 @@ import { resourceFromAttributes } from "@opentelemetry/resources";
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
 import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
 import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
-import { joinOtlpUrl } from "../utils/joinOtlpUrl.js";
-import type { TelemetryOptions } from "../telemetryOptions.js";
+import { joinOtlpUrl } from "../utils/joinOtlpUrl";
+import type { TelemetryOptions } from "../telemetryOptions";
 import type { BrowserTelemetryHandle } from "./registerBrowserTelemetry.d";
 
 let registered = false;

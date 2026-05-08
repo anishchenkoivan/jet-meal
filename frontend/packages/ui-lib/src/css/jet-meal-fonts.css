@@ -1,0 +1,32 @@
+/* Yandex Sans Text — variable (как на сервисах Яндекса, CDN yastatic). */
+
+@font-face {
+  font-family: "Yandex Sans Text";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("https://yastatic.net/s3/home/fonts/ys/3/text-variable-full.woff2")
+    format("woff2-variations");
+}
+
+:root {
+  --jet-font-sans: "Yandex Sans Text", -apple-system, blinkmacsystemfont,
+    "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+}
+
+html {
+  font-family: var(--jet-font-sans);
+}
+
+body {
+  font-family: var(--jet-font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--jet-font-sans);
+}

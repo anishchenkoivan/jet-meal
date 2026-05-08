@@ -1,82 +1,47 @@
-"use client";
+import { fetchCatalogItems } from "../../src/lib/gql-wrapper";
+import { CatalogPage } from "../../src/containers/CatalogPage/CatalogPage";
 
-import { gql } from "@apollo/client";
-import { useSuspenseQuery } from "@apollo/client/react";
-import { Empty, Spin } from "antd";
-import cx from "classnames";
-import { Suspense, type ReactNode } from "react";
-import { RestaurantsCatalogPage } from "../../../../packages/ui-lib/src/components/RestaurantsCatalogPage/RestaurantsCatalogPage";
-import styles from "./page.module.css";
+export const dynamic = "force-dynamic";
 
-const RESTAURANTS_QUERY = gql`
-  query Restaurants {
-    restaurants {
-      id
-      name
-      city
-      description
-    }
-  }
-`;
+export default async function CatalogPageRoute({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
 
-type RestaurantsQueryData = {
-  restaurants: Array<{
-    id: string;
-    name: string;
-    city: string;
-    description?: string;
-  }>;
-};
+  const tagsRaw = typeof sp["tags"] === "string" ? sp["tags"] : undefined;
+  const tagIds = tagsRaw
+    ? tagsRaw.split(",").map((s) => s.trim()).filter(Boolean)
+    : undefined;
 
-/**
- * useSuspenseQuery приостанавливает рендер, пока нет данных — состояние «loading»
- * задаётся только через родительский <Suspense fallback={...}>, не через поле в результате хука.
- */
-function CatalogRestaurantsSection() {
-  const { data, error } = useSuspenseQuery<RestaurantsQueryData>(RESTAURANTS_QUERY, {
-    errorPolicy: "all",
-  });
-  const items = data?.restaurants ?? [];
-
-  let catalogBody: ReactNode;
-  if (error) {
-    catalogBody = (
-      <Empty
-        className={cx(styles["catalogSlot"])}
-        description="Не удалось загрузить каталог. Попробуйте позже."
-      />
-    );
-  } else if (items.length === 0) {
-    catalogBody = (
-      <Empty
-        className={cx(styles["catalogSlot"])}
-        description="Ничего не найдено, попробуйте позже"
-      />
-    );
-  } else {
-    catalogBody = <RestaurantsCatalogPage items={items} />;
+  const dtRaw = typeof sp["dt"] === "string" ? sp["dt"] : undefined;
+  let deliveryMaxMinutes: number | undefined;
+  let deliveryToday = false;
+  if (dtRaw === "15" || dtRaw === "30" || dtRaw === "60") {
+    deliveryMaxMinutes = Number(dtRaw);
+  } else if (dtRaw === "today") {
+    deliveryToday = true;
   }
 
-  return catalogBody;
-}
+  const deliveryWish =
+    typeof sp["wish"] === "string" && sp["wish"].trim()
+      ? sp["wish"].trim()
+      : undefined;
 
-export default function CatalogPage() {
-  return (
-    <main className={cx(styles["main"])}>
-      <h1 className={cx(styles["title"])}>Catalog</h1>
-      <p>
-        Публичный каталог. Вход в панель ресторана:{" "}
-        <a href="/restaurant/login">/restaurant/login</a>.
-      </p>
-      <Suspense
-        fallback={
-          <div className={cx(styles["catalogSlot"])}>
-            <Spin size="large" />
-          </div>
-        }
-      >
-        <CatalogRestaurantsSection />
-      </Suspense>
-    </main>
-  );
+  const filters = {
+    city: typeof sp["city"] === "string" ? sp["city"] : undefined,
+    search: typeof sp["q"] === "string" ? sp["q"] : undefined,
+    restaurantSearch: typeof sp["rq"] === "string" ? sp["rq"] : undefined,
+    category: typeof sp["cat"] === "string" ? sp["cat"] : undefined,
+    restaurantId: typeof sp["rid"] === "string" ? sp["rid"] : undefined,
+    tagIds,
+    deliveryMaxMinutes,
+    deliveryToday,
+    deliveryWish: dtRaw === "custom" ? deliveryWish : undefined,
+  };
+
+  const items = await fetchCatalogItems(filters);
+
+  return <CatalogPage items={items} />;
 }

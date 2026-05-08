@@ -1,21 +1,30 @@
+import "@jet-meal/ui-lib/src/css/jet-meal-global.css";
+
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { ReactNode } from "react";
-import type { Metadata } from "next";
-import cx from "classnames";
-import { AntdProvider } from "../../../packages/ui-lib/src/components/AntdProvider/AntdProvider";
-import { ApolloProvider } from "../src/components/ApolloProvider/ApolloProvider";
-import styles from "./layout.module.css";
+import { RestaurantAppShell } from "../src/components/RestaurantAppShell/RestaurantAppShell";
+import { createMainNavTabs } from "@jet-meal/ui-lib/src/navigation/mainNavTabs";
+import {
+  getLogoHrefFromPublicEnv,
+  getMainNavUrlsFromPublicEnv,
+} from "@jet-meal/ui-lib/src/navigation/mainNavEnv";
 
-export const metadata: Metadata = {
-  title: "Jet Meal — restaurant",
-};
+export default function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const tabs = createMainNavTabs(getMainNavUrlsFromPublicEnv());
+  const logoHref = getLogoHrefFromPublicEnv();
 
-export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <body className={cx(styles["body"])}>
-        <AntdProvider>
-          <ApolloProvider>{children}</ApolloProvider>
-        </AntdProvider>
+      <body suppressHydrationWarning>
+        <AntdRegistry>
+          <RestaurantAppShell tabs={tabs} logoHref={logoHref}>
+            {children}
+          </RestaurantAppShell>
+        </AntdRegistry>
       </body>
     </html>
   );

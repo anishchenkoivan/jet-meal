@@ -1,0 +1,46 @@
+:global(.ant-layout-header).header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 950;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--site-app-header-height, 64px);
+  min-height: var(--site-app-header-height, 64px);
+  padding: 0 20px;
+  flex-wrap: nowrap;
+  line-height: 1;
+  background: var(--ant-color-bg-container, #fff);
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+  /* Слой композитинга: меньше дрожания при скролле/оверскролле в WKWebView */
+  transform: translateZ(0);
+}
+
+.headerSpacer {
+  flex-shrink: 0;
+  width: 100%;
+  height: var(--site-app-header-height, 64px);
+  pointer-events: none;
+}
+
+.logoLink {
+  color: inherit;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoLink:hover {
+  color: inherit;
+}
+
+.nav {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}

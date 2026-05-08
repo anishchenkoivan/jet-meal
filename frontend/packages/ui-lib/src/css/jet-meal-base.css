@@ -1,0 +1,27 @@
+/* Глобальная база приложения: до гидрации совпадает с типичным shell (фон, отступы). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --jet-page-bg: #faf8f5;
+  /** Высота SiteAppHeader (синхрон с .header min-height / отступами лэйаута). */
+  --site-app-header-height: 64px;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background-color: var(--jet-page-bg);
+  /* Меньше «резинового» оттягивания всего документа; хедер fixed не должен визуально уезжать */
+  overscroll-behavior-y: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--jet-page-bg);
+  overscroll-behavior-y: none;
+}

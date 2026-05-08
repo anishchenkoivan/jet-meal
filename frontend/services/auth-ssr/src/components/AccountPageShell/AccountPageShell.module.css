@@ -1,0 +1,45 @@
+.desktopWrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px 8px;
+}
+
+.desktopWrap :global(.ant-card-body) {
+  padding: 12px 16px;
+}
+
+.desktopWrap :global(.ant-card) {
+  max-width: 100%;
+  margin-inline: 0;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 4%),
+    0 8px 40px rgb(0 0 0 / 6%);
+}
+
+.mobileDrawerBody {
+  padding: 0 12px 8px !important;
+}
+
+.mobileInner {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mobileInner :global(.ant-card) {
+  max-width: 100%;
+  border: none;
+  box-shadow: none;
+}
+
+.mobileInner :global(.ant-card-body) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (max-width: 767px) {
+  .desktopWrap {
+    padding: 0 12px 8px;
+  }
+}

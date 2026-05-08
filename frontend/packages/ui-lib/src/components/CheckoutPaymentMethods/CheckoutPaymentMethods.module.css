@@ -1,0 +1,83 @@
+.section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tileRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 13px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  margin-inline: -2px;
+  padding-inline: 2px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tileRow::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tileRow::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--ant-color-fill-secondary, #e6e6e6);
+}
+
+.tile {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 106px;
+  height: 106px;
+  padding: 10px 8px;
+  border: 2px solid var(--ant-color-border-secondary, #f0f0f0);
+  border-radius: 11px;
+  background: var(--ant-color-bg-container, #fff);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+  scroll-snap-align: start;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.tile:hover {
+  border-color: var(--ant-color-primary, #1677ff);
+  color: var(--ant-color-primary, #1677ff);
+}
+
+.tileActive {
+  border-color: var(--ant-color-primary, #1677ff);
+  background: var(--ant-color-primary-bg, #e6f4ff);
+  color: var(--ant-color-primary, #1677ff);
+}
+
+.panel {
+  min-height: 72px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.panelText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}

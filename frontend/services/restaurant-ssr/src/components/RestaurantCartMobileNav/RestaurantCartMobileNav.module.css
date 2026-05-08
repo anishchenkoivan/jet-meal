@@ -1,0 +1,39 @@
+.iconBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+  background: transparent;
+}
+
+.iconBtn:hover {
+  background: var(--ant-color-fill-tertiary, rgba(0, 0, 0, 0.04));
+  color: var(--ant-color-primary, #1677ff);
+}
+
+.iconSvg {
+  display: block;
+}
+
+.dot {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  color: #fff;
+  background: var(--ant-color-primary, #1677ff);
+}

@@ -1,0 +1,166 @@
+.slide {
+  position: relative;
+  min-height: calc(100dvh - var(--jet-site-header-height, 64px));
+  display: flex;
+  align-items: flex-end;
+  box-sizing: border-box;
+  padding: 40px 24px 56px;
+  color: #fff;
+}
+
+.slideBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.slideOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.78) 0%,
+    rgba(0, 0, 0, 0.22) 55%,
+    rgba(0, 0, 0, 0.38) 100%
+  );
+}
+
+.slideInner {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+
+.slideTitle {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Главный CTA в заголовке (каталог) */
+.titleLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  margin: 4px 0 0;
+  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(
+    160deg,
+    rgb(255 255 255 / 26%) 0%,
+    rgb(255 255 255 / 10%) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 48%);
+  border-radius: 999px;
+  box-shadow:
+    0 6px 28px rgb(0 0 0 / 35%),
+    inset 0 1px 0 rgb(255 255 255 / 28%);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.titleLink:hover {
+  background: linear-gradient(
+    160deg,
+    rgb(255 255 255 / 36%) 0%,
+    rgb(255 255 255 / 16%) 100%
+  );
+  border-color: rgb(255 255 255 / 72%);
+  transform: translateY(-2px);
+}
+
+.slideLead {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  opacity: 0.94;
+  max-width: 560px;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* Второстепенная ссылка в абзаце (если нужна) */
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  margin: 0 4px;
+  font-weight: 600;
+  font-size: 0.95em;
+  color: #fff;
+  text-decoration: none;
+  vertical-align: middle;
+  background: rgb(255 255 255 / 16%);
+  border: 1px solid rgb(255 255 255 / 42%);
+  border-radius: 999px;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 22%);
+  backdrop-filter: blur(6px);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.inlineLink:hover {
+  background: rgb(255 255 255 / 26%);
+  border-color: rgb(255 255 255 / 65%);
+  transform: translateY(-1px);
+}
+
+/* Ряд кнопок под абзацем (партнёрский слайд) */
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 22px 0 0;
+  max-width: 640px;
+}
+
+.ctaPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  background: linear-gradient(
+    145deg,
+    rgb(255 255 255 / 24%) 0%,
+    rgb(255 255 255 / 9%) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 46%);
+  border-radius: 999px;
+  box-shadow:
+    0 4px 18px rgb(0 0 0 / 28%),
+    inset 0 1px 0 rgb(255 255 255 / 22%);
+  backdrop-filter: blur(8px);
+  transition:
+    transform 0.16s ease,
+    background 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.ctaPill:hover {
+  background: linear-gradient(
+    145deg,
+    rgb(255 255 255 / 34%) 0%,
+    rgb(255 255 255 / 14%) 100%
+  );
+  border-color: rgb(255 255 255 / 72%);
+  transform: translateY(-2px);
+}

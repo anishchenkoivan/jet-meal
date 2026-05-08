@@ -1,0 +1,230 @@
+/* Десктоп: левая колонка; узкий экран — полоска под маской дровера (z ниже MobileDrawer) + MobileDrawer */
+.shell {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr;
+  grid-template-areas: "main";
+  gap: 20px;
+  align-items: start;
+  align-self: stretch;
+  width: 100%;
+  min-height: 0;
+}
+
+.shellNavOpen .mobileBar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.aside {
+  box-sizing: border-box;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  border-radius: var(--ant-border-radius-lg, 8px);
+  background: var(--ant-color-bg-container, #fff);
+}
+
+.asideTitle {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.asideBody {
+  position: relative;
+  isolation: isolate;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.asideBody :global(.ant-select-dropdown) {
+  z-index: 1050;
+  max-height: min(320px, 55dvh);
+}
+
+.asideFooter {
+  flex-shrink: 0;
+  padding-top: 4px;
+  border-top: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.desktopAsideFooter {
+  flex-shrink: 0;
+}
+
+.main {
+  position: relative;
+  z-index: 0;
+  min-width: 0;
+  grid-area: main;
+}
+
+.mobileDock {
+  display: none;
+  position: fixed;
+  top: var(--page-header-height, 64px);
+  right: 0;
+  left: 0;
+  /* Ниже маски Header MobileDrawer (900) и NavListBlock drawer (920), выше контента main (0) */
+  z-index: 870;
+}
+
+.mobileDockInner {
+  position: relative;
+}
+
+.mobileBar {
+  position: relative;
+  z-index: 871;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  background: var(--ant-color-bg-container, #fff);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+}
+
+.mobileTriggerRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.mobileSearchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mobileNavToggle {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 112px;
+  padding-inline: 8px;
+}
+
+.mobileDockSkSearch {
+  box-sizing: border-box;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.mobileDockSkBtn {
+  box-sizing: border-box;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.filtersDrawerRoot :global(.ant-drawer-mask) {
+  top: calc(
+    var(--page-header-height, 64px) + var(--nav-mobile-filter-bar, 48px)
+  ) !important;
+}
+
+.filtersDrawerRoot :global(.ant-drawer-content-wrapper) {
+  top: calc(
+    var(--page-header-height, 64px) + var(--nav-mobile-filter-bar, 48px)
+  ) !important;
+}
+
+.mobileDrawerColumn {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.mobileDrawerScroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.mobileDrawerActions {
+  flex-shrink: 0;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0));
+  border-top: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+  background: var(--ant-color-bg-container, #fff);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobileDrawerDone {
+  width: 100%;
+}
+
+.mobileDrawerReset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #ff4d4f;
+  text-align: center;
+  width: 100%;
+}
+
+.mobileDrawerReset:hover {
+  text-decoration: underline;
+}
+
+.filtersDrawerBody {
+  padding: 0 !important;
+}
+
+@media (max-width: 1291px) {
+  .main {
+    padding-top: 52px;
+  }
+
+  .mobileDock {
+    display: block;
+  }
+}
+
+@media (min-width: 1292px) {
+  .shell {
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+    grid-template-areas: "aside main";
+    gap: 24px;
+  }
+
+  .aside {
+    display: flex;
+    grid-area: aside;
+    position: sticky;
+    top: var(--nav-list-aside-sticky-top, 16px);
+    align-self: start;
+    max-height: calc(100dvh - var(--nav-list-aside-sticky-top, 16px) - 24px);
+    overflow: hidden;
+  }
+
+  .asideBody {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .mobileDock {
+    display: none !important;
+  }
+
+  .main {
+    padding-top: 0;
+  }
+}

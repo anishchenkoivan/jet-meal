@@ -1,0 +1,63 @@
+.root {
+  width: 100%;
+  margin: 0;
+}
+
+.carousel {
+  width: 100%;
+}
+
+.carousel :global(.slick-list) {
+  min-height: calc(100dvh - var(--jet-site-header-height, 64px));
+}
+
+.carousel :global(.slick-track),
+.carousel :global(.slick-slide > div) {
+  height: 100%;
+  min-height: calc(100dvh - var(--jet-site-header-height, 64px));
+}
+
+.carousel :global(.slick-dots) {
+  bottom: 20px;
+}
+
+.carousel :global(.slick-dots li button) {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.carousel :global(.slick-dots li.slick-active button) {
+  background: #fff;
+}
+
+.carousel :global(.slick-arrow) {
+  z-index: 4;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(0 0 0 / 32%);
+  backdrop-filter: blur(4px);
+}
+
+.carousel :global(.slick-arrow::before) {
+  font-size: 20px;
+  opacity: 1;
+}
+
+.carousel :global(.slick-prev) {
+  inset-inline-start: 12px;
+}
+
+.carousel :global(.slick-next) {
+  inset-inline-end: 12px;
+}
+
+.carousel :global(.slick-arrow:hover),
+.carousel :global(.slick-arrow:focus-visible) {
+  background: rgb(0 0 0 / 48%);
+  color: #fff;
+}

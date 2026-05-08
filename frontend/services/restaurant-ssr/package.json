@@ -12,8 +12,10 @@
     "storybook:build": "storybook build"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "catalog:",
     "@apollo/client": "catalog:",
-    "@ant-design/icons": "catalog:",
+    "@jet-meal/opentelemetry": "workspace:*",
+    "@jet-meal/restaurant-ui": "workspace:*",
     "@jet-meal/ui-lib": "workspace:*",
     "classnames": "catalog:",
     "graphql": "catalog:",

@@ -1,0 +1,67 @@
+.checkoutAddressAside {
+  overflow-y: auto;
+}
+
+.linesSection {
+  margin: 0 0 20px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.linesTitle {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+}
+
+.lineRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: baseline;
+  padding: 10px 0;
+  font-size: 14px;
+  line-height: 1.35;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+}
+
+.lineCell {
+  min-width: 0;
+}
+
+.lineRow:last-child {
+  border-bottom: none;
+}
+
+.lineName {
+  margin: 0;
+  min-width: 0;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+}
+
+.lineMeta {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ant-color-text-secondary, rgba(0, 0, 0, 0.45));
+}
+
+.lineTotal {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+}
+
+.totalBlock {
+  margin: 0 0 20px;
+  font-size: 15px;
+}
+
+.addrLine {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+}

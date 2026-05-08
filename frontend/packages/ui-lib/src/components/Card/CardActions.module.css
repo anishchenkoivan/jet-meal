@@ -1,0 +1,13 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (min-width: 576px) {
+  .row {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}

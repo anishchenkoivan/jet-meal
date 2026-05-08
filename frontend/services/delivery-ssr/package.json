@@ -1,0 +1,25 @@
+{
+  "name": "@jet-meal/delivery-ssr",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "tsc": "tsc"
+  },
+  "dependencies": {
+    "@ant-design/nextjs-registry": "catalog:",
+    "@jet-meal/opentelemetry": "workspace:*",
+    "@jet-meal/ui-lib": "workspace:*",
+    "classnames": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}
