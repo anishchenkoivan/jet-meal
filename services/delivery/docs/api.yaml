@@ -70,11 +70,16 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Point'
       responses:
         '200':
           description: Updated courier position
 
-  /order/{id}/fetch-courier:
+  /order/{id}/get-courier-position:
     get:
       tags:
         - orders
@@ -93,6 +98,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CourierPositionInfo'
+
+  /geo/distance:
+    post:
+      tags:
+        - geo
+      operationId: calculate_distance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistanceCalculateRequest'
+      responses:
+        '201':
+          description: Calculated distance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistanceEstimationData'
+
+  /geo/route:
+    post:
+      tags:
+        - geo
+      operationId: calculate_route
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteCalculateRequest'
+      responses:
+        '200':
+          description: Route to destination
 
 components:
   schemas:
@@ -115,12 +152,46 @@ components:
         - lat
         - lon
       properties:
-        lan:
+        lat:
           type: number
           format: double
         lon:
           type: number
           format: double
+
+    Address:
+      type: object
+      required:
+        - country
+        - city
+        - street
+        - house
+      properties:
+        country:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        house:
+          type: string
+        apartment:
+          type: string
+        instructions:
+          type: string
+        location:
+          $ref: '#/components/schemas/Point'
+
+    Location:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/Point'
+        address:
+          $ref: '#/components/schemas/Address'
+      anyOf:
+        - required: [location]
+        - required: [address]
 
     CourierCreateRequest:
       type: object
@@ -130,6 +201,28 @@ components:
         user_id:
           type: string
           format: uuid
+
+    RouteCalculateRequest:
+      type: object
+      required:
+        - origin
+        - destination
+      properties:
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+
+    DistanceCalculateRequest:
+      type: object
+      required:
+        - origin
+        - destination
+      properties:
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
 
     CourierPositionInfo:
       type: object
@@ -141,3 +234,22 @@ components:
         time_remaining_minutes:
           type: number
           format: int
+
+    DistanceEstimationData:
+      type: object
+      required:
+        - estimated_time_minutes
+      properties:
+        estimated_time_minutes:
+          type: number
+          format: int
+
+    Route:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: array
+          items:
+            $ref: '#/components/schemas/Point'
