@@ -59,7 +59,7 @@ def test_deposit_accumulates_balance(url):
     user_id = str(uuid.uuid4())
     deposit(url, user_id, amount_minor=300)
     resp = deposit(url, user_id, amount_minor=200)
-    assert resp.json()["amount_minor"] == 500
+    assert resp.json()["money"]["amount_minor"] == 500
 
 
 def test_deposit_zero_amount_returns_400(url):
@@ -120,7 +120,7 @@ def test_history_transaction_has_expected_fields(url):
     deposit(url, user_id, amount_minor=400)
     tx = requests.get(f"{url}/api/v1/users/{user_id}/balance/history").json()["transactions"][0]
     assert tx["user_id"] == user_id
-    assert tx["amount_minor"] == 400
+    assert tx["money"]["amount_minor"] == 400
     assert tx["kind"] == "deposit"
     assert "id" in tx
     assert "created_at" in tx

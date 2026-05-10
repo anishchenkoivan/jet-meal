@@ -7,8 +7,8 @@ services:
       POSTGRES_USER: billing
       POSTGRES_PASSWORD: billing
     # Non persistent test state
-    # volumes:
-    #   - postgres_data:/var/lib/postgresql/data
+    volumes:
+      - ../migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U billing -d billing"]
       interval: 2s

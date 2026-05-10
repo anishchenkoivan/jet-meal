@@ -140,7 +140,7 @@ def test_pay_invoice_deducts_balance(url):
     invoice = create_invoice(url, user_id=user_id, amount_minor=1000).json()
     requests.post(f"{url}/api/v1/invoices/{invoice['id']}/pay")
     bal = requests.get(f"{url}/api/v1/users/{user_id}/balance").json()
-    assert bal["amount_minor"] == 4000
+    assert bal["money"]["amount_minor"] == 4000
 
 
 def test_pay_invoice_insufficient_funds_returns_409(url):
@@ -192,7 +192,7 @@ def test_refund_restores_balance(url):
     requests.post(f"{url}/api/v1/invoices/{invoice['id']}/pay")
     requests.post(f"{url}/api/v1/invoices/{invoice['id']}/refund")
     bal = requests.get(f"{url}/api/v1/users/{user_id}/balance").json()
-    assert bal["amount_minor"] == 2000
+    assert bal["money"]["amount_minor"] == 2000
 
 
 def test_refund_pending_invoice_returns_409(url):
