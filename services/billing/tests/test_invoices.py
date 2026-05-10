@@ -16,14 +16,15 @@ def create_invoice(url, user_id=None, order_id=None, amount_minor=AMOUNT, curren
     order_id = order_id or str(uuid.uuid4())
     return requests.post(
         f"{url}/api/v1/invoices",
-        json={"order_id": order_id, "user_id": user_id, "amount_minor": amount_minor, "currency": currency},
+        json={"order_id": order_id, "user_id": user_id, "money": {
+            "amount_minor": amount_minor, "currency": currency}},
     )
 
 
 def deposit(url, user_id, amount_minor=AMOUNT * 10, currency=CURRENCY):
     requests.post(
         f"{url}/api/v1/users/{user_id}/balance/deposit",
-        json={"amount_minor": amount_minor, "currency": currency},
+        json={"money": {"amount_minor": amount_minor, "currency": currency}},
     )
 
 
@@ -46,8 +47,8 @@ def test_create_invoice_returns_expected_fields(url):
     body = resp.json()
     assert body["user_id"] == user_id
     assert body["order_id"] == order_id
-    assert body["amount_minor"] == AMOUNT
-    assert body["currency"] == CURRENCY
+    assert body["money"]["amount_minor"] == AMOUNT
+    assert body["money"]["currency"] == CURRENCY
     assert body["status"] == "pending"
     assert "id" in body
     assert "created_at" in body
@@ -64,14 +65,16 @@ def test_create_invoice_invalid_json_returns_400(url):
 
 
 def test_create_invoice_missing_fields_returns_400(url):
-    resp = requests.post(f"{url}/api/v1/invoices", json={"order_id": str(uuid.uuid4())})
+    resp = requests.post(f"{url}/api/v1/invoices",
+                         json={"order_id": str(uuid.uuid4())})
     assert resp.status_code == 400
 
 
 def test_create_invoice_invalid_uuid_returns_400(url):
     resp = requests.post(
         f"{url}/api/v1/invoices",
-        json={"order_id": "not-a-uuid", "user_id": str(uuid.uuid4()), "amount_minor": AMOUNT, "currency": CURRENCY},
+        json={"order_id": "not-a-uuid", "user_id": str(uuid.uuid4()), "money": {
+            "amount_minor": AMOUNT, "currency": CURRENCY}},
     )
     assert resp.status_code == 400
 
@@ -123,9 +126,6 @@ def test_get_user_invoices_empty_for_unknown_user(url):
 def test_get_user_invoices_invalid_user_id_returns_400(url):
     resp = requests.get(f"{url}/api/v1/users/bad-id/invoices")
     assert resp.status_code == 400
-
-
-# --- pay ---
 
 def test_pay_invoice_with_sufficient_balance_returns_200(url, funded_invoice):
     invoice, _ = funded_invoice

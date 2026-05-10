@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: billing
       POSTGRES_USER: billing
       POSTGRES_PASSWORD: billing
-    volumes:
-      - ../migrations:/docker-entrypoint-initdb.d
     # Non persistent test state
     # volumes:
     #   - postgres_data:/var/lib/postgresql/data

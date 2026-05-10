@@ -22,8 +22,8 @@ Invoice PgInvoiceRepository::make_invoice(
     invoice.id.parse(id);
     invoice.order_id.parse(order_id);
     invoice.user_id.parse(user_id);
-    invoice.amount_minor = amount_minor;
-    invoice.currency = currency;
+    invoice.money.amount_minor = amount_minor;
+    invoice.money.currency = currency;
     invoice.status = models::invoice_status_from_string(status_str);
     invoice.created_at = created_at;
     invoice.updated_at = updated_at;
@@ -133,7 +133,7 @@ Invoice PgInvoiceRepository::create(const Invoice& invoice) {
                    "(id, order_id, user_id, amount_minor, currency, status, created_at, updated_at) "
                    "VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
             kw::bind(id_str), kw::bind(order_id_str), kw::bind(user_id_str),
-            kw::bind(invoice.amount_minor), kw::bind(invoice.currency), kw::bind(status_str),
+            kw::bind(invoice.money.amount_minor), kw::bind(invoice.money.currency), kw::bind(status_str),
             kw::bind(invoice.created_at), kw::bind(invoice.updated_at),
             kw::now;
     } catch (const Poco::Exception& e) {

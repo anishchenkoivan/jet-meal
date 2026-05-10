@@ -342,8 +342,7 @@ components:
         - id
         - order_id
         - user_id
-        - amount_minor
-        - currency
+        - money
         - status
         - created_at
         - updated_at
@@ -357,12 +356,8 @@ components:
         user_id:
           type: string
           format: uuid
-        amount_minor:
-          type: integer
-          description: Amount in minor currency units (e.g. kopecks for RUB)
-        currency:
-          type: string
-          description: ISO 4217 currency code
+        money:
+          $ref: '#/components/schemas/Money'
         status:
           $ref: '#/components/schemas/InvoiceStatus'
         created_at:
@@ -395,8 +390,7 @@ components:
       required:
         - order_id
         - user_id
-        - amount_minor
-        - currency
+        - money
       properties:
         order_id:
           type: string
@@ -404,46 +398,32 @@ components:
         user_id:
           type: string
           format: uuid
-        amount_minor:
-          type: integer
-          description: Amount in minor currency units (e.g. kopecks for RUB)
-        currency:
-          type: string
-          description: ISO 4217 currency code
+        money:
+          $ref: '#/components/schemas/Money'
 
     Balance:
       type: object
       required:
         - user_id
-        - amount_minor
-        - currency
         - updated_at
+        - money
       properties:
         user_id:
           type: string
           format: uuid
-        amount_minor:
-          type: integer
-          description: Amount in minor currency units (e.g. kopecks for RUB)
-        currency:
-          type: string
-          description: ISO 4217 currency code
         updated_at:
           type: string
           format: date-time
+        money:
+          $ref: '#/components/schemas/Money'
 
     DepositRequest:
       type: object
       required:
-        - amount_minor
-        - currency
+        - money
       properties:
-        amount_minor:
-          type: integer
-          description: Amount in minor currency units (e.g. kopecks for RUB)
-        currency:
-          type: string
-          description: ISO 4217 currency code
+        money:
+          $ref: '#/components/schemas/Money'
 
     BalanceTransaction:
       type: object
@@ -464,7 +444,7 @@ components:
           type: integer
           description: Signed amount in minor currency units; positive = credit, negative = debit
         kind:
-          $ref: '#/components/schemas/TransactionKind'
+          $ref: '#/components/schemas/TransactionType'
         reference_id:
           type:
             - string
@@ -475,7 +455,7 @@ components:
           type: string
           format: date-time
 
-    TransactionKind:
+    TransactionType:
       type: string
       enum:
       - deposit
@@ -491,6 +471,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BalanceTransaction'
+
+    Money:
+      type: object
+      required:
+        - amount_minor
+        - currency
+      amount_minor:
+        type: integer
+        description: Amount in minor currency units (e.g. kopecks for RUB)
+      currency:
+        type: string
+        description: ISO 4217 currency code
+
 tags:
 - name: invoices
   description: Invoice management endpoints

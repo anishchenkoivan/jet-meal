@@ -8,7 +8,7 @@ CURRENCY = "RUB"
 def deposit(url, user_id, amount_minor=1000, currency=CURRENCY):
     return requests.post(
         f"{url}/api/v1/users/{user_id}/balance/deposit",
-        json={"amount_minor": amount_minor, "currency": currency},
+        json={"money": {"amount_minor": amount_minor, "currency": currency}},
     )
 
 
@@ -29,8 +29,8 @@ def test_get_balance_returns_expected_fields(url):
     deposit(url, user_id, amount_minor=750)
     body = requests.get(f"{url}/api/v1/users/{user_id}/balance").json()
     assert body["user_id"] == user_id
-    assert body["amount_minor"] == 750
-    assert body["currency"] == CURRENCY
+    assert body["money"]["amount_minor"] == 750
+    assert body["money"]["currency"] == CURRENCY
     assert "updated_at" in body
 
 
@@ -50,8 +50,8 @@ def test_deposit_returns_updated_balance(url):
     resp = deposit(url, user_id, amount_minor=500)
     body = resp.json()
     assert body["user_id"] == user_id
-    assert body["amount_minor"] == 500
-    assert body["currency"] == CURRENCY
+    assert body["money"]["amount_minor"] == 500
+    assert body["money"]["currency"] == CURRENCY
     assert "updated_at" in body
 
 
@@ -94,7 +94,7 @@ def test_deposit_missing_fields_returns_400(url):
 def test_deposit_invalid_user_id_returns_400(url):
     resp = requests.post(
         f"{url}/api/v1/users/not-a-uuid/balance/deposit",
-        json={"amount_minor": 100, "currency": CURRENCY},
+        json={"money": {"amount_minor": 100, "currency": CURRENCY}},
     )
     assert resp.status_code == 400
 
@@ -131,7 +131,7 @@ def test_history_charge_after_payment(url):
     deposit(url, user_id, amount_minor=5000)
     invoice = requests.post(
         f"{url}/api/v1/invoices",
-        json={"order_id": str(uuid.uuid4()), "user_id": user_id, "amount_minor": 1000, "currency": CURRENCY},
+        json={"order_id": str(uuid.uuid4()), "user_id": user_id, "money": {"amount_minor": 1000, "currency": CURRENCY}},
     ).json()
     requests.post(f"{url}/api/v1/invoices/{invoice['id']}/pay")
     txs = requests.get(f"{url}/api/v1/users/{user_id}/balance/history").json()["transactions"]
@@ -145,7 +145,7 @@ def test_history_refund_after_refund(url):
     deposit(url, user_id, amount_minor=5000)
     invoice = requests.post(
         f"{url}/api/v1/invoices",
-        json={"order_id": str(uuid.uuid4()), "user_id": user_id, "amount_minor": 1000, "currency": CURRENCY},
+        json={"order_id": str(uuid.uuid4()), "user_id": user_id, "money": {"amount_minor": 1000, "currency": CURRENCY}},
     ).json()
     requests.post(f"{url}/api/v1/invoices/{invoice['id']}/pay")
     requests.post(f"{url}/api/v1/invoices/{invoice['id']}/refund")

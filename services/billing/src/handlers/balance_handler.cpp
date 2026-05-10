@@ -3,6 +3,7 @@
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/Exception.h>
 
+#include <iostream>
 #include <repository/balance/balance_repository.hpp>
 
 namespace billing::handlers {
@@ -18,8 +19,8 @@ std::string format_datetime(const Poco::DateTime& datetime) {
 crow::json::wvalue balance_to_json(const models::Balance& balance) {
     crow::json::wvalue json;
     json["user_id"] = balance.user_id.toString();
-    json["amount_minor"] = balance.amount_minor;
-    json["currency"] = balance.currency;
+    json["money"]["amount_minor"] = balance.money.amount_minor;
+    json["money"]["currency"] = balance.money.currency;
     json["updated_at"] = format_datetime(balance.updated_at);
     return json;
 }
@@ -28,7 +29,8 @@ crow::json::wvalue transaction_to_json(const models::BalanceTransaction& transac
     crow::json::wvalue json;
     json["id"] = transaction.id.toString();
     json["user_id"] = transaction.user_id.toString();
-    json["amount_minor"] = transaction.amount_minor;
+    json["money"]["amount_minor"] = transaction.money.amount_minor;
+    json["money"]["currency"] = transaction.money.currency;
     json["kind"] = models::to_string(transaction.kind);
     json["reference_id"] = transaction.reference_id ? transaction.reference_id->toString() : "";
     json["created_at"] = format_datetime(transaction.created_at);
@@ -41,7 +43,7 @@ crow::response error_response(int code, const std::string& message) {
     return {code, body};
 }
 
-bool parse_uuid(const std::string& uuid_str, Poco::UUID& out) {
+bool validate_uuid(const std::string& uuid_str, Poco::UUID& out) {
     try { out.parse(uuid_str); return true; }
     catch (const Poco::SyntaxException&) { return false; }
 }
@@ -52,7 +54,7 @@ BalanceHandler::BalanceHandler(service::PaymentService& svc) : _svc(svc) {}
 
 crow::response BalanceHandler::get(const crow::request&, const std::string& user_id) {
     Poco::UUID uuid;
-    if (!parse_uuid(user_id, uuid)) {
+    if (!validate_uuid(user_id, uuid)) {
         return error_response(400, "invalid user id");
     }
 
@@ -69,7 +71,7 @@ crow::response BalanceHandler::get(const crow::request&, const std::string& user
 
 crow::response BalanceHandler::deposit(const crow::request& req, const std::string& user_id) {
     Poco::UUID uuid;
-    if (!parse_uuid(user_id, uuid)) {
+    if (!validate_uuid(user_id, uuid)) {
         return error_response(400, "invalid user id");
     }
 
@@ -81,8 +83,8 @@ crow::response BalanceHandler::deposit(const crow::request& req, const std::stri
     Poco::Int64 amount_minor;
     std::string currency;
     try {
-        amount_minor = body["amount_minor"].i();
-        currency = std::string(body["currency"].s());
+        amount_minor = body["money"]["amount_minor"].i();
+        currency = std::string(body["money"]["currency"].s());
     } catch (...) {
         return error_response(400, "amount_minor (integer) and currency (string) are required");
     }
@@ -98,7 +100,7 @@ crow::response BalanceHandler::deposit(const crow::request& req, const std::stri
 
 crow::response BalanceHandler::history(const crow::request& req, const std::string& user_id) {
     Poco::UUID uuid;
-    if (!parse_uuid(user_id, uuid)) {
+    if (!validate_uuid(user_id, uuid)) {
         return error_response(400, "invalid user id");
     }
 

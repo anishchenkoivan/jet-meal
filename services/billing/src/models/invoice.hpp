@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "money.hpp"
+
 #include <Poco/DateTime.h>
 #include <Poco/Types.h>
 #include <Poco/UUID.h>
@@ -31,11 +33,10 @@ struct Invoice {
     Poco::UUID     id;
     Poco::UUID     order_id;
     Poco::UUID     user_id;
-    Poco::Int64    amount_minor;  // Minor currency units (e.g. kopecks for RUB)
-    std::string    currency;      // ISO 4217 (e.g. "RUB")
     InvoiceStatus  status;
     Poco::DateTime created_at;
     Poco::DateTime updated_at;
+    Money          money;
 };
 
 } // namespace billing::models

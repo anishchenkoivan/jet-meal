@@ -26,7 +26,6 @@ services:
       POSTGRES_PASSWORD: billing
     volumes:
       - billing_postgres_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U billing -d billing"]
       interval: 5s

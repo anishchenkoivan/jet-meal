@@ -22,8 +22,8 @@ models::Invoice PaymentService::create_invoice(
     invoice.id = Poco::UUIDGenerator::defaultGenerator().createRandom();
     invoice.order_id = order_id;
     invoice.user_id = user_id;
-    invoice.amount_minor = amount_minor;
-    invoice.currency = currency;
+    invoice.money.amount_minor = amount_minor;
+    invoice.money.currency = currency;
     invoice.status = models::InvoiceStatus::Pending;
     invoice.created_at = Poco::DateTime();
     invoice.updated_at = invoice.created_at;
@@ -50,13 +50,13 @@ models::Invoice PaymentService::pay_invoice(const Poco::UUID& invoice_id) {
         throw InvalidInvoiceStateError("invoice must be Pending to be paid");
     }
 
-    _balances.debit(invoice.user_id, invoice.amount_minor, models::TransactionKind::Charge, invoice_id);
+    _balances.debit(invoice.user_id, invoice.money.amount_minor, models::TransactionKind::Charge, invoice_id);
 
     try {
         _invoices.update_status(invoice_id, models::InvoiceStatus::Paid);
     } catch (...) {
         // Saga compensation: roll back the debit if the status update fails.
-        try { _balances.credit(invoice.user_id, invoice.amount_minor, models::TransactionKind::Refund, invoice_id); }
+        try { _balances.credit(invoice.user_id, invoice.money.amount_minor, models::TransactionKind::Refund, invoice_id); }
         catch (...) {}
         throw;
     }
@@ -79,7 +79,7 @@ models::Invoice PaymentService::refund_invoice(const Poco::UUID& invoice_id) {
     _invoices.update_status(invoice_id, models::InvoiceStatus::Refunded);
 
     try {
-        _balances.credit(invoice.user_id, invoice.amount_minor, models::TransactionKind::Refund, invoice_id);
+        _balances.credit(invoice.user_id, invoice.money.amount_minor, models::TransactionKind::Refund, invoice_id);
     } catch (...) {
         // Saga compensation: restore Paid status if the credit fails.
         try { _invoices.update_status(invoice_id, models::InvoiceStatus::Paid); }

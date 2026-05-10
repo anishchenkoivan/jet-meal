@@ -21,8 +21,8 @@ crow::json::wvalue invoice_to_json(const models::Invoice& invoice) {
     json["id"] = invoice.id.toString();
     json["order_id"] = invoice.order_id.toString();
     json["user_id"] = invoice.user_id.toString();
-    json["amount_minor"] = invoice.amount_minor;
-    json["currency"] = invoice.currency;
+    json["money"]["amount_minor"] = invoice.money.amount_minor;
+    json["money"]["currency"] = invoice.money.currency;
     json["status"] = models::to_string(invoice.status);
     json["created_at"] = format_datetime(invoice.created_at);
     json["updated_at"] = format_datetime(invoice.updated_at);
@@ -35,7 +35,7 @@ crow::response error_response(int code, const std::string& message) {
     return {code, body};
 }
 
-bool parse_uuid(const std::string& uuid_str, Poco::UUID& out) {
+bool validate_uuid(const std::string& uuid_str, Poco::UUID& out) {
     try { out.parse(uuid_str); return true; }
     catch (const Poco::SyntaxException&) { return false; }
 }
@@ -54,14 +54,14 @@ crow::response InvoiceHandler::create(const crow::request& req) {
     Poco::Int64 amount_minor;
     std::string currency;
     try {
-        if (!parse_uuid(std::string(body["order_id"].s()), order_id)) {
+        if (!validate_uuid(std::string(body["order_id"].s()), order_id)) {
             return error_response(400, "invalid or missing order_id");
         }
-        if (!parse_uuid(std::string(body["user_id"].s()), user_id)) {
+        if (!validate_uuid(std::string(body["user_id"].s()), user_id)) {
             return error_response(400, "invalid or missing user_id");
         }
-        amount_minor = body["amount_minor"].i();
-        currency = std::string(body["currency"].s());
+        amount_minor = body["money"]["amount_minor"].i();
+        currency = std::string(body["money"]["currency"].s());
     } catch (...) {
         return error_response(400, "order_id, user_id, amount_minor and currency are required");
     }
@@ -77,7 +77,7 @@ crow::response InvoiceHandler::create(const crow::request& req) {
 
 crow::response InvoiceHandler::get_by_id(const crow::request&, const std::string& id) {
     Poco::UUID uuid;
-    if (!parse_uuid(id, uuid)) {
+    if (!validate_uuid(id, uuid)) {
         return error_response(400, "invalid invoice id");
     }
 
@@ -94,7 +94,7 @@ crow::response InvoiceHandler::get_by_id(const crow::request&, const std::string
 
 crow::response InvoiceHandler::get_by_user(const crow::request&, const std::string& user_id) {
     Poco::UUID uuid;
-    if (!parse_uuid(user_id, uuid)) {
+    if (!validate_uuid(user_id, uuid)) {
         return error_response(400, "invalid user id");
     }
 
@@ -115,7 +115,7 @@ crow::response InvoiceHandler::get_by_user(const crow::request&, const std::stri
 
 crow::response InvoiceHandler::pay(const crow::request&, const std::string& id) {
     Poco::UUID uuid;
-    if (!parse_uuid(id, uuid)) {
+    if (!validate_uuid(id, uuid)) {
         return error_response(400, "invalid invoice id");
     }
 
@@ -134,7 +134,7 @@ crow::response InvoiceHandler::pay(const crow::request&, const std::string& id) 
 
 crow::response InvoiceHandler::refund(const crow::request&, const std::string& id) {
     Poco::UUID uuid;
-    if (!parse_uuid(id, uuid)) {
+    if (!validate_uuid(id, uuid)) {
         return error_response(400, "invalid invoice id");
     }
 

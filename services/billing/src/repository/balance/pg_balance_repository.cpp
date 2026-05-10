@@ -39,8 +39,8 @@ std::optional<Balance> PgBalanceRepository::get(const Poco::UUID& user_id) {
 
     Balance balance;
     balance.user_id.parse(user_id_str);
-    balance.amount_minor = amount_minor;
-    balance.currency = currency;
+    balance.money.amount_minor = amount_minor;
+    balance.money.currency = currency;
     balance.updated_at = updated_at;
     return balance;
 }
@@ -68,8 +68,8 @@ Balance PgBalanceRepository::initialize(const Poco::UUID& user_id, const std::st
 
     Balance balance;
     balance.user_id.parse(user_id_str);
-    balance.amount_minor = amount_minor;
-    balance.currency = currency;
+    balance.money.amount_minor = amount_minor;
+    balance.money.currency = currency;
     balance.updated_at = updated_at;
     return balance;
 }
@@ -157,7 +157,7 @@ BalanceTransaction PgBalanceRepository::apply(
     BalanceTransaction transaction;
     transaction.id.parse(tx_id_str);
     transaction.user_id.parse(user_id_str);
-    transaction.amount_minor = signed_delta;
+    transaction.money.amount_minor = signed_delta;
     transaction.kind = kind;
     transaction.created_at = created_at;
     if (reference_id.has_value()) {
@@ -197,7 +197,7 @@ std::vector<BalanceTransaction> PgBalanceRepository::history(
         BalanceTransaction transaction;
         transaction.id.parse(ids[i]);
         transaction.user_id.parse(user_ids[i]);
-        transaction.amount_minor = amounts[i];
+        transaction.money.amount_minor = amounts[i];
         transaction.kind = models::transaction_kind_from_string(kinds[i]);
         transaction.created_at = created_ats[i];
         if (!ref_ids[i].isNull()) {

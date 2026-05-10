@@ -3,6 +3,8 @@
 #include <optional>
 #include <string>
 
+#include "money.hpp"
+
 #include <Poco/DateTime.h>
 #include <Poco/Types.h>
 #include <Poco/UUID.h>
@@ -28,18 +30,17 @@ inline TransactionKind transaction_kind_from_string(const std::string& s) {
 
 struct Balance {
     Poco::UUID     user_id;
-    Poco::Int64    amount_minor;  // Minor currency units (e.g. kopecks for RUB)
-    std::string    currency;      // ISO 4217 (e.g. "RUB")
     Poco::DateTime updated_at;
+    Money          money;
 };
 
 struct BalanceTransaction {
-    Poco::UUID               id;
-    Poco::UUID               user_id;
-    Poco::Int64              amount_minor;  // Signed: positive = credit, negative = debit
-    TransactionKind          kind;
+    Poco::UUID                id;
+    Poco::UUID                user_id;
+    TransactionKind           kind;
     std::optional<Poco::UUID> reference_id;  // e.g. invoice id for charges/refunds
-    Poco::DateTime           created_at;
+    Poco::DateTime            created_at;
+    Money                     money;
 };
 
 } // namespace billing::models

@@ -32,6 +32,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && apt-get install -y libpq5
 
 COPY --from=builder /build/services/billing/build/bin/billing /usr/local/bin/billing
+COPY services/billing/migrations /docker-entrypoint-initdb.d
 
 EXPOSE 8080
 
