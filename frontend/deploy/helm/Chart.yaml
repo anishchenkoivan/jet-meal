@@ -1,0 +1,6 @@
+apiVersion: v2
+name: jet-meal-ssr
+description: Generic Helm chart for jet-meal Next.js SSR services
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

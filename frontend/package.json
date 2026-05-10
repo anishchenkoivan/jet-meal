@@ -7,7 +7,9 @@
     "lint": "biome check .",
     "lint:write": "biome check --write .",
     "build": "pnpm -r run build",
-    "dev:gateway": "pnpm --filter @jet-meal/dev-gateway dev"
+    "dev:gateway": "pnpm --filter @jet-meal/dev-gateway dev",
+    "generate:navigation": "tsx scripts/generate-navigation.ts",
+    "prepare": "[ -d ../.git ] && git -C .. config core.hooksPath frontend/.husky || true"
   },
   "engines": {
     "node": "24.13.0",
@@ -17,8 +19,10 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@types/node": "catalog:",
+    "husky": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
-    "typescript-plugin-css-modules": "catalog:"
+"yaml": "catalog:"
   },
   "overrides": {
     "react": "catalog:",

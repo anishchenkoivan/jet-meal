@@ -1,0 +1,114 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jet-meal-frontend
+spec:
+  hosts:
+    - jet.meal
+  gateways:
+    - jet-meal-frontend
+  http:
+    - match:
+        - uri:
+            prefix: /admin/restaurants
+      route:
+        - destination:
+            host: restaurant-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /admin/restaurant
+      route:
+        - destination:
+            host: restaurant-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /admin/delivery
+      route:
+        - destination:
+            host: delivery-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /restaurants
+      route:
+        - destination:
+            host: restaurant-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /restaurant
+      route:
+        - destination:
+            host: restaurant-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /my/orders
+      route:
+        - destination:
+            host: delivery-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /my/order
+      route:
+        - destination:
+            host: delivery-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /account
+      route:
+        - destination:
+            host: auth-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /catalog
+      route:
+        - destination:
+            host: restaurant-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /admin
+      route:
+        - destination:
+            host: auth-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /api
+      route:
+        - destination:
+            host: restaurant-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /my
+      route:
+        - destination:
+            host: auth-ssr
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: auth-ssr
+            port:
+              number: 80

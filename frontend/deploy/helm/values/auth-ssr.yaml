@@ -1,0 +1,6 @@
+image:
+  repository: REGISTRY/jet-meal/auth-ssr
+
+env:
+  - name: NEXT_PUBLIC_ADS_CONTACT_EMAIL
+    value: ""
