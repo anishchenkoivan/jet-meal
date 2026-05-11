@@ -31,6 +31,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	implementation("org.flywaydb:flyway-core")
 }
 
 kotlin {
@@ -45,8 +48,8 @@ openApiGenerate {
 	generatorName.set("kotlin-spring")
 	inputSpec.set(file("${projectDir}/docs/api.yaml").toURI().toString())
 	outputDir.set(openApiOutputDir.get().asFile.absolutePath)
-	apiPackage.set("ru.jetmeal.delivery.api")
-	modelPackage.set("ru.jetmeal.delivery.model")
+	apiPackage.set("ru.jetmeal.delivery.generated.api")
+	modelPackage.set("ru.jetmeal.delivery.generated.model")
 	configOptions.set(mapOf(
 		"interfaceOnly" to "true",
 		"delegatePattern" to "false",

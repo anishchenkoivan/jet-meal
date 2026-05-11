@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  title: Order Service
-  description: Order and delivery service
+  title: Delivery Service
+  description: Delivery service
   version: 1.0.0
 paths:
   /couriers/register:
@@ -10,6 +10,7 @@ paths:
         - couriers
       operationId: register_courier
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -26,6 +27,7 @@ paths:
         - couriers
       operationId: update_courier
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -71,6 +73,7 @@ paths:
             type: string
             format: uuid
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -105,6 +108,7 @@ paths:
         - geo
       operationId: calculate_distance
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -123,6 +127,7 @@ paths:
         - geo
       operationId: calculate_route
       requestBody:
+        required: true
         content:
           application/json:
             schema:
