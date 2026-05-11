@@ -23,7 +23,9 @@ class OrderEventsListener(
 		}
 
 		when (message.eventType) {
-			OrderEventType.CREATED -> courierService.assignCourierToOrder(message)
+			OrderEventType.CREATED -> if (message.courierId == null) {
+				courierService.assignCourierToOrder(message)
+			}
 			OrderEventType.CANCELLED -> courierService.freeCourier(message)
 			OrderEventType.FINISHED -> courierService.freeCourier(message)
 			else -> {}

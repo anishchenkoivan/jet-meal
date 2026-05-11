@@ -1,10 +1,9 @@
 package ru.jetmeal.delivery
 
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
+import ru.jetmeal.delivery.integration.IntegrationTestBase
 
-@SpringBootTest
-class DeliveryApplicationTests {
+class DeliveryApplicationTests : IntegrationTestBase() {
 
 	@Test
 	fun contextLoads() {

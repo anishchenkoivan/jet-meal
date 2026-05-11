@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.jetmeal.delivery.repositories.CourierRepository
 import ru.jetmeal.delivery.clients.order.OrderChangedMessage
+import ru.jetmeal.delivery.clients.order.OrderEventType
 import ru.jetmeal.delivery.clients.order.OrderEventsPublisher
 import ru.jetmeal.delivery.services.geo.PositionService
 import ru.jetmeal.delivery.services.geo.model.Point
@@ -47,7 +48,13 @@ class CourierService(
         return updated
     }
 
-    fun assignCourierToOrder(orderChangedMessage: OrderChangedMessage, orderLocation: Point? = null) {
+    fun assignCourierToOrder(orderChangedMessage: OrderChangedMessage) {
+        val orderLocation = orderChangedMessage.location?.let {
+            Point(
+                lon = it.lon,
+                lat = it.lat,
+            )
+        }
         if (orderLocation == null) {
             logger.warn("Order {} has no location; skipping courier assignment", orderChangedMessage.orderId)
             return
@@ -63,6 +70,7 @@ class CourierService(
         logger.info("Assigned courier {} to order {}", courier.id, orderChangedMessage.orderId)
 
         orderEventsPublisher.publish(orderChangedMessage.copy(
+            eventType = OrderEventType.UPDATED,
             courierId = courier.id,
         ))
     }

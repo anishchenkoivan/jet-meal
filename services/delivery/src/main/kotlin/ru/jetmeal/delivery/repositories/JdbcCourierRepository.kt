@@ -10,10 +10,12 @@ import kotlin.uuid.Uuid
 class JdbcCourierRepository(
     private val jdbcTemplate: NamedParameterJdbcTemplate,
 ) : CourierRepository {
+    private fun toJdbcUuid(value: Uuid): java.util.UUID = java.util.UUID.fromString(value.toString())
+
     override fun save(courier: Courier) {
         val params = mapOf(
-            "id" to courier.id.toString(),
-            "user_id" to courier.userId.toString(),
+            "id" to toJdbcUuid(courier.id),
+            "user_id" to toJdbcUuid(courier.userId),
             "lat" to courier.location.lat,
             "lon" to courier.location.lon,
             "last_updated" to courier.lastUpdated,
@@ -42,7 +44,7 @@ class JdbcCourierRepository(
     }
 
     override fun findById(id: Uuid): Courier? {
-        val params = mapOf("id" to id.toString())
+        val params = mapOf("id" to toJdbcUuid(id))
 
         return jdbcTemplate.query(
             """
@@ -72,7 +74,7 @@ class JdbcCourierRepository(
     }
 
     override fun findByUserId(userId: Uuid): Courier? {
-        val params = mapOf("user_id" to userId.toString())
+        val params = mapOf("user_id" to toJdbcUuid(userId))
 
         return jdbcTemplate.query(
             """
