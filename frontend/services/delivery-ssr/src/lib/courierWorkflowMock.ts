@@ -23,12 +23,18 @@ export type WorkflowOffer = {
 
 const MOSCOW: WorkflowCoords = { lat: 55.751244, lng: 37.618423 };
 
-function offset(base: WorkflowCoords, dLat: number, dLng: number): WorkflowCoords {
+function offset(
+  base: WorkflowCoords,
+  dLat: number,
+  dLng: number,
+): WorkflowCoords {
   return { lat: base.lat + dLat, lng: base.lng + dLng };
 }
 
 /** Предложения рядом с позицией курьера (для dev / демо). */
-export function buildWorkflowOffersNear(courier: WorkflowCoords): WorkflowOffer[] {
+export function buildWorkflowOffersNear(
+  courier: WorkflowCoords,
+): WorkflowOffer[] {
   const r = courier;
   return [
     {
@@ -105,7 +111,10 @@ export function haversineKm(a: WorkflowCoords, b: WorkflowCoords): number {
 }
 
 /** Грубая оценка времени в пути (мин), для UI без маршрутизатора. */
-export function estimateTravelMinutes(a: WorkflowCoords, b: WorkflowCoords): number {
+export function estimateTravelMinutes(
+  a: WorkflowCoords,
+  b: WorkflowCoords,
+): number {
   const km = haversineKm(a, b);
   return Math.max(6, Math.round(km * 3.8 + 4));
 }

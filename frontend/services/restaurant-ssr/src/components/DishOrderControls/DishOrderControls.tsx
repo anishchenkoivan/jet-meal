@@ -46,14 +46,14 @@ export function DishOrderControls({
   }
 
   return (
-    <div
-      className="inline-flex flex-row items-center flex-wrap justify-end gap-1"
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className="inline-flex flex-row items-center flex-wrap justify-end gap-1">
       <Button
         size="small"
         aria-label="Меньше"
-        onClick={() => setQuantity(dishId, qty - 1)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setQuantity(dishId, qty - 1);
+        }}
       >
         −
       </Button>
@@ -63,7 +63,10 @@ export function DishOrderControls({
       <Button
         size="small"
         aria-label="Больше"
-        onClick={() => setQuantity(dishId, qty + 1)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setQuantity(dishId, qty + 1);
+        }}
       >
         +
       </Button>

@@ -125,9 +125,7 @@ export function CatalogPageLayout({
       }
       footer={<Footer text={footerText} />}
     >
-      <div className={hideChrome ? undefined : "p-6"}>
-        {catalogBody}
-      </div>
+      <div className={hideChrome ? undefined : "p-6"}>{catalogBody}</div>
     </AppLayout>
   );
 }

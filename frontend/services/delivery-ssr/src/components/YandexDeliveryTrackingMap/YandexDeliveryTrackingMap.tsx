@@ -91,12 +91,17 @@ export function YandexDeliveryTrackingMap({
     void (async () => {
       try {
         await loadYandexScript(apiKey);
-        if (cancelled || !(window as { ymaps?: unknown }).ymaps || !hostRef.current) {
+        if (
+          cancelled ||
+          !(window as { ymaps?: unknown }).ymaps ||
+          !hostRef.current
+        ) {
           return;
         }
         await new Promise<void>((r) => {
-          (window as unknown as { ymaps: { ready: (cb: () => void) => void } })
-            .ymaps.ready(() => r());
+          (
+            window as unknown as { ymaps: { ready: (cb: () => void) => void } }
+          ).ymaps.ready(() => r());
         });
         if (cancelled || !hostRef.current) {
           return;
@@ -267,7 +272,11 @@ export function YandexDeliveryTrackingMap({
           .filter(Boolean)
           .join(" ")}
       >
-        <div ref={hostRef} className={mapHostClass} aria-label="Карта доставки" />
+        <section
+          ref={hostRef}
+          className={mapHostClass}
+          aria-label="Карта доставки"
+        />
         {!mapReady ? (
           <div className="absolute inset-0 z-[1] flex flex-col [background:var(--ant-color-bg-container,#fff)]">
             <GeoMarkersFrame

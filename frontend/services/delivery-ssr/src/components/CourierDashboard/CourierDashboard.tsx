@@ -1,31 +1,31 @@
 "use client";
 
-import { CourierScheduleEditor } from "../CourierScheduleModal/CourierScheduleModal";
 import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
+import { useDrawer } from "@jet-meal/ui-lib/src/components/DrawerProvider/DrawerProvider";
 import { Form } from "@jet-meal/ui-lib/src/components/Form/Form";
 import {
   Input,
   Search,
   TextArea,
 } from "@jet-meal/ui-lib/src/components/Input/Input";
+import { MiddleColumn } from "@jet-meal/ui-lib/src/components/MiddleColumn/MiddleColumn";
 import { Select } from "@jet-meal/ui-lib/src/components/Select/Select";
 import { Tag } from "@jet-meal/ui-lib/src/components/Tag/Tag";
 import {
   Paragraph,
   Title,
 } from "@jet-meal/ui-lib/src/components/Typography/Typography";
-import { MiddleColumn } from "@jet-meal/ui-lib/src/components/MiddleColumn/MiddleColumn";
-import { useDrawer } from "@jet-meal/ui-lib/src/components/DrawerProvider/DrawerProvider";
 import { useJetMealDevMock } from "@jet-meal/ui-lib/src/context/JetMealDevMockContext";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  courierRowsFromJetMealDevOrders,
-  type CourierOrderRow,
-} from "../../lib/courierMockOrders";
 import {
   COURIER_PROFILE_DRAWER_ID,
   COURIER_SCHEDULE_DRAWER_ID,
 } from "../../lib/courierDrawerIds";
+import {
+  type CourierOrderRow,
+  courierRowsFromJetMealDevOrders,
+} from "../../lib/courierMockOrders";
+import { templateContractLabel } from "../../lib/courierScheduleTypes";
 import {
   ensureCourierNotificationPermission,
   operationalStatusLabel,
@@ -33,7 +33,7 @@ import {
   pushCourierNotify,
   useCourierShiftRuntime,
 } from "../../lib/courierShiftRuntime";
-import { templateContractLabel } from "../../lib/courierScheduleTypes";
+import { CourierScheduleEditor } from "../CourierScheduleModal/CourierScheduleModal";
 
 const SETTINGS_KEY = "jet-meal-courier-settings.v1";
 

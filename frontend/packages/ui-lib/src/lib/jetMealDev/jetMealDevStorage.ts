@@ -1,6 +1,6 @@
-import { defaultJetMealDevPaymentProfile } from "./jetMealDevPaymentTypes";
 import { SEED_JET_MEAL_DEV_ORDERS } from "./jetMealDevOrdersSeed";
 import type { JetMealDevOrder } from "./jetMealDevOrderTypes";
+import { defaultJetMealDevPaymentProfile } from "./jetMealDevPaymentTypes";
 
 const PREFIX = "jet-meal-dev";
 
@@ -58,10 +58,7 @@ export function ensureJetMealDevStorageDefaults(): void {
     );
   }
   if (window.localStorage.getItem(JET_MEAL_DEV_STORAGE.orders) === null) {
-    writeJetMealDevJson(
-      JET_MEAL_DEV_STORAGE.orders,
-      SEED_JET_MEAL_DEV_ORDERS,
-    );
+    writeJetMealDevJson(JET_MEAL_DEV_STORAGE.orders, SEED_JET_MEAL_DEV_ORDERS);
   }
   if (window.localStorage.getItem(JET_MEAL_DEV_STORAGE.dirty) === null) {
     writeJetMealDevJson(JET_MEAL_DEV_STORAGE.dirty, false);

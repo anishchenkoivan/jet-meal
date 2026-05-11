@@ -1,7 +1,7 @@
 "use client";
 
 import { JetMealDevCartProvider } from "@jet-meal/ui-lib/src/context/JetMealDevCartContext";
-import { useMemo, type ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { useRestaurantCart } from "../../context/restaurant-cart-context";
 
 export function RestaurantDevCartBridge({ children }: { children: ReactNode }) {
@@ -19,5 +19,7 @@ export function RestaurantDevCartBridge({ children }: { children: ReactNode }) {
     }),
     [cart.lines, cart.totalRub, cart.restaurantId, cart.restaurantName],
   );
-  return <JetMealDevCartProvider value={value}>{children}</JetMealDevCartProvider>;
+  return (
+    <JetMealDevCartProvider value={value}>{children}</JetMealDevCartProvider>
+  );
 }

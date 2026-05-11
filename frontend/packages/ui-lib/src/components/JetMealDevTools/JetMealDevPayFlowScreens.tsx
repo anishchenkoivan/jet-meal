@@ -69,7 +69,11 @@ export function PayOutcomeLayout({
   actions: ReactNode;
 }) {
   return (
-    <MiddleColumn verticalAlign="center" maxWidthPx={640} className="h-full min-h-0 flex-1">
+    <MiddleColumn
+      verticalAlign="center"
+      maxWidthPx={640}
+      className="h-full min-h-0 flex-1"
+    >
       <div className="flex flex-col items-center gap-5 py-8 text-center">
         {icon}
         <div className="flex max-w-[320px] flex-col gap-2">
@@ -82,7 +86,9 @@ export function PayOutcomeLayout({
             </p>
           ) : null}
         </div>
-        <div className="mt-2 flex w-full max-w-[320px] flex-col gap-2">{actions}</div>
+        <div className="mt-2 flex w-full max-w-[320px] flex-col gap-2">
+          {actions}
+        </div>
       </div>
     </MiddleColumn>
   );

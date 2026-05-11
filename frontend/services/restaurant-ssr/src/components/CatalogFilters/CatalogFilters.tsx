@@ -1,14 +1,11 @@
 "use client";
 
-import cx from "classnames";
-import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { AppConfirmModal } from "@jet-meal/ui-lib/src/components/AppConfirmModal/AppConfirmModal";
 import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import {
-  CatalogFilterRailScroll,
   CATALOG_FILTER_RAIL_SCROLLBAR_HIDE,
   type CatalogFilterRailLayer,
+  CatalogFilterRailScroll,
 } from "@jet-meal/ui-lib/src/components/CatalogFilters/CatalogFilterRailScroll";
 import { useMobileFiltersDrawerController } from "@jet-meal/ui-lib/src/components/CatalogFilters/CatalogFiltersLayoutContext";
 import { FilterSection } from "@jet-meal/ui-lib/src/components/CatalogFilters/FilterSection";
@@ -24,6 +21,9 @@ import {
   StorefrontIcon,
 } from "@jet-meal/ui-lib/src/components/Icons/Icons";
 import { TimeInput } from "@jet-meal/ui-lib/src/components/TimeInput/TimeInput";
+import cx from "classnames";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 /** Стабильные id для якорей; не привязаны к конкретному сервису. */
 const filterDom = {
@@ -252,9 +252,7 @@ export function CatalogFilters({
           <InputSection
             id={filterDom.restaurant}
             title={
-              restaurantSearchLabel.trim()
-                ? restaurantSearchLabel
-                : undefined
+              restaurantSearchLabel.trim() ? restaurantSearchLabel : undefined
             }
             placeholder={restaurantSearchPlaceholder}
             value={restaurantSearchValue}
@@ -298,7 +296,7 @@ export function CatalogFilters({
             searchValue={tagSearchValue}
             onSearchChange={onTagSearchChange}
             selectedValues={selectedTagValues}
-            optionCatalog={tagCatalogOptions!}
+            optionCatalog={tagCatalogOptions}
             onToggle={toggleTag}
             showSearchHits={showSearchHits}
             popularOptions={popularOptions}
@@ -403,7 +401,13 @@ export function CatalogFilters({
           return "Раздел фильтров";
       }
     },
-    [searchLabel, restaurantSearchLabel, cityLabel, filtersLabel, deliveryTimeLabel],
+    [
+      searchLabel,
+      restaurantSearchLabel,
+      cityLabel,
+      filtersLabel,
+      deliveryTimeLabel,
+    ],
   );
 
   const cityDrillRailAria = useCallback((rowKey: string) => {
@@ -442,25 +446,25 @@ export function CatalogFilters({
         icon: <MapPinIcon size={16} />,
         section: (
           <FilterSection id="filters-city-drill-list" title="Выберите город">
-            <div
+            <ul
               className={cx(
-                "flex min-h-0 flex-col gap-1 py-[2px]",
+                "m-0 flex min-h-0 list-none flex-col gap-1 p-0 py-[2px]",
                 scrollFiltersInDrawer
                   ? "max-h-[min(50vh,320px)] overflow-y-auto overflow-x-hidden"
                   : "min-h-0 flex-1 flex-col overflow-y-auto",
                 CATALOG_FILTER_RAIL_SCROLLBAR_HIDE,
               )}
-              role="list"
             >
               {filteredCityOptions.map((opt) => (
-                <SelectOptionRow
-                  key={opt.value || "__any__"}
-                  label={opt.label}
-                  selected={tempCity === opt.value}
-                  onPick={() => setTempCity(opt.value)}
-                />
+                <li key={opt.value || "__any__"} className="m-0 list-none p-0">
+                  <SelectOptionRow
+                    label={opt.label}
+                    selected={tempCity === opt.value}
+                    onPick={() => setTempCity(opt.value)}
+                  />
+                </li>
               ))}
-            </div>
+            </ul>
           </FilterSection>
         ),
       },
@@ -473,8 +477,7 @@ export function CatalogFilters({
     tempCity,
   ]);
 
-  const showBuiltInFooter =
-    showApplyButton && Boolean(onApplyFilters);
+  const showBuiltInFooter = showApplyButton && Boolean(onApplyFilters);
 
   const footerBlock =
     showBuiltInFooter && onApplyFilters ? (
@@ -519,9 +522,7 @@ export function CatalogFilters({
         <CatalogFilterRailScroll
           layers={cityDrillLayers}
           railIconAriaLabel={cityDrillRailAria}
-          scrollMode={
-            scrollFiltersInDrawer ? "nearestViewport" : "scrollRoot"
-          }
+          scrollMode={scrollFiltersInDrawer ? "nearestViewport" : "scrollRoot"}
           className={cx(
             "min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden [-webkit-overflow-scrolling:touch]",
             !scrollFiltersInDrawer && "wide:ml-[-56px]",
@@ -560,9 +561,7 @@ export function CatalogFilters({
       <CatalogFilterRailScroll
         layers={filterLayers}
         railIconAriaLabel={railIconAriaLabel}
-        scrollMode={
-          scrollFiltersInDrawer ? "nearestViewport" : "scrollRoot"
-        }
+        scrollMode={scrollFiltersInDrawer ? "nearestViewport" : "scrollRoot"}
         className={cx(
           "flex min-w-0 flex-col gap-3 box-border",
           !scrollFiltersInDrawer && "wide:ml-[-56px]",

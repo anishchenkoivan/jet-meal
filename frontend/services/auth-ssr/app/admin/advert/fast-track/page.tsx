@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { hasValidAccountSession } from "../../../../lib/middlewares/authGuard";
 import { AccountPageShell } from "../../../../src/components/AccountPageShell/AccountPageShell";
 import { AdminAdvertFastTrackClient } from "../../../../src/components/AdminAdvertFastTrack/AdminAdvertFastTrackClient";
-import Link from "next/link";
 
 export default async function AdminAdvertFastTrackPage() {
   const cookieStore = await cookies();

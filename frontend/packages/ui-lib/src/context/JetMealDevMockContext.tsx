@@ -2,14 +2,19 @@
 
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
+import type { JetMealDevOrder } from "../lib/jetMealDev/jetMealDevOrderTypes";
+import {
+  defaultJetMealDevPaymentProfile,
+  type JetMealDevPaymentProfile,
+} from "../lib/jetMealDev/jetMealDevPaymentTypes";
 import {
   ensureJetMealDevStorageDefaults,
   JET_MEAL_DEV_STORAGE,
@@ -17,13 +22,8 @@ import {
   readJetMealDevJson,
   writeJetMealDevJson,
 } from "../lib/jetMealDev/jetMealDevStorage";
-import {
-  defaultJetMealDevPaymentProfile,
-  type JetMealDevPaymentProfile,
-} from "../lib/jetMealDev/jetMealDevPaymentTypes";
-import type { JetMealDevOrder } from "../lib/jetMealDev/jetMealDevOrderTypes";
 
-const IS_DEV = process.env["NODE_ENV"] === "development";
+const IS_DEV = process.env.NODE_ENV === "development";
 
 export type JetMealDevPayScenario = "success" | "error" | "stuck";
 

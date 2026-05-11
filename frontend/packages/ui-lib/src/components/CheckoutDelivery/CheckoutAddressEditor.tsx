@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { forwardGeocodeSuggestions, type GeocodeSuggestion } from "./forwardGeocode";
+import {
+  forwardGeocodeSuggestions,
+  type GeocodeSuggestion,
+} from "./forwardGeocode";
 import type { CheckoutAddressModel } from "./useCheckoutAddress";
 import { YandexMapPicker } from "./YandexMapPicker";
 

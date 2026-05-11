@@ -2,19 +2,23 @@
 
 import cx from "classnames";
 import {
+  type ChangeEvent,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useState,
-  type ChangeEvent,
 } from "react";
 import { Button } from "../Button/Button";
 import { CheckoutPaymentMethodTiles } from "./CheckoutPaymentMethodTiles";
 import type { CheckoutPaymentMethodId } from "./checkoutPaymentMethodModel";
 
-export type { CheckoutPaymentMethodId } from "./checkoutPaymentMethodModel";
-export { CHECKOUT_PAYMENT_METHODS, getPaymentMethodLabel } from "./checkoutPaymentMethodModel";
 export { CheckoutPaymentMethodTiles } from "./CheckoutPaymentMethodTiles";
+export type { CheckoutPaymentMethodId } from "./checkoutPaymentMethodModel";
+export {
+  CHECKOUT_PAYMENT_METHODS,
+  getPaymentMethodLabel,
+} from "./checkoutPaymentMethodModel";
 
 /** QR-заглушка для оплаты СБП (показывается в модалке после «Оплатить»). */
 export function CheckoutSbpQrBlock() {
@@ -22,20 +26,76 @@ export function CheckoutSbpQrBlock() {
     <div className="flex flex-col items-center gap-3">
       <div
         className="flex h-[148px] w-[148px] items-center justify-center border [border-color:var(--ant-color-border-secondary,#f0f0f0)] [border-radius:var(--ant-border-radius-lg,8px)] [background:var(--ant-color-fill-secondary,#f0f0f0)]"
+        role="img"
         aria-label="QR-код для оплаты"
       >
         <div className="flex flex-col items-center gap-1 [color:var(--ant-color-text-quaternary,rgba(0,0,0,0.25))]">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden>
-            <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor" />
-            <rect x="28" y="4" width="16" height="16" rx="2" fill="currentColor" />
-            <rect x="4" y="28" width="16" height="16" rx="2" fill="currentColor" />
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 48 48"
+            fill="none"
+            aria-hidden
+          >
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="currentColor"
+            />
+            <rect
+              x="28"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="currentColor"
+            />
+            <rect
+              x="4"
+              y="28"
+              width="16"
+              height="16"
+              rx="2"
+              fill="currentColor"
+            />
             <rect x="8" y="8" width="8" height="8" rx="1" fill="white" />
             <rect x="32" y="8" width="8" height="8" rx="1" fill="white" />
             <rect x="8" y="32" width="8" height="8" rx="1" fill="white" />
-            <rect x="28" y="28" width="4" height="4" rx="1" fill="currentColor" />
-            <rect x="36" y="28" width="4" height="4" rx="1" fill="currentColor" />
-            <rect x="28" y="36" width="4" height="4" rx="1" fill="currentColor" />
-            <rect x="36" y="36" width="4" height="4" rx="1" fill="currentColor" />
+            <rect
+              x="28"
+              y="28"
+              width="4"
+              height="4"
+              rx="1"
+              fill="currentColor"
+            />
+            <rect
+              x="36"
+              y="28"
+              width="4"
+              height="4"
+              rx="1"
+              fill="currentColor"
+            />
+            <rect
+              x="28"
+              y="36"
+              width="4"
+              height="4"
+              rx="1"
+              fill="currentColor"
+            />
+            <rect
+              x="36"
+              y="36"
+              width="4"
+              height="4"
+              rx="1"
+              fill="currentColor"
+            />
           </svg>
           <span className="text-center text-[11px] leading-[1.3]">QR-код</span>
         </div>
@@ -112,16 +172,21 @@ function formatPanGroups(digits: string): string {
   return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
 }
 
-function CardPanel({ onValidityChange }: { onValidityChange: (valid: boolean) => void }) {
+function CardPanel({
+  onValidityChange,
+}: {
+  onValidityChange: (valid: boolean) => void;
+}) {
+  const panId = useId();
+  const expiryId = useId();
+  const cvvId = useId();
   const [panDigits, setPanDigits] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
 
   const last4 = panDigits.slice(-4).padStart(4, "•");
   const maskedPan =
-    panDigits.length <= 4
-      ? "•••• •••• •••• ____"
-      : `•••• •••• •••• ${last4}`;
+    panDigits.length <= 4 ? "•••• •••• •••• ____" : `•••• •••• •••• ${last4}`;
 
   const valid = useMemo(() => {
     const cvvOk = /^[0-9]{3,4}$/.test(cvv);
@@ -156,10 +221,14 @@ function CardPanel({ onValidityChange }: { onValidityChange: (valid: boolean) =>
             className="h-5 w-8 rounded-[3px] [background:linear-gradient(135deg,#ffd700,#ffa500)]"
             aria-hidden
           />
-          <span className="text-xs font-semibold text-white opacity-70">BANK CARD</span>
+          <span className="text-xs font-semibold text-white opacity-70">
+            BANK CARD
+          </span>
         </div>
         <div className="flex flex-col gap-2">
-          <p className="m-0 font-mono text-[15px] tracking-[0.18em] text-white opacity-90">{maskedPan}</p>
+          <p className="m-0 font-mono text-[15px] tracking-[0.18em] text-white opacity-90">
+            {maskedPan}
+          </p>
           <div className="flex items-end justify-between">
             <div>
               <p className="m-0 text-[9px] uppercase tracking-wide text-white opacity-50">
@@ -183,10 +252,14 @@ function CardPanel({ onValidityChange }: { onValidityChange: (valid: boolean) =>
 
       <div className="flex flex-col gap-3">
         <div>
-          <label className="mb-[6px] block text-[12px] font-semibold uppercase tracking-wide [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]">
+          <label
+            htmlFor={panId}
+            className="mb-[6px] block text-[12px] font-semibold uppercase tracking-wide [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]"
+          >
             Номер карты
           </label>
           <input
+            id={panId}
             type="text"
             inputMode="numeric"
             placeholder="•••• •••• •••• ____"
@@ -199,10 +272,14 @@ function CardPanel({ onValidityChange }: { onValidityChange: (valid: boolean) =>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-[6px] block text-[12px] font-semibold uppercase tracking-wide [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]">
+            <label
+              htmlFor={expiryId}
+              className="mb-[6px] block text-[12px] font-semibold uppercase tracking-wide [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]"
+            >
               Срок (ММ/ГГ)
             </label>
             <input
+              id={expiryId}
               type="text"
               inputMode="numeric"
               placeholder="MM/YY"
@@ -214,10 +291,14 @@ function CardPanel({ onValidityChange }: { onValidityChange: (valid: boolean) =>
             />
           </div>
           <div>
-            <label className="mb-[6px] block text-[12px] font-semibold uppercase tracking-wide [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]">
+            <label
+              htmlFor={cvvId}
+              className="mb-[6px] block text-[12px] font-semibold uppercase tracking-wide [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]"
+            >
               CVV
             </label>
             <input
+              id={cvvId}
               type="password"
               inputMode="numeric"
               placeholder="•••"
@@ -300,7 +381,8 @@ function SberPanel({ linked }: { linked: boolean }) {
               Уже привязано
             </p>
             <p className="m-0 mt-2 max-w-[280px] text-sm leading-[1.45] [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]">
-              Счёт СберPay привязан — можно оплатить заказ из приложения Сбербанка.
+              Счёт СберPay привязан — можно оплатить заказ из приложения
+              Сбербанка.
             </p>
           </>
         ) : (
@@ -336,7 +418,8 @@ function CardSavedMockPanel({
   return (
     <div className="flex flex-col items-center gap-3 py-6">
       <p className="m-0 text-center text-sm leading-relaxed [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))]">
-        В dev сохранена тестовая карта (кэш). Можно сразу подтвердить способ оплаты.
+        В dev сохранена тестовая карта (кэш). Можно сразу подтвердить способ
+        оплаты.
       </p>
     </div>
   );
@@ -431,7 +514,9 @@ export function CheckoutPaymentMethods({
             ) : (
               <CardPanel onValidityChange={onCardValidityChange} />
             ))}
-          {activeMethod === "yandex" && <YandexPayPanel linked={yandexPayLinked} />}
+          {activeMethod === "yandex" && (
+            <YandexPayPanel linked={yandexPayLinked} />
+          )}
           {activeMethod === "sber" && <SberPanel linked={sberPayLinked} />}
         </div>
       </div>

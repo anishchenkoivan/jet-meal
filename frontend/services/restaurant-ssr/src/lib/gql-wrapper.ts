@@ -80,9 +80,8 @@ export async function fetchCatalogItems(
     }
 
     if (filters.deliveryMaxMinutes != null) {
-      items = items.filter(
-        (item) => (item.deliveryMinutes ?? 999) <= filters.deliveryMaxMinutes!,
-      );
+      const cap = filters.deliveryMaxMinutes;
+      items = items.filter((item) => (item.deliveryMinutes ?? 999) <= cap);
     }
 
     if (filters.deliveryToday) {
@@ -134,11 +133,9 @@ export async function fetchRestaurants(
     }
 
     if (filters.tagIds?.length) {
+      const tagIds = filters.tagIds;
       restaurants = restaurants.filter((restaurant) =>
-        restaurantMatchesCatalogTagIds(
-          restaurant.preview?.cuisineTags,
-          filters.tagIds!,
-        ),
+        restaurantMatchesCatalogTagIds(restaurant.preview?.cuisineTags, tagIds),
       );
     }
 

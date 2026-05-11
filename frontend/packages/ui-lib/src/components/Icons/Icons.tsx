@@ -13,6 +13,7 @@ export function MinusIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -31,6 +32,7 @@ export function PlusIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -54,6 +56,7 @@ export function DeleteIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -83,6 +86,7 @@ export function ShoppingCartIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -109,6 +113,7 @@ export function DownIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -134,6 +139,7 @@ export function CloseIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -157,6 +163,7 @@ export function MenuIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -180,6 +187,7 @@ export function StarIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -198,6 +206,7 @@ export function LeftIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -223,6 +232,7 @@ export function RightIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
@@ -249,20 +259,14 @@ export function SearchIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-      aria-hidden
     >
-      <circle
-        cx="7"
-        cy="7"
-        r="4.25"
-        stroke={color}
-        strokeWidth="1.75"
-      />
+      <circle cx="7" cy="7" r="4.25" stroke={color} strokeWidth="1.75" />
       <path
         d="M10 10l3.5 3.5"
         stroke={color}
@@ -281,12 +285,12 @@ export function HashtagIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-      aria-hidden
     >
       <path
         d="M6 3L4 13M12 3l-2 10M3 6h10M2 10h10"
@@ -306,20 +310,14 @@ export function ClockIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-      aria-hidden
     >
-      <circle
-        cx="8"
-        cy="8"
-        r="5.75"
-        stroke={color}
-        strokeWidth="1.5"
-      />
+      <circle cx="8" cy="8" r="5.75" stroke={color} strokeWidth="1.5" />
       <path
         d="M8 5.25V8l2.25 1.5"
         stroke={color}
@@ -339,12 +337,12 @@ export function StorefrontIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-      aria-hidden
     >
       <path
         d="M3 6.5h10v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7z"
@@ -377,12 +375,12 @@ export function MapPinIcon({
 }: IconProps) {
   return (
     <svg
+      aria-hidden
       width={size}
       height={size}
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-      aria-hidden
     >
       <path
         d="M8 14s4-3.25 4-7a4 4 0 1 0-8 0c0 3.75 4 7 4 7z"

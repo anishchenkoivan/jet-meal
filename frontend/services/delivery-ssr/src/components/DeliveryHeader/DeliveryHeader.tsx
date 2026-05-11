@@ -24,7 +24,11 @@ export type DeliveryHeaderProps = {
   navAfter?: ReactNode;
 };
 
-export function DeliveryHeader({ tabs, logoHref, navAfter }: DeliveryHeaderProps) {
+export function DeliveryHeader({
+  tabs,
+  logoHref,
+  navAfter,
+}: DeliveryHeaderProps) {
   const pathname = usePathname();
   const selectedKey = selectMainNavKeyFromPathname(pathname);
 

@@ -148,8 +148,10 @@ export function resolveBackend(params: {
 
   const inferred = inferServiceIdFromNextAssetPathname(pathname, routes);
   if (inferred) {
-    const p = routes.serviceById.get(inferred)!;
-    return { serviceId: inferred, port: p.port };
+    const p = routes.serviceById.get(inferred);
+    if (p) {
+      return { serviceId: inferred, port: p.port };
+    }
   }
 
   return { serviceId: routes.defaultServiceId, port: routes.defaultPort };

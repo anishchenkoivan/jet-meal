@@ -1,11 +1,11 @@
 import "./globals.css";
 
 import { Footer } from "@jet-meal/ui-lib/src/components/Footer/Footer";
+import { JetMealDevFab } from "@jet-meal/ui-lib/src/components/JetMealDevTools/JetMealDevFab";
 import { AppLayout } from "@jet-meal/ui-lib/src/containers/AppLayout/AppLayout";
+import { JetMealDevMockProvider } from "@jet-meal/ui-lib/src/context/JetMealDevMockContext";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { JetMealDevFab } from "@jet-meal/ui-lib/src/components/JetMealDevTools/JetMealDevFab";
-import { JetMealDevMockProvider } from "@jet-meal/ui-lib/src/context/JetMealDevMockContext";
 import { AuthHeader } from "../src/components/AuthHeader/AuthHeader";
 
 export const metadata: Metadata = {
@@ -26,10 +26,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             header={<AuthHeader />}
             footer={<Footer text="© Jet Meal" />}
           >
-            <>
-              {children}
-              <JetMealDevFab />
-            </>
+            {children}
+            <JetMealDevFab />
           </AppLayout>
         </JetMealDevMockProvider>
       </body>

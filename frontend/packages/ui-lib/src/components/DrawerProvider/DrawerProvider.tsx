@@ -1,5 +1,6 @@
 "use client";
 
+import cx from "classnames";
 import {
   createContext,
   type ReactNode,
@@ -8,14 +9,15 @@ import {
   useMemo,
   useState,
 } from "react";
-import cx from "classnames";
 import { CloseIcon } from "../Icons/Icons";
 
 /** Pass a function so the overlay re-renders with fresh props on each parent commit (e.g. checkout forms). */
 export type DrawerContent = ReactNode | (() => ReactNode);
 
 function resolveDrawerContent(content: DrawerContent): ReactNode {
-  return typeof content === "function" ? (content as () => ReactNode)() : content;
+  return typeof content === "function"
+    ? (content as () => ReactNode)()
+    : content;
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────

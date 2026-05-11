@@ -42,12 +42,7 @@ export function NavListFiltersDrawerRegistration({
         null,
       );
     };
-  }, [
-    enabled,
-    asideTitle,
-    filtersSlotContent,
-    filtersBodyClassName,
-  ]);
+  }, [enabled, asideTitle, filtersSlotContent, filtersBodyClassName]);
 
   useEffect(() => {
     return () => {

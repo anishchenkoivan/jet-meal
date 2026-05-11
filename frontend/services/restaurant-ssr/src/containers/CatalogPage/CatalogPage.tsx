@@ -30,11 +30,17 @@ export function CatalogPage({ items }: CatalogPageProps) {
         selectedNavKey={MAIN_NAV_KEYS.catalog}
         mobileSearchField={{
           value: headerSearch,
-          onChange: (v) => { setHeaderSearch(v); setSearchCallbackRef.current(v); },
+          onChange: (v) => {
+            setHeaderSearch(v);
+            setSearchCallbackRef.current(v);
+          },
           placeholder: "Название блюда, ингредиенты…",
         }}
         onMobileApply={() => mobileRef.current.apply()}
-        onMobileResetNav={() => { mobileRef.current.reset(); setHeaderSearch(""); }}
+        onMobileResetNav={() => {
+          mobileRef.current.reset();
+          setHeaderSearch("");
+        }}
         sidebarBody={
           <CatalogFiltersClient
             registerMobileHandlers={(api) => {

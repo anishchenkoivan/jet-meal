@@ -1,7 +1,7 @@
 "use client";
 
 import cx from "classnames";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useDrawerZonePortal } from "../DrawerProvider/DrawerProvider";
 import { CloseIcon } from "../Icons/Icons";
@@ -51,7 +51,9 @@ export function MobileDrawer({
           ) : null}
         </div>
       ) : null}
-      <div className={cx("flex-[1_1_auto] min-h-0 overflow-auto", bodyClassName)}>
+      <div
+        className={cx("flex-[1_1_auto] min-h-0 overflow-auto", bodyClassName)}
+      >
         {children}
       </div>
     </div>

@@ -32,7 +32,11 @@ export type CheckoutAddressModel = {
   onUseGeo: () => void;
   pickSaved: (a: CheckoutSavedAddress) => void;
   isGeocoding: boolean;
-  setMapCoordsAndGeocode: (lat: number, lng: number, knownLabel?: string) => void;
+  setMapCoordsAndGeocode: (
+    lat: number,
+    lng: number,
+    knownLabel?: string,
+  ) => void;
 };
 
 export function useCheckoutAddress(): CheckoutAddressModel {

@@ -1,25 +1,25 @@
 "use client";
 
-import { CheckoutPayFlowBody } from "../../components/checkout/CheckoutPayFlowBody";
+import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import { CheckoutAddressEditor } from "@jet-meal/ui-lib/src/components/CheckoutDelivery/CheckoutAddressEditor";
 import { useCheckoutAddress } from "@jet-meal/ui-lib/src/components/CheckoutDelivery/useCheckoutAddress";
 import {
-  CheckoutPaymentMethodTiles,
-  CheckoutPaymentMethods,
   type CheckoutPaymentMethodId,
+  CheckoutPaymentMethods,
+  CheckoutPaymentMethodTiles,
 } from "@jet-meal/ui-lib/src/components/CheckoutPaymentMethods/CheckoutPaymentMethods";
 import { useDrawer } from "@jet-meal/ui-lib/src/components/DrawerProvider/DrawerProvider";
-import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import { MiddleColumn } from "@jet-meal/ui-lib/src/components/MiddleColumn/MiddleColumn";
+import { StickyAsidePanel } from "@jet-meal/ui-lib/src/components/StickyAsidePanel/StickyAsidePanel";
 import { PageContentShell } from "@jet-meal/ui-lib/src/containers/PageContentShell/PageContentShell";
 import { PageTwoColumnSticky } from "@jet-meal/ui-lib/src/containers/PageTwoColumnSticky/PageTwoColumnSticky";
-import { StickyAsidePanel } from "@jet-meal/ui-lib/src/components/StickyAsidePanel/StickyAsidePanel";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CheckoutPayFlowBody } from "../../components/checkout/CheckoutPayFlowBody";
 import { RESTAURANT_CART_INLINE_MIN_PX } from "../../components/RestaurantCartMobileNav/RestaurantCartMobileNav";
-import { useRestaurantDevMock } from "../../context/restaurant-dev-mock-context";
 import { useRestaurantCart } from "../../context/restaurant-cart-context";
+import { useRestaurantDevMock } from "../../context/restaurant-dev-mock-context";
 import type { Restaurant } from "../../types/restaurant";
 
 export type RestaurantCheckoutPageProps = {
@@ -72,7 +72,9 @@ function CheckoutDrawerFrame({
           {title}
         </span>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 }
@@ -302,8 +304,7 @@ export function RestaurantCheckoutPage({
     return null;
   }
 
-  const displayAddress =
-    addr.lastAddress?.label || addr.addressLine || null;
+  const displayAddress = addr.lastAddress?.label || addr.addressLine || null;
 
   const deliveryFeeLabel =
     deliveryFeeRub <= 0 ? "Бесплатно" : `${deliveryFeeRub} ₽`;

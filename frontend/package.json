@@ -22,7 +22,7 @@
     "husky": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
-"yaml": "catalog:"
+    "yaml": "catalog:"
   },
   "overrides": {
     "react": "catalog:",

@@ -10,11 +10,11 @@ import {
 import { createMainNavTabs } from "@jet-meal/ui-lib/src/navigation/mainNavTabs";
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
-import { RestaurantCartProvider } from "../src/context/restaurant-cart-context";
-import { RestaurantDevMockProvider } from "../src/context/restaurant-dev-mock-context";
+import { RestaurantDevCartBridge } from "../src/components/dev/RestaurantDevCartBridge";
 import { RestaurantHeader } from "../src/components/RestaurantHeader/RestaurantHeader";
 import { RestaurantLayoutClient } from "../src/components/RestaurantLayoutClient/RestaurantLayoutClient";
-import { RestaurantDevCartBridge } from "../src/components/dev/RestaurantDevCartBridge";
+import { RestaurantCartProvider } from "../src/context/restaurant-cart-context";
+import { RestaurantDevMockProvider } from "../src/context/restaurant-dev-mock-context";
 
 export const viewport: Viewport = {
   viewportFit: "cover",
@@ -34,10 +34,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 header={<RestaurantHeader tabs={tabs} logoHref={logoHref} />}
                 footer={<Footer text="© Jet Meal" />}
               >
-                <>
-                  <RestaurantLayoutClient>{children}</RestaurantLayoutClient>
-                  <JetMealDevFab />
-                </>
+                <RestaurantLayoutClient>{children}</RestaurantLayoutClient>
+                <JetMealDevFab />
               </AppLayout>
             </RestaurantDevCartBridge>
           </RestaurantDevMockProvider>

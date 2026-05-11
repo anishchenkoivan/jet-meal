@@ -15,7 +15,12 @@ export function CardActions({
   className,
 }: CardActionsProps) {
   return (
-    <div className={cx("flex flex-col flex-wrap gap-[10px] sm:flex-row sm:items-stretch", className)}>
+    <div
+      className={cx(
+        "flex flex-col flex-wrap gap-[10px] sm:flex-row sm:items-stretch",
+        className,
+      )}
+    >
       {bookHref ? (
         <AdaptiveButton variant="primary" href={bookHref}>
           Забронировать

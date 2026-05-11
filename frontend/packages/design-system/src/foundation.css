@@ -16,20 +16,24 @@
   }
 
   :root {
-    --jet-font-sans: "Yandex Sans Text", -apple-system, BlinkMacSystemFont,
-      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --jet-font-sans:
+      "Yandex Sans Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
     --jet-page-bg: #faf8f5;
     --site-app-header-height: 64px;
     /* Высота полосы шапки + верхний safe-area (notch / статус-бар). */
     --jet-site-chrome-top: calc(
-      var(--site-app-header-height, 64px) + env(safe-area-inset-top, 0px)
+      var(--site-app-header-height, 64px) +
+      env(safe-area-inset-top, 0px)
     );
     --jet-site-header-height: 64px;
     /* Примерная высота футера (py-6 + строка текста + border) + нижний safe-area. */
     --jet-site-footer-chrome: calc(72px + env(safe-area-inset-bottom, 0px));
     /* Высота полосы контента между шапкой и футером в полноэкранном layout. */
     --jet-site-main-fill-height: calc(
-      100dvh - var(--jet-site-chrome-top) - var(--jet-site-footer-chrome)
+      100dvh -
+      var(--jet-site-chrome-top) -
+      var(--jet-site-footer-chrome)
     );
   }
 

@@ -23,7 +23,10 @@ export function courierRowsFromJetMealDevOrders(
           ? "JM-10491"
           : o.id === "demo-transit"
             ? "JM-10492"
-            : `JM-${o.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase()}`,
+            : `JM-${o.id
+                .replace(/[^a-zA-Z0-9]/g, "")
+                .slice(0, 6)
+                .toUpperCase()}`,
       completedAt: o.deliveredAtIso ?? o.createdAt,
       route: `${o.restaurantName} → клиент`,
       amountRub: o.totalRub,

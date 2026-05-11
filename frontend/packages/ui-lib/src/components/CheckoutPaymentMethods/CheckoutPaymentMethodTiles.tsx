@@ -2,7 +2,10 @@
 
 import cx from "classnames";
 import type { CheckoutPaymentMethodId } from "./checkoutPaymentMethodModel";
-import { CHECKOUT_PAYMENT_METHODS, getPaymentMethodLabel } from "./checkoutPaymentMethodModel";
+import {
+  CHECKOUT_PAYMENT_METHODS,
+  getPaymentMethodLabel,
+} from "./checkoutPaymentMethodModel";
 
 export type CheckoutPaymentMethodTilesVariant = "muted" | "emphasis";
 
@@ -31,9 +34,8 @@ export function CheckoutPaymentMethodTiles({
   const relaxed = density === "relaxed";
 
   return (
-    <div
-      className={cx("w-full min-w-0", className)}
-      role="group"
+    <fieldset
+      className={cx("m-0 min-w-0 border-0 p-0", className)}
       aria-label="Способ оплаты"
     >
       <div
@@ -55,7 +57,9 @@ export function CheckoutPaymentMethodTiles({
               aria-pressed={selected}
               className={cx(
                 "flex aspect-square min-w-0 cursor-pointer flex-col items-center justify-center border-2 border-solid text-center font-semibold leading-tight [border-radius:var(--ant-border-radius-sm,6px)] [transition:border-color_0.15s_ease,background_0.15s_ease,color_0.15s_ease,box-shadow_0.15s_ease]",
-                relaxed ? "min-h-[96px] gap-1.5 p-2 text-xs" : "min-h-[76px] gap-1 p-1.5 text-[11px]",
+                relaxed
+                  ? "min-h-[96px] gap-1.5 p-2 text-xs"
+                  : "min-h-[76px] gap-1 p-1.5 text-[11px]",
                 emphasis
                   ? selected
                     ? "[border-color:var(--ant-color-primary,#1677ff)] [background:var(--ant-color-primary-bg,#e6f4ff)] [color:var(--ant-color-primary,#1677ff)] [box-shadow:0_0_0_1px_rgba(22,119,255,0.35)]"
@@ -80,6 +84,6 @@ export function CheckoutPaymentMethodTiles({
           );
         })}
       </div>
-    </div>
+    </fieldset>
   );
 }

@@ -41,7 +41,9 @@ export default async function AdminHomePage() {
       href={HREF_RESTAURANTS}
       className="block box-border w-full px-8 py-7 rounded-2xl border border-black/[0.08] bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_50%,#fafafa_100%)] no-underline text-inherit shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-[box-shadow,border-color] duration-200 ease hover:border-[#91caff] hover:shadow-[0_8px_32px_rgba(22,119,255,0.12)]"
     >
-      <h2 className="m-0 mb-2 text-[1.35rem] font-bold leading-[1.3] text-black/[0.88]">Укажите свой ресторан</h2>
+      <h2 className="m-0 mb-2 text-[1.35rem] font-bold leading-[1.3] text-black/[0.88]">
+        Укажите свой ресторан
+      </h2>
       <p className="m-0 text-base leading-[1.5] text-black/55">
         Подключите заведение к Jet Meal и принимайте заказы онлайн.
       </p>
@@ -54,7 +56,9 @@ export default async function AdminHomePage() {
       href={HREF_DELIVERY}
       className="block box-border w-full px-8 py-7 rounded-2xl border border-black/[0.08] bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_50%,#fafafa_100%)] no-underline text-inherit shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-[box-shadow,border-color] duration-200 ease hover:border-[#91caff] hover:shadow-[0_8px_32px_rgba(22,119,255,0.12)]"
     >
-      <h2 className="m-0 mb-2 text-[1.35rem] font-bold leading-[1.3] text-black/[0.88]">Устройтесь в доставку</h2>
+      <h2 className="m-0 mb-2 text-[1.35rem] font-bold leading-[1.3] text-black/[0.88]">
+        Устройтесь в доставку
+      </h2>
       <p className="m-0 text-base leading-[1.5] text-black/55">
         Курьерам и службам доставки — заказы и личный кабинет.
       </p>
@@ -67,7 +71,9 @@ export default async function AdminHomePage() {
       href={HREF_ADVERT}
       className="block box-border w-full px-8 py-7 rounded-2xl border border-black/[0.08] bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_50%,#fafafa_100%)] no-underline text-inherit shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-[box-shadow,border-color] duration-200 ease hover:border-[#91caff] hover:shadow-[0_8px_32px_rgba(22,119,255,0.12)]"
     >
-      <h2 className="m-0 mb-2 text-[1.35rem] font-bold leading-[1.3] text-black/[0.88]">Реклама на Jet Meal</h2>
+      <h2 className="m-0 mb-2 text-[1.35rem] font-bold leading-[1.3] text-black/[0.88]">
+        Реклама на Jet Meal
+      </h2>
       <p className="m-0 text-base leading-[1.5] text-black/55">
         {hasAds
           ? "Баннеры и спецразмещения на сайте и в сервисах — откройте кабинет."
@@ -84,9 +90,7 @@ export default async function AdminHomePage() {
     <main className="m-0 p-0 min-h-0">
       <AccountPageShell>
         <div className="w-full max-w-[900px] mx-auto">
-          <h1 className="m-0 mb-2 text-2xl font-bold">
-            Админка
-          </h1>
+          <h1 className="m-0 mb-2 text-2xl font-bold">Админка</h1>
           <p className="m-0 mb-6 text-black/55">
             Быстрые действия и подсказки. Разделы открываются на соответствующих
             сервисах.

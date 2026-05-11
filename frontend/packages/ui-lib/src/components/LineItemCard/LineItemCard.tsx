@@ -84,19 +84,30 @@ export function LineItemCard({
         )}
       >
         <div className="min-w-0">
-          <h3 className="m-0 text-[15px] font-semibold leading-[1.35]">{title}</h3>
+          <h3 className="m-0 text-[15px] font-semibold leading-[1.35]">
+            {title}
+          </h3>
           {description ? (
-            <div className="mt-1 text-[13px] leading-[1.45] [color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))]">{description}</div>
+            <div className="mt-1 text-[13px] leading-[1.45] [color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))]">
+              {description}
+            </div>
           ) : null}
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-2 items-baseline text-[13px]">
-          <span className="[color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))]">{unitPriceLabel}</span>
+          <span className="[color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))]">
+            {unitPriceLabel}
+          </span>
           {lineTotalLabel ? (
-            <span className="font-semibold [color:var(--ant-color-text,rgba(0,0,0,0.88))]">{lineTotalLabel}</span>
+            <span className="font-semibold [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
+              {lineTotalLabel}
+            </span>
           ) : null}
         </div>
         {navMode ? (
-          <p className="mt-1 text-[13px] [color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))]" aria-hidden>
+          <p
+            className="mt-1 text-[13px] [color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))]"
+            aria-hidden
+          >
             ×{quantity}
           </p>
         ) : (
@@ -110,7 +121,10 @@ export function LineItemCard({
                 disabled={quantity <= minQuantity}
                 onClick={dec}
               />
-              <span className="min-w-[2ch] text-center [font-variant-numeric:tabular-nums] font-medium" aria-live="polite">
+              <span
+                className="min-w-[2ch] text-center [font-variant-numeric:tabular-nums] font-medium"
+                aria-live="polite"
+              >
                 {quantity}
               </span>
               <Button

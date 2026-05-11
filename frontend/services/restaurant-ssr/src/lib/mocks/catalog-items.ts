@@ -31,10 +31,7 @@ function categoryForDivision(divisionId: string): string {
   return "main";
 }
 
-function tagsForBlock(
-  divisionId: string,
-  title: string,
-): string[] | undefined {
+function tagsForBlock(divisionId: string, title: string): string[] | undefined {
   const t = title.toLowerCase();
   const tags = new Set<string>();
   if (divisionId.includes("pizza")) {

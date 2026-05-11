@@ -12,7 +12,8 @@ export const mockRestaurants: Restaurant[] = [
         "https://via.placeholder.com/800x400/1677ff/white?text=Ресторан+наш",
       ],
       rating: 4.8,
-      description: "Ваше заведение в Jet Meal — редактируйте карточку и меню в кабинете.",
+      description:
+        "Ваше заведение в Jet Meal — редактируйте карточку и меню в кабинете.",
       deliveryTimeLabel: "20–35 мин",
       cuisineTags: ["Свой бренд"],
       city: "Москва",
@@ -30,7 +31,8 @@ export const mockRestaurants: Restaurant[] = [
         "https://via.placeholder.com/800x400/e74c3c/white?text=Бургер-плейс",
       ],
       rating: 4.6,
-      description: "Фастфуд: бургеры, картофель, напитки и комбо — большое меню на любой вкус",
+      description:
+        "Фастфуд: бургеры, картофель, напитки и комбо — большое меню на любой вкус",
       deliveryTimeLabel: "25–40 мин",
       cuisineTags: ["Фастфуд", "Бургеры"],
       city: "Москва",

@@ -84,7 +84,10 @@ export function CatalogItemCard({
 
     if (additionalInfo.length > 0) {
       sections.push(
-        <div key="additional" className="text-[13px] text-[#8c8c8c] leading-[1.4]">
+        <div
+          key="additional"
+          className="text-[13px] text-[#8c8c8c] leading-[1.4]"
+        >
           {additionalInfo.join(" • ")}
         </div>,
       );

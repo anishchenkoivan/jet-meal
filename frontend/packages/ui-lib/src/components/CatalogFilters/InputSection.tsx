@@ -25,7 +25,9 @@ export function InputSection({
         allowClear
         placeholder={placeholder}
         value={value}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          onChange(e.target.value)
+        }
       />
     </FilterSection>
   );

@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { forwardGeocodeSuggestions, type GeocodeSuggestion } from "../CheckoutDelivery/forwardGeocode";
+import {
+  forwardGeocodeSuggestions,
+  type GeocodeSuggestion,
+} from "../CheckoutDelivery/forwardGeocode";
 import { reverseGeocodeDisplayName } from "../CheckoutDelivery/reverseGeocode";
 import { YandexMapPicker } from "../CheckoutDelivery/YandexMapPicker";
 
@@ -10,7 +13,10 @@ const DEBOUNCE_MS = 500;
 // Берём только первые 2 части Nominatim display_name (улица, номер дома).
 // Пример: "улица Ленина, 5, Москва, Россия" → "улица Ленина, 5"
 function formatShortAddress(displayName: string): string {
-  const parts = displayName.split(",").map((p) => p.trim()).filter(Boolean);
+  const parts = displayName
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
   return parts.slice(0, 2).join(", ");
 }
 
@@ -75,7 +81,10 @@ export function AddressPickerField({
         const results = await forwardGeocodeSuggestions(next, ac.signal);
         if (!ac.signal.aborted) {
           setSuggestions(
-            results.map((s) => ({ ...s, displayName: formatShortAddress(s.displayName) })),
+            results.map((s) => ({
+              ...s,
+              displayName: formatShortAddress(s.displayName),
+            })),
           );
         }
       } catch {

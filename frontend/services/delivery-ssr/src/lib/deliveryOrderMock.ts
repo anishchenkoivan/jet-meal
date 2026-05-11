@@ -1,8 +1,8 @@
 /** Демо-данные до подключения API. Заказы — из `jet-meal-dev:orders-v1` (общий слой с рестораном). */
 
+import { SEED_JET_MEAL_DEV_ORDERS } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevOrdersSeed";
 import type { JetMealDevOrder } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevOrderTypes";
 import { readJetMealDevOrdersFromLocalStorage } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevStorage";
-import { SEED_JET_MEAL_DEV_ORDERS } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevOrdersSeed";
 
 export type DeliveryOrderBase = {
   id: string;
@@ -69,7 +69,10 @@ export function buildDeliveryOrderView(
       ? "JM-10492"
       : o.id === "demo-done"
         ? "JM-10491"
-        : `JM-${o.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase()}`;
+        : `JM-${o.id
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .slice(0, 6)
+            .toUpperCase()}`;
 
   const state = o.deliveryMockState ?? "completed";
 
@@ -131,7 +134,10 @@ export function jetMealDevOrdersToDemoListItems(
         ? "JM-10492"
         : o.id === "demo-done"
           ? "JM-10491"
-          : `JM-${o.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase()}`;
+          : `JM-${o.id
+              .replace(/[^a-zA-Z0-9]/g, "")
+              .slice(0, 6)
+              .toUpperCase()}`;
     const summary = `${o.restaurantName} · ${
       state === "in_transit" ? "в пути" : "доставлен"
     }`;

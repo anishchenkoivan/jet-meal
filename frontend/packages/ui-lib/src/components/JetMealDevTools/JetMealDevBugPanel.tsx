@@ -1,15 +1,15 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useJetMealDevMock } from "../../context/JetMealDevMockContext";
 import { useJetMealDevCart } from "../../context/JetMealDevCartContext";
-import { getJetMealMyOrderHref } from "../../lib/jetMealDev/jetMealDevNavMyOrder";
+import { useJetMealDevMock } from "../../context/JetMealDevMockContext";
 import {
   clearLocalStorageByPrefix,
   JET_MEAL_DEV_STORAGE_PREFIX,
 } from "../../lib/devLocalStoragePrefix";
+import { getJetMealMyOrderHref } from "../../lib/jetMealDev/jetMealDevNavMyOrder";
 import { Button } from "../Button/Button";
 import {
   PayCircleErrorIcon,
@@ -100,7 +100,15 @@ export function JetMealDevBugPanel({ onClose }: { onClose: () => void }) {
       setPayPhase("success");
     }, ms);
     return () => window.clearTimeout(t);
-  }, [payPhase, fakeTarget, cart.lines, cart.totalRub, cart.restaurantId, cart.restaurantName, dev]);
+  }, [
+    payPhase,
+    fakeTarget,
+    cart.lines,
+    cart.totalRub,
+    cart.restaurantId,
+    cart.restaurantName,
+    dev,
+  ]);
 
   const saveBindings = useCallback(() => {
     dev.setPaymentProfile({
@@ -249,17 +257,27 @@ export function JetMealDevBugPanel({ onClose }: { onClose: () => void }) {
 
       <Section title="Следующая оплата с чекаута" defaultOpen>
         <p className="mt-0 mb-2 text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))]">
-          Влияет на кнопку в дровере «Оплатить» на странице оформления (один раз,
-          затем снова «успех»).
+          Влияет на кнопку в дровере «Оплатить» на странице оформления (один
+          раз, затем снова «успех»).
         </p>
         <div className="flex flex-col gap-2">
-          <Button size="small" onClick={() => dev.setNextCheckoutPayScenario("success")}>
+          <Button
+            size="small"
+            onClick={() => dev.setNextCheckoutPayScenario("success")}
+          >
             Успех
           </Button>
-          <Button size="small" danger onClick={() => dev.setNextCheckoutPayScenario("error")}>
+          <Button
+            size="small"
+            danger
+            onClick={() => dev.setNextCheckoutPayScenario("error")}
+          >
             Ошибка
           </Button>
-          <Button size="small" onClick={() => dev.setNextCheckoutPayScenario("stuck")}>
+          <Button
+            size="small"
+            onClick={() => dev.setNextCheckoutPayScenario("stuck")}
+          >
             Зависание
           </Button>
         </div>
@@ -290,7 +308,8 @@ export function JetMealDevBugPanel({ onClose }: { onClose: () => void }) {
       <Section title={`Заказы (${dev.orders.length})`} defaultOpen>
         {dev.orders.length === 0 ? (
           <p className="m-0 text-sm [color:var(--ant-color-text-secondary,rgba(0,0,0,0.45))]">
-            Пока пусто — проведите оплату из чекаута или «Оплатить (успех)» выше.
+            Пока пусто — проведите оплату из чекаута или «Оплатить (успех)»
+            выше.
           </p>
         ) : (
           <ul className="m-0 list-none space-y-2 p-0">
@@ -299,8 +318,8 @@ export function JetMealDevBugPanel({ onClose }: { onClose: () => void }) {
                 key={o.id}
                 className="rounded-md border px-2 py-2 text-xs [border-color:var(--ant-color-border-secondary,#f0f0f0)]"
               >
-                <span className="font-semibold">{o.id}</span> — {o.restaurantName}{" "}
-                — {o.totalRub} ₽
+                <span className="font-semibold">{o.id}</span> —{" "}
+                {o.restaurantName} — {o.totalRub} ₽
                 <button
                   type="button"
                   className="ml-2 border-none bg-transparent p-0 text-[var(--ant-color-primary,#1677ff)] underline"

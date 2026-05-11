@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "../Button/Button";
-import { MiddleColumn } from "../MiddleColumn/MiddleColumn";
 import {
   clearLocalStorageByPrefix,
   JET_MEAL_DEV_STORAGE_PREFIX,
 } from "../../lib/devLocalStoragePrefix";
+import { Button } from "../Button/Button";
+import { MiddleColumn } from "../MiddleColumn/MiddleColumn";
 
 export type JetMealDevStorageClearPanelProps = {
   onClose: () => void;

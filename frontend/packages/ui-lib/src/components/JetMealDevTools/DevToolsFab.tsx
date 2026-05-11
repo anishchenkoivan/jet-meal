@@ -37,11 +37,10 @@ export function DevToolsFab({
       aria-label="Dev: инструменты"
       title="Dev"
       onClick={() =>
-        open(
-          drawerId,
-          () => renderPanel({ close }),
-          { replace: true, title: drawerTitle },
-        )
+        open(drawerId, () => renderPanel({ close }), {
+          replace: true,
+          title: drawerTitle,
+        })
       }
     >
       🐛

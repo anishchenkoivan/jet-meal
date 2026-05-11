@@ -1,18 +1,11 @@
 "use client";
 
+import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import {
-  CheckoutSbpQrBlock,
   type CheckoutPaymentMethodId,
+  CheckoutSbpQrBlock,
   getPaymentMethodLabel,
 } from "@jet-meal/ui-lib/src/components/CheckoutPaymentMethods/CheckoutPaymentMethods";
-import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { getOrdersListHref } from "../../lib/nav/ordersListHref";
-import type { RestaurantCartLine } from "../../context/restaurant-cart-context";
-import type { DevPayScenario } from "../../context/restaurant-dev-mock-context";
-import type { MockRestaurantOrder } from "../../types/mock-order";
-import { MiddleColumn } from "@jet-meal/ui-lib/src/components/MiddleColumn/MiddleColumn";
 import {
   PayCircleErrorIcon,
   PayCircleLoader,
@@ -20,6 +13,13 @@ import {
   PayOutcomeLayout,
   PayPrimaryButton,
 } from "@jet-meal/ui-lib/src/components/JetMealDevTools/JetMealDevPayFlowScreens";
+import { MiddleColumn } from "@jet-meal/ui-lib/src/components/MiddleColumn/MiddleColumn";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import type { RestaurantCartLine } from "../../context/restaurant-cart-context";
+import type { DevPayScenario } from "../../context/restaurant-dev-mock-context";
+import { getOrdersListHref } from "../../lib/nav/ordersListHref";
+import type { MockRestaurantOrder } from "../../types/mock-order";
 
 type Phase = "idle" | "wait" | "success" | "error" | "stuck";
 
@@ -187,8 +187,8 @@ export function CheckoutPayFlowBody({
         return (
           <div className="flex flex-col gap-4 px-1">
             <p className="m-0 text-sm leading-relaxed [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
-              Оплата через СБП ({getPaymentMethodLabel("sbp")}). Отсканируйте QR в
-              приложении банка.
+              Оплата через СБП ({getPaymentMethodLabel("sbp")}). Отсканируйте QR
+              в приложении банка.
             </p>
             <CheckoutSbpQrBlock />
           </div>
@@ -207,14 +207,16 @@ export function CheckoutPayFlowBody({
         return (
           <p className="m-0 px-1 text-sm leading-relaxed [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
             Перейдите в приложение{" "}
-            <span className="font-semibold">Яндекс Пэй</span>, чтобы завершить оплату.
+            <span className="font-semibold">Яндекс Пэй</span>, чтобы завершить
+            оплату.
           </p>
         );
       case "sber":
         return (
           <p className="m-0 px-1 text-sm leading-relaxed [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
             Перейдите в приложение{" "}
-            <span className="font-semibold">Сбербанк Онлайн</span>, чтобы завершить оплату.
+            <span className="font-semibold">Сбербанк Онлайн</span>, чтобы
+            завершить оплату.
           </p>
         );
       default:

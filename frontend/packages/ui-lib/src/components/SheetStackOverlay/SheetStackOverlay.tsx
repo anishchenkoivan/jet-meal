@@ -45,7 +45,9 @@ export function SheetStackOverlay({
       <div
         className={cx(
           "flex-1 min-h-0 w-full max-w-none m-0 rounded-none [background:var(--ant-color-bg-layout,#f5f5f5)] shadow-none overflow-y-auto [-webkit-overflow-scrolling:touch]",
-          sheetOverflowX === "visible" ? "overflow-x-visible" : "overflow-x-hidden",
+          sheetOverflowX === "visible"
+            ? "overflow-x-visible"
+            : "overflow-x-hidden",
           sheetClassName,
         )}
         id={sheetId}

@@ -12,9 +12,9 @@ type BandRenderFn = () => ReactNode;
 
 // Split into two contexts so NavListBlock (setter consumer) doesn't re-render
 // when renderFn changes — only LayoutBandSlot (value consumer) does.
-const LayoutBandSetterContext = createContext<(fn: BandRenderFn | null) => void>(
-  () => {},
-);
+const LayoutBandSetterContext = createContext<
+  (fn: BandRenderFn | null) => void
+>(() => {});
 const LayoutBandValueContext = createContext<BandRenderFn | null>(null);
 
 export function LayoutBandProvider({ children }: { children: ReactNode }) {

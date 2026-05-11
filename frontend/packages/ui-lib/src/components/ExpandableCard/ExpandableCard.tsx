@@ -1,7 +1,7 @@
 "use client";
 
 import cx from "classnames";
-import type { MouseEvent, ReactNode } from "react";
+import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
 import { useState } from "react";
 import { CachedImage } from "../CachedImage/CachedImage";
 import { DownIcon } from "../Icons/Icons";
@@ -88,7 +88,7 @@ export function ExpandableCard({
   catalogFooterEnd,
   restaurantFooterStart,
 }: ExpandableCardProps) {
-  const initial = defaultExpanded ?? (mode === "restaurant" ? true : false);
+  const initial = defaultExpanded ?? mode === "restaurant";
   const [internalExpanded, setInternalExpanded] = useState(initial);
 
   const isControlled = controlledExpanded !== undefined;
@@ -99,7 +99,7 @@ export function ExpandableCard({
     disableExpansion && description?.trim(),
   );
 
-  const handleToggle = (_e: MouseEvent<HTMLDivElement>) => {
+  const handleToggle = () => {
     if (disabled || !hasPanel) {
       return;
     }
@@ -117,14 +117,35 @@ export function ExpandableCard({
       return;
     }
     const t = e.target as HTMLElement;
-    if (t.closest("button, a")) {
+    if (t.closest("button, a, [data-tag-static]")) {
       return;
     }
     if (onCardNavigate) {
       onCardNavigate();
       return;
     }
-    handleToggle(e);
+    handleToggle();
+  };
+
+  const handleCardKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "Enter" && e.key !== " ") {
+      return;
+    }
+    if (disabled) {
+      return;
+    }
+    const t = e.target as HTMLElement;
+    if (t.closest("button, a, [data-tag-static]")) {
+      return;
+    }
+    e.preventDefault();
+    if (onCardNavigate) {
+      onCardNavigate();
+      return;
+    }
+    if (hasPanel) {
+      handleToggle();
+    }
   };
 
   const footerSlot =
@@ -140,12 +161,20 @@ export function ExpandableCard({
         : "default";
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: composite card — nested buttons/links; root handles row activation.
     <div
       className={cx(
         "relative box-border w-full max-w-[min(760px,100%)] mx-auto flex flex-col gap-0 p-3 rounded-xl border [border-color:var(--jm-color-border-secondary,#f0f0f0)] [background:var(--jm-color-bg-container,#fff)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] [transition:border-color_0.2s_ease,box-shadow_0.2s_ease] hover:[border-color:var(--jm-color-border-secondary,#e0e0e0)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
         className,
       )}
       onClick={handleCardClick}
+      onKeyDown={
+        !disabled && (onCardNavigate || hasPanel)
+          ? handleCardKeyDown
+          : undefined
+      }
+      role={!disabled && (onCardNavigate || hasPanel) ? "group" : undefined}
+      tabIndex={!disabled && (onCardNavigate || hasPanel) ? 0 : undefined}
       data-expanded={isExpanded ? "true" : "false"}
       data-has-panel={hasPanel ? "true" : "false"}
       data-mode={mode}
@@ -181,6 +210,7 @@ export function ExpandableCard({
             {rating ? (
               <span
                 className="flex-shrink-0 mt-[1px] text-[13px] font-semibold leading-[1.35] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] whitespace-nowrap"
+                role="img"
                 aria-label={`Рейтинг ${rating}`}
               >
                 ⭐ {rating}
@@ -247,8 +277,8 @@ export function ExpandableCard({
                       </button>
                     ) : (
                       <span
+                        data-tag-static
                         className="m-0 p-0 font-[inherit] text-[13px] italic leading-[1.5] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] bg-none border-none cursor-default no-underline"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         {t.label}
                       </span>
@@ -272,7 +302,6 @@ export function ExpandableCard({
             "grid [grid-template-rows:0fr] [transition:grid-template-rows_0.22s_ease] overflow-hidden",
             isExpanded && "[grid-template-rows:1fr]",
           )}
-          role="region"
           aria-hidden={!isExpanded}
         >
           <div className="min-h-0 pt-2 pb-1 flex flex-col gap-2">

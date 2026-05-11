@@ -7,7 +7,8 @@ export type CourierSchedulePersist = {
   ranges: DayRange[];
 };
 
-export const COURIER_SCHEDULE_PERSIST_KEY = "jet-meal-courier-schedule-persist.v1";
+export const COURIER_SCHEDULE_PERSIST_KEY =
+  "jet-meal-courier-schedule-persist.v1";
 
 export function templateContractLabel(t: CourierScheduleTemplate): string {
   if (t === "4x8") {

@@ -6,10 +6,10 @@ import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import { useDrawer } from "@jet-meal/ui-lib/src/components/DrawerProvider/DrawerProvider";
 import cx from "classnames";
 import { useRouter } from "next/navigation";
-import { hasValidAccountSessionInBrowser } from "../../lib/accountSession";
 import { useRestaurantCart } from "../../context/restaurant-cart-context";
-import { RestaurantCheckoutAuthDrawer } from "../RestaurantCheckoutAuthDrawer/RestaurantCheckoutAuthDrawer";
+import { hasValidAccountSessionInBrowser } from "../../lib/accountSession";
 import { CartOrderLines } from "../CartOrderList/CartOrderList";
+import { RestaurantCheckoutAuthDrawer } from "../RestaurantCheckoutAuthDrawer/RestaurantCheckoutAuthDrawer";
 import { RESTAURANT_CHECKOUT_AUTH_DRAWER_ID } from "../restaurantDrawerIds";
 
 export type RestaurantCartPanelProps = {

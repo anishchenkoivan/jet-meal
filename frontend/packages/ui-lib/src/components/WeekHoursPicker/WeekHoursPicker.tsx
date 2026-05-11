@@ -18,7 +18,9 @@ export type DayHours = { open: string; close: string; closed: boolean };
 export type WeekHoursValue = Record<string, DayHours>;
 
 export function defaultWeekHours(): WeekHoursValue {
-  return Object.fromEntries(WEEK.map((d) => [d.key, { open: "10:00", close: "22:00", closed: false }]));
+  return Object.fromEntries(
+    WEEK.map((d) => [d.key, { open: "10:00", close: "22:00", closed: false }]),
+  );
 }
 
 export type WeekHoursPickerProps = {
@@ -30,9 +32,16 @@ export function WeekHoursPicker({ value, onChange }: WeekHoursPickerProps) {
   return (
     <div className="flex flex-col gap-2">
       {WEEK.map((d) => {
-        const dh = value[d.key] ?? { open: "10:00", close: "22:00", closed: false };
+        const dh = value[d.key] ?? {
+          open: "10:00",
+          close: "22:00",
+          closed: false,
+        };
         return (
-          <div key={d.key} className="flex min-w-0 flex-row flex-nowrap items-center gap-2">
+          <div
+            key={d.key}
+            className="flex min-w-0 flex-row flex-nowrap items-center gap-2"
+          >
             <span className="w-7 shrink-0 text-[13px] font-medium [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
               {d.short}
             </span>
@@ -50,7 +59,11 @@ export function WeekHoursPicker({ value, onChange }: WeekHoursPickerProps) {
                 if (val?.[0] && val?.[1]) {
                   onChange({
                     ...value,
-                    [d.key]: { ...dh, open: val[0].format("HH:mm"), close: val[1].format("HH:mm") },
+                    [d.key]: {
+                      ...dh,
+                      open: val[0].format("HH:mm"),
+                      close: val[1].format("HH:mm"),
+                    },
                   });
                 }
               }}
@@ -62,7 +75,10 @@ export function WeekHoursPicker({ value, onChange }: WeekHoursPickerProps) {
                 type="checkbox"
                 checked={dh.closed}
                 onChange={(e) =>
-                  onChange({ ...value, [d.key]: { ...dh, closed: e.target.checked } })
+                  onChange({
+                    ...value,
+                    [d.key]: { ...dh, closed: e.target.checked },
+                  })
                 }
               />
               Вых.

@@ -61,10 +61,7 @@ export function CourierOrderDetailClient({ orderId }: { orderId: string }) {
       <Paragraph type="secondary" style={{ marginTop: 4 }}>
         Статус: <strong>{statusLabel}</strong>
         {view.status === "in_transit" ? (
-          <>
-            {" "}
-            · ETA ~{view.order.etaMinutes} мин
-          </>
+          <> · ETA ~{view.order.etaMinutes} мин</>
         ) : null}
       </Paragraph>
 
@@ -101,9 +98,7 @@ export function CourierOrderDetailClient({ orderId }: { orderId: string }) {
               <span className="[color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))]">
                 Доставлен
               </span>
-              <div>
-                {when.format(new Date(view.order.deliveredAt))}
-              </div>
+              <div>{when.format(new Date(view.order.deliveredAt))}</div>
             </div>
           ) : null}
           {view.status === "in_transit" ? (

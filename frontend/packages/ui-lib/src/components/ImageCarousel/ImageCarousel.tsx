@@ -2,7 +2,7 @@
 
 import { Button } from "antd";
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { type KeyboardEvent, useCallback, useState } from "react";
 import { CachedImage } from "../CachedImage/CachedImage";
 import { DeleteIcon, LeftIcon, PlusIcon, RightIcon } from "../Icons/Icons";
 
@@ -108,7 +108,25 @@ export function ImageCarousel({
     );
   }
 
+  const onEditCarouselKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (!editMode || !onSlideActivate) {
+        return;
+      }
+      if (e.key !== "Enter" && e.key !== " ") {
+        return;
+      }
+      if ((e.target as HTMLElement).closest("button")) {
+        return;
+      }
+      e.preventDefault();
+      onSlideActivate(index);
+    },
+    [editMode, onSlideActivate, index],
+  );
+
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: edit overlay over slides; arrow buttons are siblings inside the same frame.
     <div
       className={cx(mediaRootCls, editMode && "cursor-pointer")}
       onClick={
@@ -121,6 +139,11 @@ export function ImageCarousel({
             }
           : undefined
       }
+      onKeyDown={
+        editMode && onSlideActivate ? onEditCarouselKeyDown : undefined
+      }
+      role={editMode && onSlideActivate ? "group" : undefined}
+      tabIndex={editMode && onSlideActivate ? 0 : undefined}
       data-edit-carousel={editMode ? "true" : undefined}
     >
       {images.map((src, i) => (
@@ -157,7 +180,10 @@ export function ImageCarousel({
           >
             <RightIcon />
           </button>
-          <span className="absolute right-2 bottom-2 z-[2] px-2 py-[2px] rounded-full [background-color:rgb(0_0_0/_55%)] text-white text-xs leading-[1.5]" aria-hidden>
+          <span
+            className="absolute right-2 bottom-2 z-[2] px-2 py-[2px] rounded-full [background-color:rgb(0_0_0/_55%)] text-white text-xs leading-[1.5]"
+            aria-hidden
+          >
             {index + 1} / {count}
           </span>
         </>
@@ -165,8 +191,7 @@ export function ImageCarousel({
       {editMode ? (
         <div
           className="absolute right-2 bottom-10 z-[3] flex gap-[6px] pointer-events-auto"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
+          onPointerDownCapture={(e) => e.stopPropagation()}
         >
           {onEditDeleteSlide ? (
             <Button

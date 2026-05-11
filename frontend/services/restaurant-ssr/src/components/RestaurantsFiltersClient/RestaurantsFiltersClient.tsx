@@ -1,6 +1,5 @@
 "use client";
 
-import { CatalogFilters } from "../CatalogFilters/CatalogFilters";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useCallback,
@@ -17,6 +16,7 @@ import {
   FILTER_CITY_OPTIONS,
   FILTER_DELIVERY_TIME_OPTIONS,
 } from "../../lib/shared-catalog-filter-options";
+import { CatalogFilters } from "../CatalogFilters/CatalogFilters";
 import type { CatalogFiltersMobileHandlers } from "../CatalogFiltersClient/CatalogFiltersClient";
 
 function parseTagsParam(raw: string | null): string[] {

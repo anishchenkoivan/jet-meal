@@ -6,9 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useRestaurantCart } from "../../context/restaurant-cart-context";
 import { RestaurantCartPanel } from "../RestaurantCartPanel/RestaurantCartPanel";
-import {
-  RESTAURANT_CART_DRAWER_ID,
-} from "../restaurantDrawerIds";
+import { RESTAURANT_CART_DRAWER_ID } from "../restaurantDrawerIds";
 
 export const RESTAURANT_CART_INLINE_MIN_PX = 1292;
 
@@ -60,9 +58,13 @@ export function RestaurantCartMobileNav() {
     if (cartOpen) {
       close();
     } else {
-      open(RESTAURANT_CART_DRAWER_ID, () => <RestaurantCartPanel hideHeader />, {
-        replace: true,
-      });
+      open(
+        RESTAURANT_CART_DRAWER_ID,
+        () => <RestaurantCartPanel hideHeader />,
+        {
+          replace: true,
+        },
+      );
     }
   }, [cartOpen, open, close]);
 
@@ -76,11 +78,7 @@ export function RestaurantCartMobileNav() {
       aria-label={cartOpen ? "Закрыть корзину" : "Корзина"}
       aria-expanded={cartOpen}
     >
-      {cartOpen ? (
-        <DownIcon size={22} className="block" />
-      ) : (
-        <CartBagIcon />
-      )}
+      {cartOpen ? <DownIcon size={22} className="block" /> : <CartBagIcon />}
       {!cartOpen && totalCount > 0 ? (
         <span className="absolute top-1 right-0.5 min-w-4 h-4 px-1 rounded-[999px] text-[10px] font-bold leading-4 text-center text-white [background:var(--ant-color-primary,#1677ff)]">
           {totalCount > 99 ? "99+" : totalCount}

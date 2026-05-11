@@ -1,7 +1,7 @@
 "use client";
 
 import cx from "classnames";
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { CloseIcon } from "../Icons/Icons";
 
@@ -78,15 +78,18 @@ export function AdaptiveDrawer({
     }
   };
 
-  const handleDrawerClick = (e: React.MouseEvent) => {
-    // Предотвращаем всплытие на drawer, чтобы клик по backdrop работал
-    e.stopPropagation();
-  };
-
   const handleHeaderClick = () => {
     // На мобильном клик по header разворачивает/сворачивает
     if (isMobile) {
       setIsCollapsed(!isCollapsed);
+    }
+  };
+
+  const handleHeaderKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (!isMobile) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleHeaderClick();
     }
   };
 
@@ -95,9 +98,13 @@ export function AdaptiveDrawer({
   return (
     <>
       {/* Backdrop */}
-      <div
+      <button
+        type="button"
+        aria-label={
+          isMobile && !isCollapsed ? "Свернуть панель" : "Закрыть панель"
+        }
         className={cx(
-          "fixed top-0 left-0 right-0 bottom-0 z-[999] [transition:opacity_0.3s_ease]",
+          "fixed top-0 left-0 right-0 bottom-0 z-[999] m-0 cursor-pointer border-0 bg-transparent p-0 [transition:opacity_0.3s_ease] font-inherit text-left appearance-none",
           open ? "opacity-100 bg-black/50" : "opacity-0",
           isMobile && isCollapsed && "opacity-0",
         )}
@@ -112,14 +119,16 @@ export function AdaptiveDrawer({
           open ? "md:translate-x-0" : "md:translate-x-full",
           className,
         )}
-        onClick={handleDrawerClick}
       >
         <div className="h-full flex flex-col">
           {title && (
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#f0f0f0] bg-white sticky top-0 z-[1]">
-              <h3 className="text-[18px] font-semibold m-0 text-[#333]">{title}</h3>
+              <h3 className="text-[18px] font-semibold m-0 text-[#333]">
+                {title}
+              </h3>
               {!hideCloseButton && (
                 <button
+                  type="button"
                   className="bg-none border-none cursor-pointer p-2 rounded text-[#666] flex items-center justify-center hover:bg-[#f5f5f5] hover:text-[#333]"
                   onClick={onClose}
                   aria-label="Закрыть"
@@ -146,21 +155,34 @@ export function AdaptiveDrawer({
           "fixed z-[1000] bg-white [transition:transform_0.3s_ease]",
           "max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:max-h-[80vh] max-md:rounded-t-2xl",
           open && !isCollapsed ? "max-md:translate-y-0" : "",
-          open && isCollapsed ? "max-md:[transform:translateY(calc(100%-80px))]" : "",
+          open && isCollapsed
+            ? "max-md:[transform:translateY(calc(100%-80px))]"
+            : "",
           !open ? "max-md:translate-y-full" : "",
           className,
         )}
-        onClick={handleDrawerClick}
       >
         <div className="h-full flex flex-col">
           <div
             className="flex items-center justify-between px-5 py-4 border-b border-[#f0f0f0] bg-white sticky top-0 z-[1]"
-            onClick={handleHeaderClick}
             style={{ cursor: isMobile ? "pointer" : "default" }}
+            {...(isMobile
+              ? {
+                  onClick: handleHeaderClick,
+                  onKeyDown: handleHeaderKeyDown,
+                  role: "button" as const,
+                  tabIndex: 0,
+                }
+              : {})}
           >
-            {title && <h3 className="text-[18px] font-semibold m-0 text-[#333]">{title}</h3>}
+            {title && (
+              <h3 className="text-[18px] font-semibold m-0 text-[#333]">
+                {title}
+              </h3>
+            )}
             {!hideCloseButton && !isMobile && (
               <button
+                type="button"
                 className="bg-none border-none cursor-pointer p-2 rounded text-[#666] flex items-center justify-center hover:bg-[#f5f5f5] hover:text-[#333]"
                 onClick={onClose}
                 aria-label="Закрыть"
@@ -183,7 +205,9 @@ export function AdaptiveDrawer({
             <div
               className={cx(
                 "px-5 py-4 bg-white sticky bottom-0",
-                isMobile && isCollapsed ? "border-none rounded-t-2xl cursor-pointer" : "border-t border-[#f0f0f0]",
+                isMobile && isCollapsed
+                  ? "border-none rounded-t-2xl cursor-pointer"
+                  : "border-t border-[#f0f0f0]",
               )}
             >
               {footer}

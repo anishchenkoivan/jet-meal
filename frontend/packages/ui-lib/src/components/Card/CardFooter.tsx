@@ -51,7 +51,6 @@ export function CardFooter({
     <span
       className={cx(moreLinkCls)}
       aria-disabled="true"
-      role="link"
       title={detailUnavailableTitle}
     >
       {detailLabel}

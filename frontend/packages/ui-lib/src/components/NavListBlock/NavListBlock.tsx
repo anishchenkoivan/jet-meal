@@ -1,7 +1,7 @@
 "use client";
 
-import cx from "classnames";
 import { Button, ConfigProvider, Input } from "antd";
+import cx from "classnames";
 import type { ReactNode } from "react";
 import {
   useCallback,
@@ -194,11 +194,17 @@ export function NavListBlock({
         : mobileTopBar;
     return (
       <div className="hidden max-wide:flex flex-1 items-center gap-2 min-w-0">
-        {topBarNode ?? (
-          loading ? (
+        {topBarNode ??
+          (loading ? (
             <>
-              <div className="flex-1 min-w-0 h-8 rounded-[6px] bg-black/[0.06]" aria-hidden />
-              <div className="flex-shrink-0 w-24 h-8 rounded-[6px] bg-black/[0.06]" aria-hidden />
+              <div
+                className="flex-1 min-w-0 h-8 rounded-[6px] bg-black/[0.06]"
+                aria-hidden
+              />
+              <div
+                className="flex-shrink-0 w-24 h-8 rounded-[6px] bg-black/[0.06]"
+                aria-hidden
+              />
             </>
           ) : (
             <>
@@ -223,8 +229,7 @@ export function NavListBlock({
                 Фильтры
               </Button>
             </>
-          )
-        )}
+          ))}
       </div>
     );
   }, [
@@ -247,9 +252,7 @@ export function NavListBlock({
   }, [renderHeaderControls, setLayoutBandFn]);
 
   if (hideChrome || !hasLeftAside) {
-    return (
-      <div className="relative z-0 min-w-0 w-full">{children}</div>
-    );
+    return <div className="relative z-0 min-w-0 w-full">{children}</div>;
   }
 
   const asideAriaLabel =
@@ -257,51 +260,48 @@ export function NavListBlock({
     (typeof asideTitle === "string" ? asideTitle : "Боковая панель");
 
   return (
-    <>
-      <PageTwoColumnSticky
-        className="w-full min-h-0 flex-1 self-stretch"
-        includeSideSlot
-        sideSlotPosition="start"
-        side={
-          <StickyAsidePanel
-            id={navRegionId}
-            ariaLabel={asideAriaLabel}
-            className={cx("gap-3", asideClassName)}
+    <PageTwoColumnSticky
+      className="w-full min-h-0 flex-1 self-stretch"
+      includeSideSlot
+      sideSlotPosition="start"
+      side={
+        <StickyAsidePanel
+          id={navRegionId}
+          ariaLabel={asideAriaLabel}
+          className={cx("gap-3", asideClassName)}
+        >
+          {asideTitle ? (
+            <div className="m-0 shrink-0 p-0 text-base font-semibold leading-[1.35]">
+              {asideTitle}
+            </div>
+          ) : null}
+          <ConfigProvider
+            popupOverflow="scroll"
+            getPopupContainer={() =>
+              typeof document === "undefined"
+                ? (null as unknown as HTMLElement)
+                : document.body
+            }
           >
-            {asideTitle ? (
-              <div className="m-0 shrink-0 p-0 text-base font-semibold leading-[1.35]">
-                {asideTitle}
-              </div>
-            ) : null}
-            <ConfigProvider
-              popupOverflow="scroll"
-              getPopupContainer={() =>
-                typeof document === "undefined"
-                  ? (null as unknown as HTMLElement)
-                  : document.body
-              }
+            <div
+              className="relative isolate flex min-h-0 min-w-0 flex-1 flex-col"
+              data-nav-list-aside-scroll=""
             >
-              <div
-                className="relative isolate flex min-h-0 min-w-0 flex-1 flex-col"
-                data-nav-list-aside-scroll=""
-              >
-                {asideBody}
-              </div>
-            </ConfigProvider>
-            {asideFooter ? (
-              <div className="shrink-0 border-t pt-1 [border-color:var(--ant-color-border-secondary,#f0f0f0)]">
-                {asideFooter}
-              </div>
-            ) : null}
-          </StickyAsidePanel>
-        }
-        main={
-          <div className="relative z-0 min-w-0 w-full overflow-x-hidden">
-            {children}
-          </div>
-        }
-      />
-
-    </>
+              {asideBody}
+            </div>
+          </ConfigProvider>
+          {asideFooter ? (
+            <div className="shrink-0 border-t pt-1 [border-color:var(--ant-color-border-secondary,#f0f0f0)]">
+              {asideFooter}
+            </div>
+          ) : null}
+        </StickyAsidePanel>
+      }
+      main={
+        <div className="relative z-0 min-w-0 w-full overflow-x-hidden">
+          {children}
+        </div>
+      }
+    />
   );
 }

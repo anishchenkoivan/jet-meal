@@ -19,7 +19,8 @@ export type CartEvent =
   | { type: "REMOVE_ITEM"; payload: { lineId: string } }
   | { type: "UPDATE_NOTE"; payload: { lineId: string; note: string } }
   | { type: "CLEAR_CART" }
-  | { type: "SET_CART"; payload: Cart };
+  | { type: "SET_CART"; payload: Cart }
+  | { type: "SET_CART_VISIBILITY"; payload: boolean };
 
 interface CartState {
   cart: Cart | null;
@@ -254,6 +255,13 @@ function cartReducer(state: CartState, event: CartEvent): CartState {
       };
     }
 
+    case "SET_CART_VISIBILITY": {
+      return {
+        ...state,
+        isVisible: event.payload,
+      };
+    }
+
     default:
       return state;
   }
@@ -273,10 +281,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const hideCart = () => {
-    dispatch({
-      type: "SET_CART",
-      payload: state.cart ? { ...state.cart } : (null as any),
-    });
+    dispatch({ type: "SET_CART_VISIBILITY", payload: false });
   };
 
   const addToCart = (

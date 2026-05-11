@@ -1,7 +1,7 @@
 "use client";
 
 import cx from "classnames";
-import type { ReactNode } from "react";
+import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
 
 /** Географическая метка в WGS-84; в GQL обычно передают как `input GeoPointInput { lat, lng }` или отдельные поля. */
 export type GeoMarkerModel = {
@@ -22,7 +22,7 @@ export type GeoMarkersFrameProps = {
   /** Слой под «плитки» — можно подложить iframe/Leaflet/Yandex. */
   mapBackground?: ReactNode;
   /** Клик по контейнеру (например выбор точки доставки). */
-  onSurfaceClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onSurfaceClick?: (event: MouseEvent<HTMLDivElement>) => void;
   className?: string;
 };
 
@@ -61,19 +61,19 @@ export function GeoMarkersFrame({
     >
       <div
         className="relative w-full min-h-[200px] [border-radius:var(--ant-border-radius-lg,8px)] overflow-hidden border [border-color:var(--ant-color-border-secondary,#f0f0f0)] [background:var(--ant-color-fill-quaternary,rgba(0,0,0,0.02))]"
-        onClick={onSurfaceClick}
-        onKeyDown={
-          onSurfaceClick
-            ? (e) => {
+        {...(onSurfaceClick
+          ? {
+              onClick: onSurfaceClick,
+              onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   (e.currentTarget as unknown as HTMLElement).click();
                 }
-              }
-            : undefined
-        }
-        role={onSurfaceClick ? "button" : undefined}
-        tabIndex={onSurfaceClick ? 0 : undefined}
+              },
+              role: "button" as const,
+              tabIndex: 0,
+            }
+          : {})}
       >
         {mapBackground ? (
           <div className="absolute inset-0 z-0 [&>*]:w-full [&>*]:h-full [&>*]:border-none [&>*]:block">
@@ -106,27 +106,23 @@ export function GeoMarkersFrame({
                 top: `${y * 100}%`,
               }}
               title={m.label}
-              role={onMarkerClick ? "button" : undefined}
-              tabIndex={onMarkerClick ? 0 : undefined}
-              onClick={
-                onMarkerClick
-                  ? (e) => {
+              {...(onMarkerClick
+                ? {
+                    role: "button" as const,
+                    tabIndex: 0,
+                    onClick: (e: MouseEvent<HTMLSpanElement>) => {
                       e.stopPropagation();
                       onMarkerClick(m.id);
-                    }
-                  : undefined
-              }
-              onKeyDown={
-                onMarkerClick
-                  ? (e) => {
+                    },
+                    onKeyDown: (e: KeyboardEvent<HTMLSpanElement>) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
                         e.stopPropagation();
                         onMarkerClick(m.id);
                       }
-                    }
-                  : undefined
-              }
+                    },
+                  }
+                : {})}
             >
               <span
                 className="w-[14px] h-[14px] rounded-full [background:var(--ant-color-error,#ff4d4f)] border-2 border-white shadow-[0_1px_4px_rgb(0_0_0/25%)]"

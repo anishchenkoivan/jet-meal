@@ -82,7 +82,10 @@ function defaultSchedule(): CourierSchedulePersist {
 }
 
 export function readCourierSchedulePersist(): CourierSchedulePersist {
-  return readJson<CourierSchedulePersist>(COURIER_SCHEDULE_PERSIST_KEY) ?? defaultSchedule();
+  return (
+    readJson<CourierSchedulePersist>(COURIER_SCHEDULE_PERSIST_KEY) ??
+    defaultSchedule()
+  );
 }
 
 export function readCourierSession(): CourierSessionPersist {
@@ -253,9 +256,7 @@ export function deriveCourierUi(
 
   if (hasShift && nowMs < workEnd) {
     const inLunchBlock =
-      hasLunch &&
-      nowMs >= lunchStarted &&
-      nowMs < lunchStarted + LUNCH_MS;
+      hasLunch && nowMs >= lunchStarted && nowMs < lunchStarted + LUNCH_MS;
     const op = inLunchBlock ? null : readCourierOperational().status;
     return {
       phase: inLunchBlock ? "lunch" : "active",
@@ -402,11 +403,7 @@ export function useCourierShiftRuntime() {
     });
     tickCourierOperationalMock(true);
     setTick((x) => x + 1);
-    pushCourierNotify(
-      "Вы на линии",
-      "Смена начата.",
-      "courier-started",
-    );
+    pushCourierNotify("Вы на линии", "Смена начата.", "courier-started");
   }, []);
 
   const startLunch = useCallback(() => {

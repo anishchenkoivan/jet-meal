@@ -30,11 +30,17 @@ export function RestaurantsPage({ restaurants }: RestaurantsPageProps) {
         selectedNavKey={MAIN_NAV_KEYS.restaurants}
         mobileSearchField={{
           value: headerSearch,
-          onChange: (v) => { setHeaderSearch(v); setSearchCallbackRef.current(v); },
+          onChange: (v) => {
+            setHeaderSearch(v);
+            setSearchCallbackRef.current(v);
+          },
           placeholder: "Название ресторана…",
         }}
         onMobileApply={() => mobileRef.current.apply()}
-        onMobileResetNav={() => { mobileRef.current.reset(); setHeaderSearch(""); }}
+        onMobileResetNav={() => {
+          mobileRef.current.reset();
+          setHeaderSearch("");
+        }}
         sidebarBody={
           <RestaurantsFiltersClient
             registerMobileHandlers={(api) => {

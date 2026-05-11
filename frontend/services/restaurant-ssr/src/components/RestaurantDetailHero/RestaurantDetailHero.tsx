@@ -33,6 +33,7 @@ export function RestaurantDetailHero({
         {p?.rating != null ? (
           <span
             className="text-[1.15rem] font-semibold text-black/65 whitespace-nowrap"
+            role="img"
             aria-label={`Рейтинг ${p.rating}`}
           >
             ⭐ {p.rating}

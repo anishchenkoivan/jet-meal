@@ -77,7 +77,10 @@ export default async function AdminAdvertPage() {
     <main className="m-0 p-0 min-h-0 w-full">
       <AccountPageShell>
         <div className="w-full max-w-[1100px] mx-auto">
-          <Link href="/admin" className="inline-block mb-4 text-[0.9rem] text-[#1677ff] no-underline hover:underline">
+          <Link
+            href="/admin"
+            className="inline-block mb-4 text-[0.9rem] text-[#1677ff] no-underline hover:underline"
+          >
             ← Назад в админку
           </Link>
 
@@ -95,21 +98,32 @@ export default async function AdminAdvertPage() {
 
           {!hasAds ? (
             <div className="box-border w-full max-w-[40rem] px-7 py-6 rounded-2xl border border-black/[0.08] bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_50%,#fafafa_100%)] shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-              <h2 className="m-0 mb-3 text-[1.15rem] font-bold">Заказать размещение</h2>
+              <h2 className="m-0 mb-3 text-[1.15rem] font-bold">
+                Заказать размещение
+              </h2>
               <p className="m-0 mb-4 leading-[1.55] text-black/65">
                 Расскажите о целях кампании, желаемых сроках и формате — мы
                 пришлём медиакит с актуальными пакетами, ориентировочной ценой и
                 схемой оплаты. После согласования и оплаты кампания появится в
                 этом разделе.
               </p>
-              <a className="text-[1.05rem] font-semibold text-[#1677ff] no-underline break-all hover:underline" href={`mailto:${email}`}>
+              <a
+                className="text-[1.05rem] font-semibold text-[#1677ff] no-underline break-all hover:underline"
+                href={`mailto:${email}`}
+              >
                 {email}
               </a>
             </div>
           ) : (
-            <section className="flex flex-col gap-4 w-full" aria-label="Активные кампании">
+            <section
+              className="flex flex-col gap-4 w-full"
+              aria-label="Активные кампании"
+            >
               {DEMO_CAMPAIGNS.map((c) => (
-                <article key={c.id} className="box-border w-full px-[22px] py-5 rounded-[14px] border border-black/[0.08] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                <article
+                  key={c.id}
+                  className="box-border w-full px-[22px] py-5 rounded-[14px] border border-black/[0.08] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
+                >
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 mb-3">
                     <h2 className="m-0 text-[1.1rem] font-bold">{c.title}</h2>
                     <span
@@ -125,29 +139,47 @@ export default async function AdminAdvertPage() {
                   <dl className="grid [grid-template-columns:repeat(auto-fill,minmax(11rem,1fr))] gap-x-5 gap-y-2.5 m-0 text-[0.9rem] leading-[1.45] text-black/65">
                     <div>
                       <dt className="m-0 text-black/45 font-medium">Формат</dt>
-                      <dd className="m-0 font-semibold text-black/[0.78]">{c.format}</dd>
+                      <dd className="m-0 font-semibold text-black/[0.78]">
+                        {c.format}
+                      </dd>
                     </div>
                     <div>
-                      <dt className="m-0 text-black/45 font-medium">Площадка</dt>
-                      <dd className="m-0 font-semibold text-black/[0.78]">{c.placement}</dd>
+                      <dt className="m-0 text-black/45 font-medium">
+                        Площадка
+                      </dt>
+                      <dd className="m-0 font-semibold text-black/[0.78]">
+                        {c.placement}
+                      </dd>
                     </div>
                     <div>
-                      <dt className="m-0 text-black/45 font-medium">Стоимость</dt>
+                      <dt className="m-0 text-black/45 font-medium">
+                        Стоимость
+                      </dt>
                       <dd className="m-0 font-semibold text-black/[0.78]">
                         {c.priceRub.toLocaleString("ru-RU")} ₽ (с НДС по счёту)
                       </dd>
                     </div>
                     <div>
-                      <dt className="m-0 text-black/45 font-medium">Часы показа</dt>
-                      <dd className="m-0 font-semibold text-black/[0.78]">{c.displayHours.toLocaleString("ru-RU")} ч</dd>
+                      <dt className="m-0 text-black/45 font-medium">
+                        Часы показа
+                      </dt>
+                      <dd className="m-0 font-semibold text-black/[0.78]">
+                        {c.displayHours.toLocaleString("ru-RU")} ч
+                      </dd>
                     </div>
                     <div>
-                      <dt className="m-0 text-black/45 font-medium">Охват (оценка)</dt>
-                      <dd className="m-0 font-semibold text-black/[0.78]">{c.estimatedImpressions}</dd>
+                      <dt className="m-0 text-black/45 font-medium">
+                        Охват (оценка)
+                      </dt>
+                      <dd className="m-0 font-semibold text-black/[0.78]">
+                        {c.estimatedImpressions}
+                      </dd>
                     </div>
                     <div>
                       <dt className="m-0 text-black/45 font-medium">Период</dt>
-                      <dd className="m-0 font-semibold text-black/[0.78]">{c.period}</dd>
+                      <dd className="m-0 font-semibold text-black/[0.78]">
+                        {c.period}
+                      </dd>
                     </div>
                   </dl>
                   <p className="mt-[14px] mb-0 text-[0.88rem] leading-[1.5] text-black/55">

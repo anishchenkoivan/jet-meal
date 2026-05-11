@@ -32,8 +32,12 @@ const FAQ_ITEMS = [
 export function Faq() {
   return (
     <section className="box-border w-full max-w-[min(1120px,100%)] mx-auto px-6 pb-16">
-      <h2 className="m-0 mb-2 text-[1.75rem] font-bold tracking-[-0.02em]">Вопросы и ответы</h2>
-      <p className="m-0 mb-8 text-black/55 max-w-[640px]">Коротко о сервисе — без воды.</p>
+      <h2 className="m-0 mb-2 text-[1.75rem] font-bold tracking-[-0.02em]">
+        Вопросы и ответы
+      </h2>
+      <p className="m-0 mb-8 text-black/55 max-w-[640px]">
+        Коротко о сервисе — без воды.
+      </p>
       <div className="w-full max-w-none m-0 [&_.ant-collapse]:w-full [&_.ant-collapse-item]:w-full [&_.ant-collapse-content-box]:w-full [&_.ant-collapse-content-box]:box-border">
         <Collapse bordered={false} items={FAQ_ITEMS} />
       </div>

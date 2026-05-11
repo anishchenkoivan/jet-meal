@@ -24,9 +24,7 @@ export function AppLayoutShell({
       <LayoutBandProvider>
         <DrawerProvider>
           <div className="flex h-svh max-h-dvh min-h-0 flex-col overflow-hidden [background:var(--ant-color-bg-layout,#f5f5f5)]">
-            <div className="flex-shrink-0">
-              {header}
-            </div>
+            <div className="flex-shrink-0">{header}</div>
             <DrawerZone>
               {/* Регион «main» между шапкой и футером: ограниченная высота; скролл у контента страницы */}
               <div className="flex flex-1 min-h-0 flex-col overflow-y-auto [-webkit-overflow-scrolling:touch]">

@@ -37,7 +37,9 @@ function scrollSectionInRoot(
 
 function scrollSectionInNearestViewport(sectionId: string) {
   if (typeof document === "undefined") return;
-  document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .getElementById(sectionId)
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export type CatalogFilterRailLayer = {
@@ -112,14 +114,13 @@ export function CatalogFilterRailScroll({
               */}
               <div className="contents" style={rowVars}>
                 {layer.icon != null ? (
-                  <div
+                  <button
+                    type="button"
                     className={cx(
                       RAIL_ICON_CELL_CLASS,
-                      "cursor-pointer outline-none focus-visible:ring-2",
+                      "cursor-pointer border-0 bg-transparent p-0 font-inherit text-left outline-none focus-visible:ring-2",
                       "focus-visible:ring-[var(--jm-color-primary,#1677ff)] focus-visible:ring-offset-1",
                     )}
-                    role="button"
-                    tabIndex={0}
                     aria-label={`Показать: ${railIconAriaLabel(layer.rowKey)}`}
                     onClick={() => scrollTo(layer.sectionId)}
                     onKeyDown={(e) => {
@@ -130,7 +131,7 @@ export function CatalogFilterRailScroll({
                     }}
                   >
                     {layer.icon}
-                  </div>
+                  </button>
                 ) : (
                   <div
                     className="h-8 w-8 shrink-0 [grid-column:1/2] [grid-row:var(--row-i)/var(--row-end)]"

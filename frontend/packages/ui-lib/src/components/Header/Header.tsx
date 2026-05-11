@@ -1,8 +1,8 @@
 "use client";
 
 import cx from "classnames";
-import { AppDropdown } from "../AppDropdown/AppDropdown";
 import { useCallback } from "react";
+import { AppDropdown } from "../AppDropdown/AppDropdown";
 import { useDrawer } from "../DrawerProvider/DrawerProvider";
 import { CloseIcon, MenuIcon } from "../Icons/Icons";
 import { HeaderMobileNavDrawerBody } from "./HeaderMobileNavDrawerBody";
@@ -104,16 +104,16 @@ export function Header({
                     })),
                   }}
                 >
-                  <span
-                    tabIndex={0}
-                    role="button"
+                  <button
+                    type="button"
                     className={cx(
                       "inline-flex items-center px-[14px] py-[10px] -mb-px border-b-2 border-transparent text-sm leading-[1.5] [color:var(--ant-color-text,rgba(0,0,0,0.88))] no-underline transition-colors duration-200 hover:[color:var(--ant-color-primary,#1677ff)] cursor-pointer border-0 bg-transparent font-[inherit]",
-                      active && "font-medium [border-bottom-color:var(--ant-color-primary,#1677ff)]",
+                      active &&
+                        "font-medium [border-bottom-color:var(--ant-color-primary,#1677ff)]",
                     )}
                   >
                     {tab.label}
-                  </span>
+                  </button>
                 </AppDropdown>
               </span>
             );
@@ -130,7 +130,8 @@ export function Header({
                 href={tab.href}
                 className={cx(
                   "inline-flex items-center px-[14px] py-[10px] -mb-px border-b-2 border-transparent text-sm leading-[1.5] [color:var(--ant-color-text,rgba(0,0,0,0.88))] no-underline transition-colors duration-200 hover:[color:var(--ant-color-primary,#1677ff)]",
-                  selectedKey === tab.key && "font-medium [border-bottom-color:var(--ant-color-primary,#1677ff)]",
+                  selectedKey === tab.key &&
+                    "font-medium [border-bottom-color:var(--ant-color-primary,#1677ff)]",
                 )}
               >
                 {tab.label}

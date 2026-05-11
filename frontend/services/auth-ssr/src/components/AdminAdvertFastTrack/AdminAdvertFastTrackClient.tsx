@@ -30,7 +30,10 @@ export function AdminAdvertFastTrackClient() {
         </button>
       </div>
       <p className="mt-6 mb-0 text-xs [color:var(--jm-color-text-tertiary,rgba(0,0,0,0.45))]">
-        <Link href="/admin/advert" className="[color:var(--jm-color-primary,#1677ff)] hover:underline">
+        <Link
+          href="/admin/advert"
+          className="[color:var(--jm-color-primary,#1677ff)] hover:underline"
+        >
           Полный раздел рекламы
         </Link>
       </p>

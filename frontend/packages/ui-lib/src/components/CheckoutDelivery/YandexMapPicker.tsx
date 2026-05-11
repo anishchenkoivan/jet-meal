@@ -109,13 +109,16 @@ export function YandexMapPicker({
           return;
         }
         await new Promise<void>((r) => {
-          window.ymaps!.ready(() => r());
+          window.ymaps?.ready(() => r());
         });
         if (cancelled || !hostRef.current) {
           return;
         }
 
-        const ymaps = window.ymaps!;
+        const ymaps = window.ymaps;
+        if (!ymaps) {
+          return;
+        }
         const center: [number, number] = [initLat, initLng];
         const map = new ymaps.Map(hostRef.current, {
           center,
@@ -194,8 +197,8 @@ export function YandexMapPicker({
         />
         <p className="mt-[10px] text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))] leading-[1.4]">
           Задайте переменную окружения{" "}
-          <code className="text-[11px]">NEXT_PUBLIC_YANDEX_MAPS_API_KEY</code>, чтобы включить
-          интерактивную карту Яндекса.
+          <code className="text-[11px]">NEXT_PUBLIC_YANDEX_MAPS_API_KEY</code>,
+          чтобы включить интерактивную карту Яндекса.
         </p>
       </div>
     );
@@ -209,13 +212,15 @@ export function YandexMapPicker({
           markers={[{ id: "p", latitude, longitude, label: "Точка" }]}
           ariaLabel="Превью карты"
         />
-        <p className="mt-[10px] text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))] leading-[1.4]">{loadError}</p>
+        <p className="mt-[10px] text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))] leading-[1.4]">
+          {loadError}
+        </p>
       </div>
     );
   }
 
   return (
-    <div
+    <section
       ref={hostRef}
       className={[
         "w-full box-border aspect-[16/10] min-h-[160px] max-h-[min(42vh,380px)] [border-radius:var(--ant-border-radius-lg,8px)] overflow-hidden border [border-color:var(--ant-color-border-secondary,#f0f0f0)] [background:var(--ant-color-fill-quaternary,#f5f5f5)]",

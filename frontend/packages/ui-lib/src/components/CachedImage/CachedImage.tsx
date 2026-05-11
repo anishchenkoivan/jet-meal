@@ -184,7 +184,10 @@ export function CachedImage({
       >
         <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-[10px] [color:var(--ant-color-text-quaternary,rgba(0,0,0,0.35))] [background-color:var(--ant-color-fill-quaternary,rgba(0,0,0,0.04))]">
           <div className="flex-[0_0_auto] w-[min(48vmin,100%)] h-[min(48vmin,100%)] max-w-[min(320px,100%)] max-h-[min(320px,100%)] min-w-[72px] min-h-[72px] [color:var(--ant-color-text-tertiary,rgba(0,0,0,0.42))] [&_svg]:block [&_svg]:w-full [&_svg]:h-full">
-            <CachedImageEmptyIcon fillSlot className="[color:var(--ant-color-text-tertiary,rgba(0,0,0,0.45))]" />
+            <CachedImageEmptyIcon
+              fillSlot
+              className="[color:var(--ant-color-text-tertiary,rgba(0,0,0,0.45))]"
+            />
           </div>
         </div>
       </div>
@@ -196,6 +199,7 @@ export function CachedImage({
       <div
         className={rootCls}
         style={style}
+        role="img"
         aria-busy="true"
         aria-label={alt}
         aria-hidden={ariaHiddenProp}
@@ -223,10 +227,16 @@ export function CachedImage({
       >
         <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-[10px] [color:var(--ant-color-text-quaternary,rgba(0,0,0,0.35))] [background-color:var(--ant-color-fill-quaternary,rgba(0,0,0,0.04))]">
           <div className="flex-[0_0_auto] w-[min(48vmin,100%)] h-[min(48vmin,100%)] max-w-[min(320px,100%)] max-h-[min(320px,100%)] min-w-[72px] min-h-[72px] [color:var(--ant-color-text-tertiary,rgba(0,0,0,0.42))] [&_svg]:block [&_svg]:w-full [&_svg]:h-full">
-            <CachedImageBrokenIcon fillSlot className="[color:var(--ant-color-text-tertiary,rgba(0,0,0,0.45))]" />
+            <CachedImageBrokenIcon
+              fillSlot
+              className="[color:var(--ant-color-text-tertiary,rgba(0,0,0,0.45))]"
+            />
           </div>
         </div>
-        <div className="absolute inset-0 z-[8] flex items-center justify-center p-2 pointer-events-none" aria-hidden={false}>
+        <div
+          className="absolute inset-0 z-[8] flex items-center justify-center p-2 pointer-events-none"
+          aria-hidden={false}
+        >
           <button
             type="button"
             className="relative z-[1] inline-flex items-center gap-[6px] px-[14px] py-2 text-[13px] leading-[1.4] font-semibold [color:var(--ant-color-text,rgba(0,0,0,0.88))] cursor-pointer pointer-events-auto [background:rgb(255_255_255/0.96)] border [border-color:var(--ant-color-border,#d9d9d9)] [border-radius:var(--ant-border-radius-lg,8px)] shadow-[0_2px_12px_rgb(0_0_0/14%)] hover:[color:var(--ant-color-primary,#1677ff)] hover:[border-color:var(--ant-color-primary,#1677ff)] focus-visible:outline-2 focus-visible:[outline-color:var(--ant-color-primary,#1677ff)] focus-visible:outline-offset-2"

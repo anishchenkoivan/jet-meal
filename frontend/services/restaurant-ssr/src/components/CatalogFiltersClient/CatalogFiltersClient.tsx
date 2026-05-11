@@ -1,8 +1,13 @@
 "use client";
 
-import { CatalogFilters } from "../CatalogFilters/CatalogFilters";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   CATALOG_POPULAR_TAG_VALUES,
   CATALOG_TAG_OPTIONS,
@@ -11,6 +16,7 @@ import {
   FILTER_CITY_OPTIONS,
   FILTER_DELIVERY_TIME_OPTIONS,
 } from "../../lib/shared-catalog-filter-options";
+import { CatalogFilters } from "../CatalogFilters/CatalogFilters";
 
 function parseTagsParam(raw: string | null): string[] {
   if (!raw?.trim()) {
@@ -117,7 +123,14 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
 
     const qs = params.toString();
     router.push(qs ? `?${qs}` : "?");
-  }, [router, searchParams, cityValue, selectedTags, deliveryTimeValue, deliveryWish]);
+  }, [
+    router,
+    searchParams,
+    cityValue,
+    selectedTags,
+    deliveryTimeValue,
+    deliveryWish,
+  ]);
 
   const resetFilters = useCallback(() => {
     searchValueRef.current = "";
@@ -138,7 +151,11 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
   }, []);
 
   useLayoutEffect(() => {
-    registerMobileHandlers?.({ apply: updateURL, reset: resetFilters, setSearch });
+    registerMobileHandlers?.({
+      apply: updateURL,
+      reset: resetFilters,
+      setSearch,
+    });
   }, [registerMobileHandlers, updateURL, resetFilters, setSearch]);
 
   return (

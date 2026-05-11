@@ -13,6 +13,10 @@ import {
 import type { SetStateAction } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  useCourierShiftRuntime,
+  writeCourierOperational,
+} from "../../lib/courierShiftRuntime";
+import {
   addMinutes,
   buildWorkflowOffersNear,
   defaultCourierPosition,
@@ -20,10 +24,6 @@ import {
   type WorkflowCoords,
   type WorkflowOffer,
 } from "../../lib/courierWorkflowMock";
-import {
-  useCourierShiftRuntime,
-  writeCourierOperational,
-} from "../../lib/courierShiftRuntime";
 import { YandexWorkflowRouteMap } from "../YandexWorkflowRouteMap/YandexWorkflowRouteMap";
 
 const money = new Intl.NumberFormat("ru-RU", {
@@ -96,7 +96,11 @@ function persistJob(job: ActiveJob | null) {
 function sumLegMinutes(points: WorkflowCoords[]): number {
   let s = 0;
   for (let i = 1; i < points.length; i++) {
-    s += estimateTravelMinutes(points[i - 1]!, points[i]!);
+    const prev = points[i - 1];
+    const cur = points[i];
+    if (prev && cur) {
+      s += estimateTravelMinutes(prev, cur);
+    }
   }
   return s;
 }
@@ -173,7 +177,8 @@ export function CourierWorkflowClient({
 
   const searching = ui.operationalStatus === "searching";
   const staleOnOrder = !job && ui.operationalStatus === "on_order";
-  const showIdle = !job && ui.operationalStatus !== "searching" && !staleOnOrder;
+  const showIdle =
+    !job && ui.operationalStatus !== "searching" && !staleOnOrder;
   const showSearchBoard = searching && !job;
 
   const travelToRestaurantMin = job
@@ -187,9 +192,7 @@ export function CourierWorkflowClient({
       )
     : 0;
 
-  const routeToRestaurant = job
-    ? [courierPos, job.offer.restaurantCoords]
-    : [];
+  const routeToRestaurant = job ? [courierPos, job.offer.restaurantCoords] : [];
 
   const transitRoutePoints = useMemo(() => {
     if (!job?.pickedUpFromRestaurant) {
@@ -199,7 +202,7 @@ export function CourierWorkflowClient({
     const start: WorkflowCoords =
       completedWaypointLegs === 0
         ? offer.restaurantCoords
-        : offer.waypoints[completedWaypointLegs - 1]!.coords;
+        : offer.waypoints[completedWaypointLegs - 1]?.coords;
     const pending = offer.waypoints.slice(completedWaypointLegs);
     if (pending.length > 0) {
       return [start, ...pending.map((w) => w.coords), offer.clientCoords];
@@ -208,7 +211,8 @@ export function CourierWorkflowClient({
   }, [job]);
 
   const transitApproxMin = useMemo(
-    () => (transitRoutePoints.length >= 2 ? sumLegMinutes(transitRoutePoints) : 0),
+    () =>
+      transitRoutePoints.length >= 2 ? sumLegMinutes(transitRoutePoints) : 0,
     [transitRoutePoints],
   );
 
@@ -378,12 +382,10 @@ export function CourierWorkflowClient({
               Заберите заказ у ресторана
             </Title>
             <Paragraph style={{ marginTop: 0 }}>
-              <strong>Заказ будет готов:</strong>{" "}
-              {timeFmt.format(job.readyAt)}
+              <strong>Заказ будет готов:</strong> {timeFmt.format(job.readyAt)}
             </Paragraph>
             <Paragraph className="!mt-2">
-              <strong>Заберите его по адресу:</strong>{" "}
-              {job.offer.fromAddress}
+              <strong>Заберите его по адресу:</strong> {job.offer.fromAddress}
             </Paragraph>
             <Paragraph type="secondary" className="!mt-2 text-sm">
               Ориентируйтесь приехать к выдаче не позже:{" "}
@@ -391,7 +393,10 @@ export function CourierWorkflowClient({
               учётом готовности, дороги от вас (~{travelToRestaurantMin} мин) и
               запаса 10 мин.
             </Paragraph>
-            <Button type="primary" onClick={() => setConfirm("pickup_restaurant")}>
+            <Button
+              type="primary"
+              onClick={() => setConfirm("pickup_restaurant")}
+            >
               Заказ получен
             </Button>
           </div>
@@ -424,7 +429,10 @@ export function CourierWorkflowClient({
                   Приблизительное время в пути по оставшемуся маршруту: ~{" "}
                   <strong>{transitApproxMin}</strong> мин
                 </Paragraph>
-                <Button type="primary" onClick={() => setConfirm("waypoint_done")}>
+                <Button
+                  type="primary"
+                  onClick={() => setConfirm("waypoint_done")}
+                >
                   Заказ получен
                 </Button>
               </>
@@ -440,7 +448,10 @@ export function CourierWorkflowClient({
                   Приблизительное время в пути до клиента: ~{" "}
                   <strong>{transitApproxMin}</strong> мин
                 </Paragraph>
-                <Button type="primary" onClick={() => setConfirm("handoff_client")}>
+                <Button
+                  type="primary"
+                  onClick={() => setConfirm("handoff_client")}
+                >
                   Заказ передан
                 </Button>
               </>
@@ -501,9 +512,7 @@ export function CourierWorkflowClient({
         cancelText="Отмена"
         onCancel={() => setConfirm(null)}
         onOk={() => {
-          setJob((j) =>
-            j ? { ...j, pickedUpFromRestaurant: true } : j,
-          );
+          setJob((j) => (j ? { ...j, pickedUpFromRestaurant: true } : j));
           setConfirm(null);
         }}
       >

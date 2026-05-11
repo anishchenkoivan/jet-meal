@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { AdminRestaurantsPageClient } from "../../../src/containers/AdminRestaurantsPage/AdminRestaurantsPageClient";
 import { fetchRestaurantDetail } from "../../../src/lib/gql-wrapper";
 import { OWNED_RESTAURANT_ID } from "../../../src/lib/mocks/ownedRestaurantId";
-import { saveRestaurantAction, deleteRestaurantAction } from "./actions";
+import { deleteRestaurantAction, saveRestaurantAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
