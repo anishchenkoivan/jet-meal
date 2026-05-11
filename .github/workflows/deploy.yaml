@@ -3,9 +3,9 @@ name: Deploy service
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      service:
         type: choice
-        description: 'Select environment to deploy'
+        description: 'Select service to deploy'
         required: true
         options:
           - businesses
@@ -72,6 +72,7 @@ jobs:
       - name: Build docker-image
         run: |
           ssh deploy-server << 'EOF'
+            cd ~/jet-meal
             docker build -t ${{ github.event.inputs.service }}-service:latest -f services/businesses/Dockerfile .
           EOF
       
@@ -80,13 +81,14 @@ jobs:
           ssh deploy-server << 'EOF'
             for i in $(find services/businesses/k8s/ -type f -name *.yaml)
             do
+              cd ~/jet-meal
               kubectl apply -f $i
             done
           EOF
 
   notify-success:
     name: Send success notification
-    environment: ${{ github.event.inputs.environment }}
+    environment: ${{ github.event.inputs.service }}
     runs-on: ubuntu-latest
     needs: 
       - deploy
@@ -100,13 +102,13 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           parse-mode: html
           message: |
-            <b>✅ Release ${{ github.event.inputs.environment }} completed successfully</b>
+            <b>✅ Release ${{ github.event.inputs.service }} completed successfully</b>
             
             🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>
 
   notify-failure:
     name: Send failure notification
-    environment: ${{ github.event.inputs.environment }}
+    environment: ${{ github.event.inputs.service }}
     runs-on: ubuntu-latest
     needs: 
       - deploy
@@ -120,6 +122,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           parse-mode: html
           message: |
-            <b>❌ Release to ${{ github.event.inputs.environment }} failed</b>
+            <b>❌ Release to ${{ github.event.inputs.service }} failed</b>
             
             🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>
