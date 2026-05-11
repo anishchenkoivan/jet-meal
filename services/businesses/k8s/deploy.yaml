@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: businesses-service
+  namespace: jet-meal
+  labels:
+    app: businesses-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: businesses-service
+  template:
+    metadata:
+      labels:
+        app: businesses-service
+    spec:
+      containers:
+        - name: businesses-service
+          image: businesses-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BUSINESSES_POSTGRES_DSN
+              valueFrom:
+                configMapKeyRef:
+                  name: businesses-config
+                  key: postgres.dsn
+            - name: BUSINESSES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: businesses-config
+                  key: service.port
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5

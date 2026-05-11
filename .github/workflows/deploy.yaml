@@ -1,0 +1,125 @@
+name: Deploy service
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Select environment to deploy'
+        required: true
+        options:
+          - businesses
+          - billing
+          - order
+          - user_service
+          - shdb
+
+jobs:
+  notify-start:
+    name: Send start notification
+    environment: ${{ github.event.inputs.service }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send notification
+        uses: cbrgm/telegram-github-action@v1
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          parse-mode: html
+          message: |
+            <b>🚀 Release ${{ github.event.inputs.service }} started</b>
+            
+            🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: notify-start
+    environment: ${{ github.event.inputs.service }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          cat > ~/.ssh/config << EOF
+          Host deploy-server
+            HostName ${{ secrets.HOST }}
+            Port ${{ secrets.SSH_PORT }}
+            User ${{ vars.USER }}
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Update repo on machine
+        run: |
+          ssh deploy-server << 'EOF'
+            cd ~/jet-meal
+            git pull
+          EOF
+
+      - name: Build docker-image
+        run: |
+          ssh deploy-server << 'EOF'
+            docker build -t ${{ github.event.inputs.service }}-service:latest -f services/businesses/Dockerfile .
+          EOF
+      
+      - name: Deploy
+        run: |
+          ssh deploy-server << 'EOF'
+            for i in $(find services/businesses/k8s/ -type f -name *.yaml)
+            do
+              kubectl apply -f $i
+            done
+          EOF
+
+  notify-success:
+    name: Send success notification
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: 
+      - deploy
+    if: always() && needs.deploy.result == 'success'
+
+    steps:
+      - name: Send success notification
+        uses: cbrgm/telegram-github-action@v1
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          parse-mode: html
+          message: |
+            <b>✅ Release ${{ github.event.inputs.environment }} completed successfully</b>
+            
+            🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>
+
+  notify-failure:
+    name: Send failure notification
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: 
+      - deploy
+    if: always() && needs.deploy.result == 'failure'
+
+    steps:
+      - name: Send success notification
+        uses: cbrgm/telegram-github-action@v1
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          parse-mode: html
+          message: |
+            <b>❌ Release to ${{ github.event.inputs.environment }} failed</b>
+            
+            🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>

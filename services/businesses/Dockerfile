@@ -15,7 +15,7 @@ COPY services/businesses /build/services/businesses
 WORKDIR /build/services/businesses
 
 RUN rm -rf build && mkdir -p build && \
-    cmake -B build -DENABLE_SANITIZER=${SANITIZER} && \
+    cmake -B build -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_SANITIZER=${SANITIZER} && \
     make -C build
 
 # ---- Runtime Stage ----

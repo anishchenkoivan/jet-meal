@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: businesses-config
+  namespace: jet-meal
+data:
+  postgres.dsn: "host=businesses-postgres-db.jet-meal.svc.cluster.local port=5432 dbname=businesses_db user=businesses_service password=TODO_secrets"
+  service.port: "8080"
