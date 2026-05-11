@@ -3,7 +3,7 @@ name: Deploy service
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      service:
         type: choice
         description: 'Select environment to deploy'
         required: true
