@@ -3,7 +3,6 @@
 import { Button, Input } from "antd";
 import cx from "classnames";
 import { useMemo, useState } from "react";
-import styles from "./FilterColumnPicker.module.css";
 
 export type FilterColumnOption = {
   value: string;
@@ -41,9 +40,9 @@ export function FilterColumnPicker({
   }, [options, q]);
 
   return (
-    <div className={styles["shell"]}>
-      <div className={styles["head"]}>
-        <h2 className={styles["title"]}>{title}</h2>
+    <div className="flex flex-col gap-[10px] min-h-0 max-h-[80vh] box-border">
+      <div className="flex items-center justify-between gap-2 flex-shrink-0">
+        <h2 className="m-0 text-[15px] font-semibold leading-[1.3]">{title}</h2>
         <Button type="link" size="small" onClick={onCancel}>
           Отменить
         </Button>
@@ -53,16 +52,19 @@ export function FilterColumnPicker({
         placeholder={searchPlaceholder}
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        className={styles["search"]}
+        className="flex-shrink-0"
       />
-      <div className={styles["list"]} role="listbox">
+      <div
+        className="flex-[1_1_auto] min-h-0 overflow-y-auto [-webkit-overflow-scrolling:touch] flex flex-col gap-[2px] py-[2px] pb-1"
+        role="listbox"
+      >
         {allowClear ? (
           <button
             type="button"
             className={cx(
-              styles["option"],
-              styles["optionClear"],
-              value === null && styles["optionSelected"],
+              "block w-full m-0 px-[10px] py-[10px] border-none [border-radius:var(--ant-border-radius,6px)] bg-transparent text-left font-[inherit] text-sm leading-[1.35] cursor-pointer [color:var(--ant-color-text-secondary,rgba(0,0,0,0.65))] text-[13px] hover:[background:var(--ant-color-fill-quaternary,rgba(0,0,0,0.04))]",
+              value === null &&
+                "[background:var(--ant-color-primary-bg,#e6f4ff)] [color:var(--ant-color-primary,#1677ff)] font-semibold",
             )}
             onClick={() => {
               onChange(null);
@@ -79,8 +81,9 @@ export function FilterColumnPicker({
             role="option"
             aria-selected={value === o.value}
             className={cx(
-              styles["option"],
-              value === o.value && styles["optionSelected"],
+              "block w-full m-0 px-[10px] py-[10px] border-none [border-radius:var(--ant-border-radius,6px)] bg-transparent text-left font-[inherit] text-sm leading-[1.35] cursor-pointer [color:var(--ant-color-text,rgba(0,0,0,0.88))] hover:[background:var(--ant-color-fill-quaternary,rgba(0,0,0,0.04))]",
+              value === o.value &&
+                "[background:var(--ant-color-primary-bg,#e6f4ff)] [color:var(--ant-color-primary,#1677ff)] font-semibold",
             )}
             onClick={() => {
               onChange(o.value);

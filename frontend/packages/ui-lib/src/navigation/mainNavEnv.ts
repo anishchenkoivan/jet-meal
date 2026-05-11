@@ -1,10 +1,10 @@
 import type { MainNavUrls } from "./mainNavTabs";
 
 export function getMainNavUrlsFromPublicEnv(
-  env: Record<string, string | undefined> =
-    typeof process !== "undefined" && process.env
-      ? (process.env as Record<string, string | undefined>)
-      : {},
+  env: Record<string, string | undefined> = typeof process !== "undefined" &&
+  process.env
+    ? (process.env as Record<string, string | undefined>)
+    : {},
 ): MainNavUrls {
   return {
     home: env["NEXT_PUBLIC_NAV_HOME"] ?? "/",
@@ -25,10 +25,10 @@ export function getMainNavUrlsFromPublicEnv(
 }
 
 export function getLogoHrefFromPublicEnv(
-  env: Record<string, string | undefined> =
-    typeof process !== "undefined" && process.env
-      ? (process.env as Record<string, string | undefined>)
-      : {},
+  env: Record<string, string | undefined> = typeof process !== "undefined" &&
+  process.env
+    ? (process.env as Record<string, string | undefined>)
+    : {},
 ): string {
   return env["NEXT_PUBLIC_NAV_HOME"] ?? "/";
 }

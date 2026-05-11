@@ -2,15 +2,19 @@
 
 import { ExpandableCard } from "@jet-meal/ui-lib/src/components/ExpandableCard/ExpandableCard";
 import { Typography } from "@jet-meal/ui-lib/src/components/Typography/Typography";
-import { DishOrderControls } from "../DishOrderControls/DishOrderControls";
+import { primaryBlockImage } from "../../lib/contentBlockImages";
 import type { Restaurant } from "../../types/restaurant";
+import { DishOrderControls } from "../DishOrderControls/DishOrderControls";
 
 export type RestaurantMenuBodyProps = {
   restaurant: Restaurant;
   parsePriceRub: (raw?: string | null) => number;
 };
 
-export function RestaurantMenuBody({ restaurant, parsePriceRub }: RestaurantMenuBodyProps) {
+export function RestaurantMenuBody({
+  restaurant,
+  parsePriceRub,
+}: RestaurantMenuBodyProps) {
   const sections = restaurant.mainSections;
   if (!sections?.length) {
     return null;
@@ -19,7 +23,7 @@ export function RestaurantMenuBody({ restaurant, parsePriceRub }: RestaurantMenu
   return (
     <>
       {sections.map((section) => (
-        <div key={section.id} style={{ marginBottom: "3rem" }}>
+        <div key={section.id}>
           {section.title ? (
             <Typography.Title level={2} style={{ marginBottom: "2rem" }}>
               {section.title}
@@ -42,7 +46,7 @@ export function RestaurantMenuBody({ restaurant, parsePriceRub }: RestaurantMenu
                       title={block.title}
                       price={block.subtitle ?? undefined}
                       subtitle={division.title ?? undefined}
-                      thumbnailUrl={block.image ?? undefined}
+                      thumbnailUrl={primaryBlockImage(block)}
                       thumbnailAlt={block.title}
                       description={block.extraText ?? undefined}
                       defaultExpanded

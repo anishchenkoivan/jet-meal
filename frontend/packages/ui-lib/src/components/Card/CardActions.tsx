@@ -2,7 +2,6 @@
 
 import cx from "classnames";
 import { AdaptiveButton } from "../AdaptiveButton/AdaptiveButton";
-import styles from "./CardActions.module.css";
 
 export type CardActionsProps = {
   bookHref?: string;
@@ -10,9 +9,13 @@ export type CardActionsProps = {
   className?: string;
 };
 
-export function CardActions({ bookHref, deliveryHref, className }: CardActionsProps) {
+export function CardActions({
+  bookHref,
+  deliveryHref,
+  className,
+}: CardActionsProps) {
   return (
-    <div className={cx(styles["row"], className)}>
+    <div className={cx("flex flex-col flex-wrap gap-[10px] sm:flex-row sm:items-stretch", className)}>
       {bookHref ? (
         <AdaptiveButton variant="primary" href={bookHref}>
           Забронировать

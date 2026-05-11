@@ -1,13 +1,22 @@
-export default function AdminRestaurantsPage() {
+import { notFound } from "next/navigation";
+import { AdminRestaurantsPageClient } from "../../../src/containers/AdminRestaurantsPage/AdminRestaurantsPageClient";
+import { fetchRestaurantDetail } from "../../../src/lib/gql-wrapper";
+import { OWNED_RESTAURANT_ID } from "../../../src/lib/mocks/ownedRestaurantId";
+import { saveRestaurantAction, deleteRestaurantAction } from "./actions";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminRestaurantsPage() {
+  const restaurant = await fetchRestaurantDetail(OWNED_RESTAURANT_ID);
+  if (!restaurant) {
+    notFound();
+  }
   return (
-    <div style={{ padding: 24, maxWidth: 960, margin: "0 auto" }}>
-      <h2 style={{ marginTop: 0, fontSize: "1.5rem", fontWeight: 700 }}>
-        Управление ресторанами
-      </h2>
-      <p style={{ margin: "12px 0 0", lineHeight: 1.55, color: "rgba(0,0,0,0.65)" }}>
-        Этот раздел обслуживается сервисом ресторанов. Дальше здесь появятся
-        списки заведений, меню и настройки — пока заглушка.
-      </p>
-    </div>
+    <AdminRestaurantsPageClient
+      initialRestaurant={restaurant}
+      yandexMapsApiKey={process.env["NEXT_PUBLIC_YANDEX_MAPS_API_KEY"] ?? ""}
+      onSave={saveRestaurantAction}
+      onDelete={deleteRestaurantAction}
+    />
   );
 }

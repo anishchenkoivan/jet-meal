@@ -1,18 +1,11 @@
 "use client";
 
-import { Menu } from "antd";
 import type { MenuProps } from "antd";
-import cx from "classnames";
+import { Menu } from "antd";
 import { useMemo } from "react";
 import type { HeaderTab, LinkRenderProps } from "./HeaderTypes";
-import styles from "./Header.module.css";
 
-function DefaultLink({
-  href,
-  className,
-  children,
-  onClick,
-}: LinkRenderProps) {
+function DefaultLink({ href, className, children, onClick }: LinkRenderProps) {
   return (
     <a href={href} className={className} onClick={onClick}>
       {children}
@@ -64,23 +57,17 @@ export function HeaderMobileNavDrawerBody({
   );
 
   return (
-    <>
-      <Menu
-        mode="inline"
-        items={menuItems}
-        selectedKeys={selectedKey ? [selectedKey] : []}
-        onClick={onNavigate}
-        className={cx(styles["drawerMenu"])}
-        style={{
-          border: "none",
-          flex: "1 1 auto",
-          minHeight: 0,
-          overflow: "auto",
-        }}
-      />
-      <div className={cx(styles["drawerFooterStrip"])} role="contentinfo">
-        © Jet Meal
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-y-auto [-webkit-overflow-scrolling:touch] pb-[env(safe-area-inset-bottom,0px)]">
+        <Menu
+          mode="inline"
+          items={menuItems}
+          selectedKeys={selectedKey ? [selectedKey] : []}
+          onClick={onNavigate}
+          className="border-none text-[18px] leading-[1.45]"
+          style={{ border: "none" }}
+        />
       </div>
-    </>
+    </div>
   );
 }

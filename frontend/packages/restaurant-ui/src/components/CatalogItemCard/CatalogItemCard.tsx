@@ -1,8 +1,7 @@
 "use client";
 
 import { ExpandableCard } from "@jet-meal/ui-lib/src/components/ExpandableCard/ExpandableCard";
-import type { MenuItem } from "../../types/restaurant";
-import type { Restaurant } from "../../types/restaurant";
+import type { MenuItem, Restaurant } from "../../types/restaurant";
 
 export interface CatalogItemCardProps {
   item: MenuItem;
@@ -47,29 +46,15 @@ export function CatalogItemCard({
     const sections = [];
 
     sections.push(
-      <div key="restaurant" style={{ marginBottom: "16px" }}>
-        <div
-          style={{
-            fontSize: "14px",
-            fontWeight: 600,
-            color: "#262626",
-            marginBottom: "4px",
-          }}
-        >
+      <div key="restaurant" className="mb-4">
+        <div className="text-sm font-semibold text-[#262626] mb-1">
           Ресторан: {restaurant.name}
         </div>
-        <div style={{ fontSize: "13px", color: "#8c8c8c" }}>
+        <div className="text-[13px] text-[#8c8c8c]">
           {restaurant.cuisines.join(", ")}
         </div>
         {restaurant.description ? (
-          <div
-            style={{
-              fontSize: "13px",
-              color: "#595959",
-              marginTop: "4px",
-              lineHeight: "1.4",
-            }}
-          >
+          <div className="text-[13px] text-[#595959] mt-1 leading-[1.4]">
             {restaurant.description}
           </div>
         ) : null}
@@ -78,18 +63,11 @@ export function CatalogItemCard({
 
     if (item.ingredients && item.ingredients.length > 0) {
       sections.push(
-        <div key="ingredients" style={{ marginBottom: "12px" }}>
-          <div
-            style={{
-              fontSize: "13px",
-              fontWeight: 600,
-              color: "#262626",
-              marginBottom: "4px",
-            }}
-          >
+        <div key="ingredients" className="mb-3">
+          <div className="text-[13px] font-semibold text-[#262626] mb-1">
             Состав:
           </div>
-          <div style={{ fontSize: "13px", color: "#595959" }}>
+          <div className="text-[13px] text-[#595959]">
             {item.ingredients.join(", ")}
           </div>
         </div>,
@@ -106,14 +84,7 @@ export function CatalogItemCard({
 
     if (additionalInfo.length > 0) {
       sections.push(
-        <div
-          key="additional"
-          style={{
-            fontSize: "13px",
-            color: "#8c8c8c",
-            lineHeight: "1.4",
-          }}
-        >
+        <div key="additional" className="text-[13px] text-[#8c8c8c] leading-[1.4]">
           {additionalInfo.join(" • ")}
         </div>,
       );
@@ -130,16 +101,7 @@ export function CatalogItemCard({
           e.stopPropagation();
           onDeliveryClick(item, restaurant);
         }}
-        style={{
-          padding: 0,
-          border: "none",
-          background: "none",
-          cursor: "pointer",
-          font: "inherit",
-          fontSize: 14,
-          color: "var(--ant-color-primary, #1677ff)",
-          textDecoration: "underline",
-        }}
+        className="p-0 border-none bg-none cursor-pointer font-[inherit] text-sm [color:var(--ant-color-primary,#1677ff)] underline"
       >
         Подробнее...
       </button>

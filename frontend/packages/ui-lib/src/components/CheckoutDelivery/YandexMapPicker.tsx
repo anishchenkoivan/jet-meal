@@ -1,8 +1,7 @@
 "use client";
 
-import { GeoMarkersFrame } from "../GeoMarkersFrame/GeoMarkersFrame";
-import styles from "./YandexMapPicker.module.css";
 import { useEffect, useRef, useState } from "react";
+import { GeoMarkersFrame } from "../GeoMarkersFrame/GeoMarkersFrame";
 
 declare global {
   interface Window {
@@ -29,7 +28,10 @@ type YandexMapInstance = {
 };
 
 type YandexPlacemark = {
-  geometry: { setCoordinates: (c: number[]) => void; getCoordinates: () => number[] };
+  geometry: {
+    setCoordinates: (c: number[]) => void;
+    getCoordinates: () => number[];
+  };
   events: { add: (name: string, fn: () => void) => void };
 };
 
@@ -44,7 +46,9 @@ function loadYandexScript(apiKey: string): Promise<void> {
   if (window.ymaps) {
     return Promise.resolve();
   }
-  const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
+  const existing = document.getElementById(
+    SCRIPT_ID,
+  ) as HTMLScriptElement | null;
   if (existing?.dataset["loaded"] === "1") {
     return Promise.resolve();
   }
@@ -170,9 +174,12 @@ export function YandexMapPicker({
     map.setCenter([latitude, longitude], 16);
   }, [latitude, longitude]);
 
+  const fallbackCls =
+    "w-full aspect-[16/10] min-h-[160px] max-h-[min(42vh,380px)] box-border";
+
   if (!apiKey.trim()) {
     return (
-      <div className={[styles["fallback"], className].filter(Boolean).join(" ")}>
+      <div className={[fallbackCls, className].filter(Boolean).join(" ")}>
         <GeoMarkersFrame
           center={{ latitude, longitude }}
           markers={[
@@ -185,10 +192,10 @@ export function YandexMapPicker({
           ]}
           ariaLabel="Превью карты без API-ключа"
         />
-        <p className={styles["fallbackHint"]}>
+        <p className="mt-[10px] text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))] leading-[1.4]">
           Задайте переменную окружения{" "}
-          <code>NEXT_PUBLIC_YANDEX_MAPS_API_KEY</code>, чтобы включить интерактивную карту
-          Яндекса.
+          <code className="text-[11px]">NEXT_PUBLIC_YANDEX_MAPS_API_KEY</code>, чтобы включить
+          интерактивную карту Яндекса.
         </p>
       </div>
     );
@@ -196,13 +203,13 @@ export function YandexMapPicker({
 
   if (loadError) {
     return (
-      <div className={[styles["fallback"], className].filter(Boolean).join(" ")}>
+      <div className={[fallbackCls, className].filter(Boolean).join(" ")}>
         <GeoMarkersFrame
           center={{ latitude, longitude }}
           markers={[{ id: "p", latitude, longitude, label: "Точка" }]}
           ariaLabel="Превью карты"
         />
-        <p className={styles["fallbackHint"]}>{loadError}</p>
+        <p className="mt-[10px] text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))] leading-[1.4]">{loadError}</p>
       </div>
     );
   }
@@ -210,7 +217,12 @@ export function YandexMapPicker({
   return (
     <div
       ref={hostRef}
-      className={[styles["mapHost"], className].filter(Boolean).join(" ")}
+      className={[
+        "w-full box-border aspect-[16/10] min-h-[160px] max-h-[min(42vh,380px)] [border-radius:var(--ant-border-radius-lg,8px)] overflow-hidden border [border-color:var(--ant-color-border-secondary,#f0f0f0)] [background:var(--ant-color-fill-quaternary,#f5f5f5)]",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       aria-label="Карта Яндекса"
     />
   );

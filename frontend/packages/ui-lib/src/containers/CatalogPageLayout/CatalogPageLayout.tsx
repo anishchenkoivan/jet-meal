@@ -6,10 +6,10 @@ import { Footer } from "../../components/Footer/Footer";
 import type { LinkRenderProps } from "../../components/Header/Header";
 import {
   NavListBlock,
+  type NavListBlockProps,
   type NavListMobileSearchProps,
 } from "../../components/NavListBlock/NavListBlock";
 import { SiteAppHeader } from "../../components/SiteAppHeader/SiteAppHeader";
-import { PageLayout } from "../PageLayout/PageLayout";
 import {
   getLogoHrefFromPublicEnv,
   getMainNavUrlsFromPublicEnv,
@@ -19,7 +19,7 @@ import {
   MAIN_NAV_KEYS,
   type MainNavUrls,
 } from "../../navigation/mainNavTabs";
-import styles from "./CatalogPageLayout.module.css";
+import { AppLayout } from "../AppLayout/AppLayout";
 
 function DefaultLink({ href, className, children, onClick }: LinkRenderProps) {
   return (
@@ -32,31 +32,28 @@ function DefaultLink({ href, className, children, onClick }: LinkRenderProps) {
 export type CatalogPageLayoutProps = {
   children: ReactNode;
   /**
-   * `true` (по умолчанию) — полный сайт: `PageLayout` + шапка + футер.
-   * `false` — только колонка каталога (родитель уже дал общий `PageLayout` / шапку / футер).
+   * `true` (по умолчанию) — полный сайт: `AppLayout` + шапка + футер.
+   * `false` — только колонка каталога (родитель уже дал общий `AppLayout` / шапку / футер).
    */
   includeSiteChrome?: boolean;
   navUrls?: MainNavUrls;
-  /** Активная вкладка в шапке (`MAIN_NAV_KEYS`) */
   selectedNavKey?: string;
   logoHref?: string;
   footerText?: string;
   LinkComponent?: React.ComponentType<LinkRenderProps>;
-  /** Слоты левой колонки навигации — без привязки к конкретным полям */
   sidebarTitle?: ReactNode;
+  sidebarAriaLabel?: string;
   sidebarBody?: ReactNode;
   sidebarFooter?: ReactNode;
-  /** Высота верхней панели (мобильная полоска под хедером) */
+  sidebarClassName?: string;
+  /** Кастомная полоса в шапке на мобильной ширине вместо поиска+фильтров. */
+  mobileTopBar?: NavListBlockProps["mobileTopBar"];
   pageHeaderHeightPx?: number;
-  /** Оверлей карточки (`/catalog/dish/…`, `/restaurants/[id]`) — скрыть боковую колонку и мобильную полоску. */
   hideNavListChrome?: boolean;
-  /** Первая загрузка: скелет боковой колонки и мобильной полоски. */
   navListLoading?: boolean;
   onMobileApply?: () => void;
   onMobileResetNav?: () => void;
-  /** Мобильная строка поиска (синхронизация с query). */
   mobileSearchField?: NavListMobileSearchProps;
-  /** Если `true`, внутренний блок на всю ширину родителя (родитель задаёт max-width и поля). */
   relaxContentInnerWidth?: boolean;
 };
 
@@ -69,9 +66,11 @@ export function CatalogPageLayout({
   footerText = "© Jet Meal",
   LinkComponent = DefaultLink,
   sidebarTitle,
+  sidebarAriaLabel,
   sidebarBody,
   sidebarFooter,
-  pageHeaderHeightPx = 64,
+  sidebarClassName,
+  mobileTopBar,
   hideNavListChrome,
   navListLoading,
   onMobileApply,
@@ -86,15 +85,17 @@ export function CatalogPageLayout({
   const catalogBody = (
     <div
       className={cx(
-        styles["contentInner"],
-        relaxContentInnerWidth && styles["contentInnerFullWidth"],
+        "flex flex-1 flex-col min-h-0 box-border w-full max-w-[min(992px,100%)] mx-auto",
+        relaxContentInnerWidth && "max-w-none mx-0",
       )}
     >
       <NavListBlock
-        pageHeaderHeightPx={pageHeaderHeightPx}
         asideTitle={sidebarTitle}
+        asideAriaLabel={sidebarAriaLabel}
         asideBody={sidebarBody}
         asideFooter={sidebarFooter}
+        asideClassName={sidebarClassName}
+        mobileTopBar={mobileTopBar}
         mobileSearchField={mobileSearchField}
         hideNavListChrome={hideChrome}
         navListLoading={listLoading}
@@ -113,8 +114,8 @@ export function CatalogPageLayout({
   const tabs = createMainNavTabs(navUrls);
 
   return (
-    <PageLayout
-      top={
+    <AppLayout
+      header={
         <SiteAppHeader
           tabs={tabs}
           selectedKey={selectedNavKey}
@@ -123,9 +124,10 @@ export function CatalogPageLayout({
         />
       }
       footer={<Footer text={footerText} />}
-      contentPadding={hideChrome ? 0 : 24}
     >
-      {catalogBody}
-    </PageLayout>
+      <div className={hideChrome ? undefined : "p-6"}>
+        {catalogBody}
+      </div>
+    </AppLayout>
   );
 }

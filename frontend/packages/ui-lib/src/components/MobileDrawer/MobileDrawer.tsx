@@ -1,112 +1,61 @@
 "use client";
 
-import { Drawer } from "antd";
 import cx from "classnames";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { useDrawerZonePortal } from "../DrawerProvider/DrawerProvider";
 import { CloseIcon } from "../Icons/Icons";
-import styles from "./MobileDrawer.module.css";
-
-/**
- * Z-index ниже липкой шапки SiteAppHeader (950), чтобы хедер оставался поверх маски.
- */
-export const MOBILE_DRAWER_BELOW_HEADER_Z_INDEX = 900;
 
 export type MobileDrawerProps = {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
-  /** Смещение маски и панели от верха вьюпорта (высота шапки), px */
-  topOffsetPx?: number;
-  zIndex?: number;
   title?: ReactNode;
-  /** Строка заголовка с кнопкой закрытия (например корзина) */
   closable?: boolean;
-  /** Передаётся в antd Drawer: не переносить фокус в панель при открытии */
-  autoFocus?: boolean;
-  rootClassName?: string;
   bodyClassName?: string;
-  destroyOnClose?: boolean;
 };
 
 export function MobileDrawer({
   open,
   onClose,
   children,
-  topOffsetPx = 64,
-  zIndex = MOBILE_DRAWER_BELOW_HEADER_Z_INDEX,
   title,
   closable = false,
-  autoFocus,
-  rootClassName,
   bodyClassName,
-  destroyOnClose,
 }: MobileDrawerProps) {
-  const top = topOffsetPx;
-  const drawerHeight = `calc(100vh - ${top}px)`;
+  const portalEl = useDrawerZonePortal();
   const showTitleRow = Boolean(title) || closable;
 
-  return (
-    <Drawer
-      placement="bottom"
-      closable={false}
-      title={null}
-      autoFocus={autoFocus}
-      onClose={onClose}
-      open={open}
-      size={drawerHeight}
-      zIndex={zIndex}
-      destroyOnClose={destroyOnClose}
-      rootClassName={cx(
-        styles["drawerInstant"],
-        styles["drawerBottomFullWidth"],
-        rootClassName,
-      )}
-      styles={{
-        body: {
-          padding: 0,
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          overflow: "hidden",
-        },
-        header: { display: "none" },
-        mask: { top },
-        wrapper: {
-          top,
-          width: "100%",
-          maxWidth: "100vw",
-          left: 0,
-          right: 0,
-        },
-        section: {
-          borderRadius: "16px 16px 0 0",
-        },
-      }}
-    >
-      <div className={styles["sheet"]}>
-        {showTitleRow ? (
-          <div className={styles["sheetHeader"]}>
-            <div className={styles["sheetTitle"]}>
-              {typeof title === "string" ? (
-                <h2 className={styles["titleHeading"]}>{title}</h2>
-              ) : (
-                title
-              )}
-            </div>
-            {closable ? (
-              <button
-                type="button"
-                className={styles["sheetClose"]}
-                onClick={onClose}
-                aria-label="Закрыть"
-              >
-                <CloseIcon />
-              </button>
-            ) : null}
+  if (!open) return null;
+
+  const content = (
+    <div className="absolute inset-0 z-[900] flex flex-col [background:var(--ant-color-bg-container,#fff)]">
+      {showTitleRow ? (
+        <div className="flex flex-shrink-0 items-center gap-3 px-4 py-[14px] border-b [border-color:var(--ant-color-border-secondary,#f0f0f0)]">
+          <div className="flex-[1_1_auto] min-w-0 text-base font-semibold leading-[1.35] [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
+            {typeof title === "string" ? (
+              <h2 className="m-0 font-[inherit] text-inherit">{title}</h2>
+            ) : (
+              title
+            )}
           </div>
-        ) : null}
-        <div className={cx(styles["sheetBody"], bodyClassName)}>{children}</div>
+          {closable ? (
+            <button
+              type="button"
+              className="box-border inline-flex flex-shrink-0 items-center justify-center w-10 h-10 p-0 m-0 -mr-2 border-none [border-radius:var(--ant-border-radius-sm,6px)] bg-transparent [color:var(--ant-color-text,rgba(0,0,0,0.88))] text-[18px] leading-none cursor-pointer [-webkit-tap-highlight-color:transparent] hover:[background:var(--ant-color-fill-secondary,rgba(0,0,0,0.06))] focus-visible:outline-2 focus-visible:[outline-color:var(--ant-color-primary,#1677ff)] focus-visible:outline-offset-2"
+              onClick={onClose}
+              aria-label="Закрыть"
+            >
+              <CloseIcon />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      <div className={cx("flex-[1_1_auto] min-h-0 overflow-auto", bodyClassName)}>
+        {children}
       </div>
-    </Drawer>
+    </div>
   );
+
+  return portalEl ? createPortal(content, portalEl) : content;
 }

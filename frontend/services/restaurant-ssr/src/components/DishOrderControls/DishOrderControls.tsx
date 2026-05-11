@@ -3,7 +3,6 @@
 import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import { ShoppingCartIcon } from "@jet-meal/ui-lib/src/components/Icons/Icons";
 import { useRestaurantCart } from "../../context/restaurant-cart-context";
-import styles from "./DishOrderControls.module.css";
 
 export type DishOrderControlsProps = {
   restaurantId: string;
@@ -29,7 +28,7 @@ export function DishOrderControls({
       <Button
         type="primary"
         size="small"
-        className={styles["addBtn"]}
+        className="!font-semibold"
         onClick={(e) => {
           e.stopPropagation();
           addOne({
@@ -47,7 +46,10 @@ export function DishOrderControls({
   }
 
   return (
-    <div className={styles["counter"]} onClick={(e) => e.stopPropagation()}>
+    <div
+      className="inline-flex flex-row items-center flex-wrap justify-end gap-1"
+      onClick={(e) => e.stopPropagation()}
+    >
       <Button
         size="small"
         aria-label="Меньше"
@@ -55,7 +57,9 @@ export function DishOrderControls({
       >
         −
       </Button>
-      <span className={styles["qty"]}>{qty}</span>
+      <span className="min-w-[22px] text-center text-sm font-semibold [color:var(--ant-color-text,rgba(0,0,0,0.88))]">
+        {qty}
+      </span>
       <Button
         size="small"
         aria-label="Больше"
@@ -67,7 +71,7 @@ export function DishOrderControls({
         type="text"
         danger
         size="small"
-        className={styles["removeFromOrderBtn"]}
+        className="!px-[6px] !min-w-0"
         aria-label="Убрать позицию из заказа"
         icon={<ShoppingCartIcon size={16} />}
         onClick={(e) => {

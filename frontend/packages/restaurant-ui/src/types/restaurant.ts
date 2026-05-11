@@ -1,4 +1,4 @@
-import type { GeoPoint, Money } from './common';
+import type { GeoPoint, Money } from "./common";
 
 export interface Restaurant {
   id: string;
@@ -43,12 +43,12 @@ export interface Menu {
 }
 
 export enum CuisineType {
-  ITALIAN = 'ITALIAN',
-  ASIAN = 'ASIAN',
-  FAST_FOOD = 'FAST_FOOD',
-  HEALTHY = 'HEALTHY',
-  DESSERT = 'DESSERT',
-  OTHER = 'OTHER'
+  ITALIAN = "ITALIAN",
+  ASIAN = "ASIAN",
+  FAST_FOOD = "FAST_FOOD",
+  HEALTHY = "HEALTHY",
+  DESSERT = "DESSERT",
+  OTHER = "OTHER",
 }
 
 // Input types for forms

@@ -11,6 +11,7 @@ import {
   SESSION_EXPIRES_AT_COOKIE,
   SESSION_ID_COOKIE,
 } from "../../lib/middlewares/authGuard";
+import { ACCOUNT_HAS_RESTAURANTS_COOKIE } from "../lib/accountCapabilities";
 
 function setCookie(name: string, value: string, maxAgeSec: number) {
   // biome-ignore lint/suspicious/noDocumentCookie: демо-сессия в cookie, как в restaurant login
@@ -37,6 +38,7 @@ export function AccountLoginPanel() {
         setCookie(ACCOUNT_LOGIN_COOKIE, values.login.trim(), maxAgeSec);
         setCookie(SESSION_ID_COOKIE, sessionId, maxAgeSec);
         setCookie(SESSION_EXPIRES_AT_COOKIE, String(expiresAtMs), maxAgeSec);
+        setCookie(ACCOUNT_HAS_RESTAURANTS_COOKIE, "1", maxAgeSec);
 
         router.push("/my");
         router.refresh();

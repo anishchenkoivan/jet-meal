@@ -1,9 +1,18 @@
 import { metrics } from "@opentelemetry/api";
 import { logs } from "@opentelemetry/api-logs";
 import { resourceFromAttributes } from "@opentelemetry/resources";
-import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
-import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
-import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
+import {
+  BatchLogRecordProcessor,
+  LoggerProvider,
+} from "@opentelemetry/sdk-logs";
+import {
+  MeterProvider,
+  PeriodicExportingMetricReader,
+} from "@opentelemetry/sdk-metrics";
+import {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_VERSION,
+} from "@opentelemetry/semantic-conventions";
 import { StubLogExporter } from "../stubs/StubLogExporter";
 import { StubMetricExporter } from "../stubs/StubMetricExporter";
 
@@ -26,7 +35,9 @@ let registered = false;
  * Registers OpenTelemetry browser providers with stub exporters for logs and metrics.
  * Does not send data anywhere - only provides instrumentation APIs.
  */
-export function registerBrowserProvider(options: BrowserProviderOptions): BrowserProviderHandle {
+export function registerBrowserProvider(
+  options: BrowserProviderOptions,
+): BrowserProviderHandle {
   if (registered) {
     throw new Error(
       "@jet-meal/opentelemetry: registerBrowserProvider() was already called",
@@ -48,9 +59,7 @@ export function registerBrowserProvider(options: BrowserProviderOptions): Browse
   // Set up logger provider with stub exporter
   const loggerProvider = new LoggerProvider({
     resource,
-    processors: [
-      new BatchLogRecordProcessor(new StubLogExporter({ debug })),
-    ],
+    processors: [new BatchLogRecordProcessor(new StubLogExporter({ debug }))],
   });
   logs.setGlobalLoggerProvider(loggerProvider);
 
@@ -67,7 +76,7 @@ export function registerBrowserProvider(options: BrowserProviderOptions): Browse
   metrics.setGlobalMeterProvider(meterProvider);
 
   if (debug) {
-    console.debug('[BrowserProvider] Registered with stub exporters', {
+    console.debug("[BrowserProvider] Registered with stub exporters", {
       serviceName: options.serviceName,
       serviceVersion: options.serviceVersion,
       metricInterval: interval,
@@ -79,7 +88,7 @@ export function registerBrowserProvider(options: BrowserProviderOptions): Browse
     meterProvider,
     async shutdown(): Promise<void> {
       if (debug) {
-        console.debug('[BrowserProvider] Shutting down');
+        console.debug("[BrowserProvider] Shutting down");
       }
       await Promise.all([loggerProvider.shutdown(), meterProvider.shutdown()]);
       registered = false;

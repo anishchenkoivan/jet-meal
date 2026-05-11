@@ -19,7 +19,10 @@ export type RestaurantContentBlock = {
   title: string;
   subtitle?: string | null;
   extraText?: string | null;
+  /** Главное превью (первое фото); синхронизируется с {@link images} в админке */
   image?: string | null;
+  /** Галерея фото блюда; если не задано — используется только {@link image} */
+  images?: string[] | null;
 };
 
 export type RestaurantContentDivision = {
@@ -46,4 +49,9 @@ export type RestaurantFiltersInput = {
   city?: string;
   publishedOnly?: boolean;
   search?: string;
+  /** id тегов каталога (`tags=` в URL); в prod не уходят в GraphQL, только dev-фильтрация */
+  tagIds?: string[];
+  deliveryMaxMinutes?: number;
+  deliveryToday?: boolean;
+  deliveryWish?: string;
 };

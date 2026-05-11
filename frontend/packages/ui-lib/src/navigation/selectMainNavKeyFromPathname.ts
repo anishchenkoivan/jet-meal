@@ -16,10 +16,7 @@ export function selectMainNavKeyFromPathname(pathname: string | null): string {
   ) {
     return MAIN_NAV_KEYS.restaurants;
   }
-  if (
-    pathname.startsWith("/my/orders") ||
-    pathname.startsWith("/my/order/")
-  ) {
+  if (pathname.startsWith("/my/orders") || pathname.startsWith("/my/order/")) {
     return MAIN_NAV_KEYS.orders;
   }
   if (pathname.startsWith("/my")) {
@@ -45,10 +42,7 @@ export function selectMainNavKeyFromPathname(pathname: string | null): string {
   ) {
     return MAIN_NAV_KEYS.businessAds;
   }
-  if (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/business")
-  ) {
+  if (pathname.startsWith("/admin") || pathname.startsWith("/business")) {
     return MAIN_NAV_KEYS.business;
   }
   return MAIN_NAV_KEYS.home;

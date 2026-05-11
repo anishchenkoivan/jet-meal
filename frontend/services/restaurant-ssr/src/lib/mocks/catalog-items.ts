@@ -1,139 +1,126 @@
 import type { CatalogMenuItem } from "../../types/catalog-menu-item";
+import { mockRestaurantDetails } from "./restaurant-detail";
 
-export const mockCatalogItems: CatalogMenuItem[] = [
-  {
-    id: "1",
-    name: "Борщ украинский",
-    description: "Традиционный украинский борщ со сметаной и зеленью",
-    restaurantId: "rest1",
-    restaurantName: "Украинская хата",
-    priceLabel: "450 ₽",
-    priceRub: 450,
-    images: ["https://via.placeholder.com/300x200/ff6b6b/white?text=Борщ"],
-    category: "first",
-    city: "moscow",
-    rating: 4.5,
-    deliveryMinutes: 35,
-    dishTags: ["diet", "comfort", "ukrainian", "soup"],
-  },
-  {
-    id: "2",
-    name: "Пельмени домашние",
-    description: "Сочные пельмени с мясом, подаются со сметаной",
-    restaurantId: "rest2",
-    restaurantName: "Сибирские просторы",
-    priceLabel: "380 ₽",
-    priceRub: 380,
-    images: ["https://via.placeholder.com/300x200/4ecdc4/white?text=Пельмени"],
-    category: "main",
-    city: "moscow",
-    rating: 4.3,
-    deliveryMinutes: 28,
-    dishTags: ["kids", "comfort", "main_course"],
-  },
-  {
-    id: "3",
-    name: "Суши филадельфия",
-    description: "Роллы с лососем, огурцом и сливочным сыром",
-    restaurantId: "rest3",
-    restaurantName: "Токио",
-    priceLabel: "650 ₽",
-    priceRub: 650,
-    images: ["https://via.placeholder.com/300x200/45b7d1/white?text=Суши"],
-    category: "sushi",
-    city: "moscow",
-    rating: 4.7,
-    deliveryMinutes: 40,
-    dishTags: ["japan", "sushi", "sea", "halal"],
-  },
-  {
-    id: "4",
-    name: "Пицца маргарита",
-    description: "Классическая итальянская пицца с томатами и моцареллой",
-    restaurantId: "rest4",
-    restaurantName: "Италия",
-    priceLabel: "520 ₽",
-    priceRub: 520,
-    images: ["https://via.placeholder.com/300x200/f39c12/white?text=Пицца"],
-    category: "pizza",
-    city: "moscow",
-    rating: 4.4,
-    deliveryMinutes: 50,
-    dishTags: ["italian", "pizza", "vegetarian", "kids"],
-  },
-  {
-    id: "5",
-    name: "Борщ украинский",
-    description: "Традиционный украинский борщ со сметаной и зеленью",
-    restaurantId: "rest1",
-    restaurantName: "Украинская хата",
-    priceLabel: "450 ₽",
-    priceRub: 450,
-    images: ["https://via.placeholder.com/300x200/ff6b6b/white?text=Борщ"],
-    category: "first",
-    city: "moscow",
-    rating: 4.5,
-    deliveryMinutes: 35,
-    dishTags: ["diet", "soup", "ukrainian"],
-  },
-  {
-    id: "6",
-    name: "Пельмени домашние",
-    description: "Сочные пельмени с мясом, подаются со сметаной",
-    restaurantId: "rest2",
-    restaurantName: "Сибирские просторы",
-    priceLabel: "380 ₽",
-    priceRub: 380,
-    images: ["https://via.placeholder.com/300x200/4ecdc4/white?text=Пельмени"],
-    category: "main",
-    city: "moscow",
-    rating: 4.3,
-    deliveryMinutes: 25,
-    dishTags: ["comfort", "main_course"],
-  },
-  {
-    id: "7",
-    name: "Суши филадельфия",
-    description: "Роллы с лососем, огурцом и сливочным сыром",
-    restaurantId: "rest3",
-    restaurantName: "Токио",
-    priceLabel: "650 ₽",
-    priceRub: 650,
-    images: ["https://via.placeholder.com/300x200/45b7d1/white?text=Суши"],
-    category: "sushi",
-    city: "moscow",
-    rating: 4.7,
-    deliveryMinutes: 55,
-    dishTags: ["japan", "sushi", "spicy"],
-  },
-  {
-    id: "8",
-    name: "Пицца маргарита",
-    description: "Классическая итальянская пицца с томатами и моцареллой",
-    restaurantId: "rest4",
-    restaurantName: "Италия",
-    priceLabel: "520 ₽",
-    priceRub: 520,
-    images: ["https://via.placeholder.com/300x200/f39c12/white?text=Пицца"],
-    category: "pizza",
-    city: "moscow",
-    rating: 4.4,
-    deliveryMinutes: 45,
-    dishTags: ["italian", "pizza", "grill"],
-  },
-  {
-    id: "9",
-    name: "Уха из форели",
-    description: "Наваристая уха по-северному",
-    restaurantId: "rest2",
-    restaurantName: "Сибирские просторы",
-    priceLabel: "410 ₽",
-    priceRub: 410,
-    images: ["https://via.placeholder.com/300x200/2ecc71/white?text=Уха"],
-    category: "first",
-    city: "spb",
-    rating: 4.6,
-    deliveryMinutes: 32,
-    dishTags: ["diet", "soup", "sea", "low_cal"],
-  },
-];
+function parsePriceRub(subtitle?: string | null): number {
+  const m = /(\d+)/.exec(subtitle ?? "");
+  return m ? Number(m[1]) : 0;
+}
+
+function categoryForDivision(divisionId: string): string {
+  if (divisionId.includes("pizza")) {
+    return "pizza";
+  }
+  if (divisionId === "drinks") {
+    return "drink";
+  }
+  if (divisionId === "desserts") {
+    return "dessert";
+  }
+  if (divisionId === "burgers" || divisionId === "combos") {
+    return "main";
+  }
+  if (divisionId === "sides") {
+    return "snack";
+  }
+  if (divisionId === "home") {
+    return "first";
+  }
+  if (divisionId === "all") {
+    return "main";
+  }
+  return "main";
+}
+
+function tagsForBlock(
+  divisionId: string,
+  title: string,
+): string[] | undefined {
+  const t = title.toLowerCase();
+  const tags = new Set<string>();
+  if (divisionId.includes("pizza")) {
+    tags.add("pizza");
+    tags.add("italian");
+  }
+  if (divisionId === "drinks") {
+    tags.add("snack");
+  }
+  if (divisionId === "desserts") {
+    tags.add("dessert");
+  }
+  if (divisionId === "burgers" || divisionId === "combos") {
+    tags.add("comfort");
+    tags.add("main_course");
+    tags.add("fastfood");
+  }
+  if (divisionId === "sides") {
+    tags.add("kids");
+    tags.add("snack");
+  }
+  if (t.includes("остр") || t.includes("чили") || t.includes("diablo")) {
+    tags.add("spicy");
+  }
+  if (t.includes("вег") || t.includes("вегет")) {
+    tags.add("vegetarian");
+  }
+  if (divisionId === "home" || t.includes("борщ") || t.includes("щи")) {
+    tags.add("soup");
+    tags.add("comfort");
+  }
+  if (t.includes("кофе") || t.includes("капуч") || t.includes("флэт")) {
+    tags.add("dessert");
+  }
+  if (t.includes("рыб") || t.includes("лосос") || t.includes("морск")) {
+    tags.add("sea");
+  }
+  return tags.size ? [...tags] : ["comfort"];
+}
+
+function cityForRestaurant(id: string): string {
+  return id === "cafe2" ? "spb" : "moscow";
+}
+
+function deliveryMinutesFor(restaurantId: string, idx: number): number {
+  const base: Record<string, number> = {
+    burg: 28,
+    piz1: 40,
+    piz2: 35,
+    cafe1: 25,
+    cafe2: 45,
+  };
+  return (base[restaurantId] ?? 35) + (idx % 5) * 3;
+}
+
+function buildMockCatalogItems(): CatalogMenuItem[] {
+  const out: CatalogMenuItem[] = [];
+  let idx = 0;
+  for (const r of Object.values(mockRestaurantDetails)) {
+    const sections = r.mainSections ?? [];
+    for (const sec of sections) {
+      for (const div of sec.divisions) {
+        for (const b of div.blocks) {
+          const priceRub = parsePriceRub(b.subtitle);
+          const city = cityForRestaurant(r.id);
+          out.push({
+            id: b.id,
+            name: b.title,
+            description: b.extraText ?? undefined,
+            restaurantId: r.id,
+            restaurantName: r.name,
+            priceLabel: `${priceRub} ₽`,
+            priceRub,
+            images: b.image ? [b.image] : [],
+            category: categoryForDivision(div.id),
+            city,
+            rating: r.preview?.rating,
+            deliveryMinutes: deliveryMinutesFor(r.id, idx),
+            dishTags: tagsForBlock(div.id, b.title),
+          });
+          idx += 1;
+        }
+      }
+    }
+  }
+  return out;
+}
+
+export const mockCatalogItems: CatalogMenuItem[] = buildMockCatalogItems();

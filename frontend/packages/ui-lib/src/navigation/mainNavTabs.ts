@@ -28,7 +28,11 @@ export function createMainNavTabs(urls: MainNavUrls): HeaderTab[] {
   return [
     { key: MAIN_NAV_KEYS.home, label: "Главная", href: urls.home },
     { key: MAIN_NAV_KEYS.catalog, label: "Каталог", href: urls.catalog },
-    { key: MAIN_NAV_KEYS.restaurants, label: "Рестораны", href: urls.restaurants },
+    {
+      key: MAIN_NAV_KEYS.restaurants,
+      label: "Рестораны",
+      href: urls.restaurants,
+    },
     { key: MAIN_NAV_KEYS.orders, label: "Заказы", href: urls.orders },
     { key: MAIN_NAV_KEYS.account, label: "Аккаунт", href: urls.account },
     {

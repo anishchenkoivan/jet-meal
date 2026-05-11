@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { fetchRestaurantDetail } from "../../../../src/lib/gql-wrapper";
 import { RestaurantCheckoutPage } from "../../../../src/containers/RestaurantCheckoutPage/RestaurantCheckoutPage";
+import { fetchRestaurantDetail } from "../../../../src/lib/gql-wrapper";
 
 export const dynamic = "force-dynamic";
 

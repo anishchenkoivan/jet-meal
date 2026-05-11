@@ -1,12 +1,29 @@
-import { apolloClient } from "./apollo-client";
-import { CATALOG_ITEMS_LIST, RESTAURANTS_LIST, RESTAURANT_DETAIL } from "./graphql/documents";
-import { mockCatalogItems } from "./mocks/catalog-items";
-import { mockRestaurants } from "./mocks/restaurants";
-import { mockRestaurantDetails } from "./mocks/restaurant-detail";
-import type { CatalogMenuItem, CatalogItemFiltersInput } from "../types/catalog-menu-item";
+import type {
+  CatalogItemFiltersInput,
+  CatalogMenuItem,
+} from "../types/catalog-menu-item";
 import type { Restaurant, RestaurantFiltersInput } from "../types/restaurant";
+import { apolloClient } from "./apollo-client";
+import {
+  CATALOG_ITEMS_LIST,
+  RESTAURANT_DETAIL,
+  RESTAURANTS_LIST,
+} from "./graphql/documents";
+import { mockCatalogItems } from "./mocks/catalog-items";
+import { mockRestaurantDetails } from "./mocks/restaurant-detail";
+import { mockRestaurants } from "./mocks/restaurants";
+import {
+  parseDeliveryTimeLabelMaxMinutes,
+  restaurantMatchesCatalogTagIds,
+} from "./restaurant-catalog-tag-match";
 
 const isDev = process.env.NODE_ENV === "development";
+
+/** Значения `city` в URL как в каталоге (`moscow`) → подстрока в `preview.city` моков. */
+const RESTAURANT_CITY_SLUG_HINT: Record<string, string> = {
+  moscow: "москва",
+  spb: "санкт-петербург",
+};
 
 type CatalogItemsQueryData = {
   catalogItems: CatalogMenuItem[];
@@ -20,39 +37,42 @@ type RestaurantDetailQueryData = {
   restaurant: Restaurant;
 };
 
-export async function fetchCatalogItems(filters: CatalogItemFiltersInput = {}): Promise<CatalogMenuItem[]> {
+export async function fetchCatalogItems(
+  filters: CatalogItemFiltersInput = {},
+): Promise<CatalogMenuItem[]> {
   if (isDev) {
     // В dev возвращаем моки с фильтрацией
     let items = [...mockCatalogItems];
-    
+
     if (filters.search) {
       const search = filters.search.toLowerCase();
-      items = items.filter(item => 
-        item.name.toLowerCase().includes(search) ||
-        item.description?.toLowerCase().includes(search)
+      items = items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(search) ||
+          item.description?.toLowerCase().includes(search),
       );
     }
-    
+
     if (filters.restaurantSearch) {
       const search = filters.restaurantSearch.toLowerCase();
-      items = items.filter(item => 
-        item.restaurantName.toLowerCase().includes(search)
+      items = items.filter((item) =>
+        item.restaurantName.toLowerCase().includes(search),
       );
     }
-    
+
     if (filters.category) {
       items = items.filter((item) => item.category === filters.category);
     }
 
     if (filters.tagIds?.length) {
       const tagSet = new Set(filters.tagIds);
-      items = items.filter((item) =>
-        item.dishTags?.some((t) => tagSet.has(t)),
-      );
+      items = items.filter((item) => item.dishTags?.some((t) => tagSet.has(t)));
     }
 
     if (filters.restaurantId) {
-      items = items.filter((item) => item.restaurantId === filters.restaurantId);
+      items = items.filter(
+        (item) => item.restaurantId === filters.restaurantId,
+      );
     }
 
     if (filters.city) {
@@ -66,9 +86,7 @@ export async function fetchCatalogItems(filters: CatalogItemFiltersInput = {}): 
     }
 
     if (filters.deliveryToday) {
-      items = items.filter(
-        (item) => (item.deliveryMinutes ?? 999) <= 90,
-      );
+      items = items.filter((item) => (item.deliveryMinutes ?? 999) <= 90);
     }
 
     return items;
@@ -90,39 +108,70 @@ export async function fetchCatalogItems(filters: CatalogItemFiltersInput = {}): 
   }
 }
 
-export async function fetchRestaurants(filters: RestaurantFiltersInput = {}): Promise<Restaurant[]> {
+export async function fetchRestaurants(
+  filters: RestaurantFiltersInput = {},
+): Promise<Restaurant[]> {
   if (isDev) {
-    // В dev возвращаем моки с фильтрацией
     let restaurants = [...mockRestaurants];
-    
+
     if (filters.search) {
       const search = filters.search.toLowerCase();
-      restaurants = restaurants.filter(restaurant => 
-        restaurant.name.toLowerCase().includes(search) ||
-        restaurant.preview?.description?.toLowerCase().includes(search)
-      );
-    }
-    
-    const cityFilter = filters.city;
-    if (cityFilter) {
-      const cityLower = cityFilter.toLowerCase();
       restaurants = restaurants.filter(
         (restaurant) =>
-          restaurant.preview?.city?.toLowerCase() === cityLower,
+          restaurant.name.toLowerCase().includes(search) ||
+          restaurant.preview?.description?.toLowerCase().includes(search),
       );
     }
-    
-    if (filters.publishedOnly !== false) {
-      restaurants = restaurants.filter(restaurant => restaurant.published);
+
+    const cityFilter = filters.city;
+    if (cityFilter) {
+      const hint =
+        RESTAURANT_CITY_SLUG_HINT[cityFilter.toLowerCase()] ??
+        cityFilter.toLowerCase();
+      restaurants = restaurants.filter((restaurant) =>
+        (restaurant.preview?.city ?? "").toLowerCase().includes(hint),
+      );
     }
-    
+
+    if (filters.tagIds?.length) {
+      restaurants = restaurants.filter((restaurant) =>
+        restaurantMatchesCatalogTagIds(
+          restaurant.preview?.cuisineTags,
+          filters.tagIds!,
+        ),
+      );
+    }
+
+    if (filters.deliveryMaxMinutes != null) {
+      const cap = filters.deliveryMaxMinutes;
+      restaurants = restaurants.filter((restaurant) => {
+        const parsed = parseDeliveryTimeLabelMaxMinutes(
+          restaurant.preview?.deliveryTimeLabel,
+        );
+        if (parsed == null) {
+          return true;
+        }
+        return parsed <= cap;
+      });
+    }
+
+    if (filters.publishedOnly !== false) {
+      restaurants = restaurants.filter((restaurant) => restaurant.published);
+    }
+
     return restaurants;
   }
 
   try {
     const { data } = await apolloClient.query<RestaurantsQueryData>({
       query: RESTAURANTS_LIST,
-      variables: { filters },
+      variables: {
+        filters: {
+          city: filters.city,
+          search: filters.search,
+          publishedOnly: filters.publishedOnly,
+        },
+      },
       fetchPolicy: "network-only",
     });
     if (!data?.restaurants) {
@@ -135,7 +184,9 @@ export async function fetchRestaurants(filters: RestaurantFiltersInput = {}): Pr
   }
 }
 
-export async function fetchRestaurantDetail(id: string): Promise<Restaurant | null> {
+export async function fetchRestaurantDetail(
+  id: string,
+): Promise<Restaurant | null> {
   if (isDev) {
     // В dev возвращаем мок по ID
     return mockRestaurantDetails[id] || null;

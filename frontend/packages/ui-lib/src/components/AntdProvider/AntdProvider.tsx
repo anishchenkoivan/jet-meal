@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { ConfigProvider } from "antd";
 import type { ThemeConfig } from "antd/es/config-provider/context";
 import ruRU from "antd/locale/ru_RU";
+import type React from "react";
+import { useMemo } from "react";
 
 const defaultTheme: ThemeConfig = {
   token: {

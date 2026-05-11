@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroSlideShell } from "../HeroSlideShell/HeroSlideShell";
 import { partnershipLandingMedia } from "../copy/partnershipLanding";
+import { HeroSlideShell } from "../HeroSlideShell/HeroSlideShell";
 import { PartnershipLandingText } from "./PartnershipLandingText";
 
 export function PartnershipLandingSlide() {

@@ -35,8 +35,8 @@ export function CourierSignupForm({
         {title}
       </Typography.Title>
       <Typography.Paragraph type="secondary" style={{ marginBottom: 20 }}>
-        Заполните паспортные данные и ИНН для договора. Сейчас форма демонстрационная: можно
-        отправить пустой и всё равно продолжить.
+        Заполните паспортные данные и ИНН для договора. Сейчас форма
+        демонстрационная: можно отправить пустой и всё равно продолжить.
       </Typography.Paragraph>
 
       <Form<CourierSignupFormValues>
@@ -66,13 +66,22 @@ export function CourierSignupForm({
         </Form.Item>
         <Form.Item name="consentPersonal" valuePropName="checked">
           <Checkbox>
-            Согласен на обработку персональных данных и передачу сведений партнёрам сервиса
+            Согласен на обработку персональных данных и передачу сведений
+            партнёрам сервиса
           </Checkbox>
         </Form.Item>
         <Form.Item name="consentContract" valuePropName="checked">
-          <Checkbox>Ознакомился с типовым договором и принимаю условия</Checkbox>
+          <Checkbox>
+            Ознакомился с типовым договором и принимаю условия
+          </Checkbox>
         </Form.Item>
-        <Button type="primary" htmlType="submit" loading={pending} block size="large">
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={pending}
+          block
+          size="large"
+        >
           Создать аккаунт курьера
         </Button>
       </Form>

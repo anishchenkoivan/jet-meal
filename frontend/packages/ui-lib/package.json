@@ -15,19 +15,24 @@
   },
   "peerDependencies": {
     "@ant-design/icons": "catalog:",
+    "@ant-design/nextjs-registry": "catalog:",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
     "@ant-design/icons": "catalog:",
+    "@ant-design/nextjs-registry": "catalog:",
+    "@jet-meal/design-system": "workspace:*",
     "@storybook/nextjs-vite": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "antd": "catalog:",
     "classnames": "catalog:",
     "next": "catalog:",
     "storybook": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
 }

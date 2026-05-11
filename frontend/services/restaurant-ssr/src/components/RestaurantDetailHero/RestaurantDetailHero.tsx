@@ -10,14 +10,17 @@ export type RestaurantDetailHeroProps = {
   onBookClick?: () => void;
 };
 
-export function RestaurantDetailHero({ restaurant, onBookClick }: RestaurantDetailHeroProps) {
+export function RestaurantDetailHero({
+  restaurant,
+  onBookClick,
+}: RestaurantDetailHeroProps) {
   const p = restaurant.preview;
   const canBook = Boolean(p?.bookHref || p?.bookingPhone);
 
   return (
-    <div style={{ marginBottom: "2rem" }}>
+    <div className="mb-8">
       {p?.images ? (
-        <div style={{ marginBottom: "1.5rem" }}>
+        <div>
           <ImageCarousel
             images={p.images}
             label={restaurant.name}
@@ -26,24 +29,10 @@ export function RestaurantDetailHero({ restaurant, onBookClick }: RestaurantDeta
         </div>
       ) : null}
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "baseline",
-          flexWrap: "wrap",
-          gap: "10px 14px",
-          marginBottom: "0.75rem",
-        }}
-      >
+      <div className="flex flex-row items-baseline flex-wrap gap-x-[14px] gap-y-2.5 mb-3">
         {p?.rating != null ? (
           <span
-            style={{
-              fontSize: "1.15rem",
-              fontWeight: 600,
-              color: "rgba(0,0,0,0.65)",
-              whiteSpace: "nowrap",
-            }}
+            className="text-[1.15rem] font-semibold text-black/65 whitespace-nowrap"
             aria-label={`Рейтинг ${p.rating}`}
           >
             ⭐ {p.rating}
@@ -54,21 +43,11 @@ export function RestaurantDetailHero({ restaurant, onBookClick }: RestaurantDeta
         </Typography.Title>
       </div>
 
-      <Typography.Paragraph style={{ fontSize: "1.1rem", color: "#666" }}>
+      <Typography.Paragraph className="!text-[1.1rem] !text-[#666]">
         {p?.description}
       </Typography.Paragraph>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          flexWrap: "wrap",
-          fontSize: "0.95rem",
-          color: "#666",
-        }}
-      >
+      <div className="flex gap-4 items-center mb-6 flex-wrap text-[0.95rem] text-[#666]">
         {p?.city ? <Typography.Text>{p.city}</Typography.Text> : null}
         {p?.address ? (
           <Typography.Text type="secondary">{p.address}</Typography.Text>
@@ -76,7 +55,7 @@ export function RestaurantDetailHero({ restaurant, onBookClick }: RestaurantDeta
       </div>
 
       {canBook && onBookClick ? (
-        <div style={{ marginBottom: "1.5rem" }}>
+        <div className="mb-6">
           <Button type="primary" onClick={onBookClick}>
             Забронировать
           </Button>

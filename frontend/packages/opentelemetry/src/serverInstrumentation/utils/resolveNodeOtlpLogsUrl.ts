@@ -1,5 +1,5 @@
-import { joinOtlpUrl } from "../../utils/joinOtlpUrl";
 import type { TelemetryOptions } from "../../telemetryOptions";
+import { joinOtlpUrl } from "../../utils/joinOtlpUrl";
 
 export function resolveNodeOtlpLogsUrl(options: TelemetryOptions): string {
   if (options.logsEndpoint) {

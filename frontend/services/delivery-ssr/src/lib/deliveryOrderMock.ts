@@ -1,4 +1,8 @@
-/** Демо-данные до подключения API. `demo-transit` / `demo-done` — примеры; любой другой id → не найден. */
+/** Демо-данные до подключения API. Заказы — из `jet-meal-dev:orders-v1` (общий слой с рестораном). */
+
+import type { JetMealDevOrder } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevOrderTypes";
+import { readJetMealDevOrdersFromLocalStorage } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevStorage";
+import { SEED_JET_MEAL_DEV_ORDERS } from "@jet-meal/ui-lib/src/lib/jetMealDev/jetMealDevOrdersSeed";
 
 export type DeliveryOrderBase = {
   id: string;
@@ -45,40 +49,69 @@ const MOSCOW_ROUTE: DeliveryRoutePoints = {
   courier: { lat: 55.7548, lng: 37.61795 },
 };
 
-const BASE: Omit<DeliveryOrderBase, "id"> = {
-  number: "JM-10492",
-  restaurantName: "Столовая на Тверской",
-  addressLine: "Москва, Тверская ул., 7",
-  totalRub: 1840,
-  placedAt: "2026-05-02T14:20:00.000Z",
-};
+/**
+ * Трекинг заказа по id и **единому** списку dev-заказов (`jet-meal-dev:orders-v1`).
+ */
+export function buildDeliveryOrderView(
+  orderId: string,
+  orders: JetMealDevOrder[],
+): DeliveryOrderView {
+  const resolvedSourceId = orderId === "demo-completed" ? "demo-done" : orderId;
+  const o = orders.find((x) => x.id === resolvedSourceId);
+  if (!o) {
+    return { status: "not_found" };
+  }
 
-export function getDeliveryOrderView(orderId: string): DeliveryOrderView {
-  if (orderId === "demo-transit") {
+  const displayId = orderId === "demo-completed" ? "demo-completed" : o.id;
+
+  const number =
+    o.id === "demo-transit"
+      ? "JM-10492"
+      : o.id === "demo-done"
+        ? "JM-10491"
+        : `JM-${o.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase()}`;
+
+  const state = o.deliveryMockState ?? "completed";
+
+  const base: DeliveryOrderBase = {
+    id: displayId,
+    number,
+    restaurantName: o.restaurantName,
+    addressLine: "Москва, Тверская ул., 7",
+    totalRub: o.totalRub,
+    placedAt: o.createdAt,
+  };
+
+  const itemsSummary =
+    o.lines
+      .map((l) => `${l.name}${l.quantity > 1 ? ` ×${l.quantity}` : ""}`)
+      .join(", ") || "Заказ";
+
+  if (state === "in_transit") {
     return {
       status: "in_transit",
       order: {
-        id: orderId,
-        ...BASE,
+        ...base,
         etaMinutes: 18,
         courierName: "Алексей",
       },
       route: MOSCOW_ROUTE,
     };
   }
-  if (orderId === "demo-done" || orderId === "demo-completed") {
-    return {
-      status: "completed",
-      order: {
-        id: orderId === "demo-completed" ? "demo-completed" : "demo-done",
-        ...BASE,
-        number: "JM-10491",
-        deliveredAt: "2026-05-02T15:02:00.000Z",
-        itemsSummary: "Борщ, салат Цезарь, компот",
-      },
-    };
-  }
-  return { status: "not_found" };
+
+  return {
+    status: "completed",
+    order: {
+      ...base,
+      deliveredAt: o.deliveredAtIso ?? "2026-05-02T15:02:00.000Z",
+      itemsSummary,
+    },
+  };
+}
+
+/** Без списка заказов (например SSR) — всегда `not_found`. */
+export function getDeliveryOrderView(orderId: string): DeliveryOrderView {
+  return buildDeliveryOrderView(orderId, []);
 }
 
 export type DemoOrderListItem = {
@@ -88,20 +121,31 @@ export type DemoOrderListItem = {
   stateLabel: string;
 };
 
-/** Список заказов для страницы «Мои заказы» (демо). */
-export function listDemoOrders(): DemoOrderListItem[] {
-  return [
-    {
-      id: "demo-transit",
-      number: "JM-10492",
-      summary: "Столовая на Тверской · в пути",
-      stateLabel: "В пути",
-    },
-    {
-      id: "demo-done",
-      number: "JM-10491",
-      summary: "Столовая на Тверской · доставлен",
-      stateLabel: "Доставлен",
-    },
-  ];
+export function jetMealDevOrdersToDemoListItems(
+  orders: JetMealDevOrder[],
+): DemoOrderListItem[] {
+  return orders.map((o) => {
+    const state = o.deliveryMockState ?? "completed";
+    const number =
+      o.id === "demo-transit"
+        ? "JM-10492"
+        : o.id === "demo-done"
+          ? "JM-10491"
+          : `JM-${o.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase()}`;
+    const summary = `${o.restaurantName} · ${
+      state === "in_transit" ? "в пути" : "доставлен"
+    }`;
+    const stateLabel = state === "in_transit" ? "В пути" : "Доставлен";
+    return { id: o.id, number, summary, stateLabel };
+  });
+}
+
+/** Стартовый список до гидрации контекста (совпадает с сидом в localStorage). */
+export function defaultDemoOrderListItems(): DemoOrderListItem[] {
+  return jetMealDevOrdersToDemoListItems(SEED_JET_MEAL_DEV_ORDERS);
+}
+
+/** Прямое чтение из localStorage (без React), например для одноразового синка. */
+export function readDeliveryOrdersFromDevStorage(): JetMealDevOrder[] {
+  return readJetMealDevOrdersFromLocalStorage();
 }

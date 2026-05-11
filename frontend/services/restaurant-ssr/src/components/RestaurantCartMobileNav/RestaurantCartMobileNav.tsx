@@ -1,20 +1,21 @@
 "use client";
 
+import { useDrawer } from "@jet-meal/ui-lib/src/components/DrawerProvider/DrawerProvider";
 import { DownIcon } from "@jet-meal/ui-lib/src/components/Icons/Icons";
-import { useSingleMobileDrawer } from "@jet-meal/ui-lib/src/components/SingleMobileDrawer/SingleMobileDrawerProvider";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRestaurantCart } from "../../context/restaurant-cart-context";
-import { RESTAURANT_MOBILE_DRAWER_CART_KEY } from "../RestaurantMobileDrawerHost/restaurantMobileDrawerKeys";
-import styles from "./RestaurantCartMobileNav.module.css";
+import { RestaurantCartPanel } from "../RestaurantCartPanel/RestaurantCartPanel";
+import {
+  RESTAURANT_CART_DRAWER_ID,
+} from "../restaurantDrawerIds";
 
-/** Брейкпункт совпадает с появлением правой колонки корзины на странице ресторана. */
-export const RESTAURANT_CART_INLINE_MIN_PX = 992;
+export const RESTAURANT_CART_INLINE_MIN_PX = 1292;
 
 function CartBagIcon() {
   return (
     <svg
-      className={styles["iconSvg"]}
+      className="block"
       width={22}
       height={22}
       viewBox="0 0 24 24"
@@ -28,23 +29,16 @@ function CartBagIcon() {
   );
 }
 
-/**
- * Узкий экран + страница ресторана: иконка корзины в шапке.
- * Один общий дроуер с меню: повторный клик закрывает, меню заменяет корзину и наоборот.
- */
 export function RestaurantCartMobileNav() {
   const pathname = usePathname();
   const onRestaurant =
     (pathname?.startsWith("/restaurant/") ?? false) &&
     !(pathname?.endsWith("/checkout") ?? false);
   const [narrow, setNarrow] = useState(false);
-  const { toggle, close, isActive } = useSingleMobileDrawer();
+  const { open, close, isOpen, currentPersistentModal } = useDrawer();
   const { totalCount } = useRestaurantCart();
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
     const mq = window.matchMedia(
       `(max-width: ${RESTAURANT_CART_INLINE_MIN_PX - 1}px)`,
     );
@@ -55,32 +49,42 @@ export function RestaurantCartMobileNav() {
   }, []);
 
   useEffect(() => {
-    if (!narrow) {
+    if (!narrow && !currentPersistentModal) {
       close();
     }
-  }, [narrow, close]);
+  }, [narrow, close, currentPersistentModal]);
 
-  if (!onRestaurant || !narrow) {
-    return null;
-  }
+  const cartOpen = isOpen(RESTAURANT_CART_DRAWER_ID);
 
-  const cartOpen = isActive(RESTAURANT_MOBILE_DRAWER_CART_KEY);
+  const toggle = useCallback(() => {
+    if (cartOpen) {
+      close();
+    } else {
+      open(RESTAURANT_CART_DRAWER_ID, () => <RestaurantCartPanel hideHeader />, {
+        replace: true,
+      });
+    }
+  }, [cartOpen, open, close]);
+
+  if (!onRestaurant || !narrow) return null;
 
   return (
     <button
       type="button"
-      className={styles["iconBtn"]}
-      onClick={() => toggle(RESTAURANT_MOBILE_DRAWER_CART_KEY)}
+      className="relative inline-flex items-center justify-center w-10 h-10 p-0 border-none rounded-[10px] cursor-pointer [color:var(--ant-color-text,rgba(0,0,0,0.88))] bg-transparent hover:[background:var(--ant-color-fill-tertiary,rgba(0,0,0,0.04))] hover:[color:var(--ant-color-primary,#1677ff)]"
+      onClick={toggle}
       aria-label={cartOpen ? "Закрыть корзину" : "Корзина"}
       aria-expanded={cartOpen}
     >
       {cartOpen ? (
-        <DownIcon size={22} className={styles["iconSvg"]} />
+        <DownIcon size={22} className="block" />
       ) : (
         <CartBagIcon />
       )}
       {!cartOpen && totalCount > 0 ? (
-        <span className={styles["dot"]}>{totalCount > 99 ? "99+" : totalCount}</span>
+        <span className="absolute top-1 right-0.5 min-w-4 h-4 px-1 rounded-[999px] text-[10px] font-bold leading-4 text-center text-white [background:var(--ant-color-primary,#1677ff)]">
+          {totalCount > 99 ? "99+" : totalCount}
+        </span>
       ) : null}
     </button>
   );

@@ -1,10 +1,9 @@
 "use client";
 
-import { PageContentShell } from "@jet-meal/ui-lib/src/containers/PageContentShell/PageContentShell";
-import { useRef } from "react";
 import { CatalogPageLayout } from "@jet-meal/ui-lib/src/containers/CatalogPageLayout/CatalogPageLayout";
-import { Typography } from "@jet-meal/ui-lib/src/components/Typography/Typography";
+import { PageContentShell } from "@jet-meal/ui-lib/src/containers/PageContentShell/PageContentShell";
 import { MAIN_NAV_KEYS } from "@jet-meal/ui-lib/src/navigation/mainNavTabs";
+import { useRef, useState } from "react";
 import type { CatalogFiltersMobileHandlers } from "../../components/CatalogFiltersClient/CatalogFiltersClient";
 import { CatalogFiltersClient } from "../../components/CatalogFiltersClient/CatalogFiltersClient";
 import { CatalogGridClient } from "../../components/CatalogGridClient/CatalogGridClient";
@@ -18,25 +17,29 @@ export function CatalogPage({ items }: CatalogPageProps) {
   const mobileRef = useRef<CatalogFiltersMobileHandlers>({
     apply: () => {},
     reset: () => {},
+    setSearch: () => {},
   });
+  const [headerSearch, setHeaderSearch] = useState("");
+  const setSearchCallbackRef = useRef<(v: string) => void>(() => {});
 
   return (
-    <PageContentShell>
+    <PageContentShell className="min-h-0 flex-1">
       <CatalogPageLayout
         includeSiteChrome={false}
         relaxContentInnerWidth
         selectedNavKey={MAIN_NAV_KEYS.catalog}
+        mobileSearchField={{
+          value: headerSearch,
+          onChange: (v) => { setHeaderSearch(v); setSearchCallbackRef.current(v); },
+          placeholder: "Название блюда, ингредиенты…",
+        }}
         onMobileApply={() => mobileRef.current.apply()}
-        onMobileResetNav={() => mobileRef.current.reset()}
-        sidebarTitle={
-          <Typography.Title level={5} style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
-            Ваши пожелания:
-          </Typography.Title>
-        }
+        onMobileResetNav={() => { mobileRef.current.reset(); setHeaderSearch(""); }}
         sidebarBody={
           <CatalogFiltersClient
             registerMobileHandlers={(api) => {
               mobileRef.current = api;
+              setSearchCallbackRef.current = api.setSearch;
             }}
           />
         }

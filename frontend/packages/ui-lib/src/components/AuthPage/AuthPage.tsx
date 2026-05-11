@@ -2,6 +2,7 @@
 
 import { Button, Card, Form, Input, Typography } from "antd";
 import { useCallback, useEffect, useState } from "react";
+import { MiddleColumn } from "../MiddleColumn/MiddleColumn";
 
 export type AuthMode = "login" | "register";
 
@@ -21,10 +22,7 @@ export type AuthPageProps = {
   verifyEmailTitle?: string;
   /** Режим при первом рендере (например, из query `?register=1`). */
   initialMode?: AuthMode;
-  onSubmit: (
-    mode: AuthMode,
-    values: AuthFormValues,
-  ) => Promise<void> | void;
+  onSubmit: (mode: AuthMode, values: AuthFormValues) => Promise<void> | void;
   /** Длина кода в письме (по умолчанию 6). */
   verificationCodeLength?: number;
 };
@@ -167,7 +165,8 @@ export function AuthPage({
   };
 
   return (
-    <Card style={{ width: "100%", maxWidth: 640 }}>
+    <MiddleColumn verticalAlign="center" maxWidthPx={640} className="min-h-0 flex-1 py-4">
+      <Card style={{ width: "100%" }}>
       <Typography.Title level={3} style={{ marginTop: 0 }}>
         {heading}
       </Typography.Title>
@@ -176,8 +175,8 @@ export function AuthPage({
         <>
           <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
             Мы отправили код на{" "}
-            <Typography.Text strong>{maskEmail(draft.email)}</Typography.Text>
-            . Введите его ниже.
+            <Typography.Text strong>{maskEmail(draft.email)}</Typography.Text>.
+            Введите его ниже.
           </Typography.Paragraph>
           <Typography.Paragraph type="secondary" style={{ marginBottom: 20 }}>
             Без почтового сервера код показывается только здесь (демо):{" "}
@@ -315,10 +314,7 @@ export function AuthPage({
               name="password"
               rules={[{ required: true, message: "Укажите пароль" }]}
             >
-              <Input.Password
-                autoComplete="new-password"
-                autoFocus={false}
-              />
+              <Input.Password autoComplete="new-password" autoFocus={false} />
             </Form.Item>
 
             <Form.Item
@@ -332,17 +328,12 @@ export function AuthPage({
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(
-                      new Error("Пароли не совпадают"),
-                    );
+                    return Promise.reject(new Error("Пароли не совпадают"));
                   },
                 }),
               ]}
             >
-              <Input.Password
-                autoComplete="new-password"
-                autoFocus={false}
-              />
+              <Input.Password autoComplete="new-password" autoFocus={false} />
             </Form.Item>
 
             <Button type="primary" htmlType="submit" loading={pending} block>
@@ -362,5 +353,6 @@ export function AuthPage({
         </>
       )}
     </Card>
+    </MiddleColumn>
   );
 }

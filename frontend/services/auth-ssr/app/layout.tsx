@@ -1,27 +1,37 @@
-import "@jet-meal/ui-lib/src/css/jet-meal-global.css";
+import "./globals.css";
 
-import { AntdRegistry } from "@ant-design/nextjs-registry";
-import cx from "classnames";
-import type { Metadata } from "next";
+import { Footer } from "@jet-meal/ui-lib/src/components/Footer/Footer";
+import { AppLayout } from "@jet-meal/ui-lib/src/containers/AppLayout/AppLayout";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { AntdProvider } from "../../../packages/ui-lib/src/components/AntdProvider/AntdProvider";
-import { SiteChromeLayout } from "../src/containers/SiteChromeLayout/SiteChromeLayout";
-import styles from "./layout.module.css";
+import { JetMealDevFab } from "@jet-meal/ui-lib/src/components/JetMealDevTools/JetMealDevFab";
+import { JetMealDevMockProvider } from "@jet-meal/ui-lib/src/context/JetMealDevMockContext";
+import { AuthHeader } from "../src/components/AuthHeader/AuthHeader";
 
 export const metadata: Metadata = {
   title: "Jet Meal — доставка еды",
   description: "Заказывайте блюда из ресторанов с доставкой на дом",
 };
 
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru" className={cx(styles["html"])}>
-      <body className={cx(styles["body"])} suppressHydrationWarning>
-        <AntdRegistry>
-          <AntdProvider>
-            <SiteChromeLayout>{children}</SiteChromeLayout>
-          </AntdProvider>
-        </AntdRegistry>
+    <html lang="ru">
+      <body suppressHydrationWarning>
+        <JetMealDevMockProvider>
+          <AppLayout
+            header={<AuthHeader />}
+            footer={<Footer text="© Jet Meal" />}
+          >
+            <>
+              {children}
+              <JetMealDevFab />
+            </>
+          </AppLayout>
+        </JetMealDevMockProvider>
       </body>
     </html>
   );

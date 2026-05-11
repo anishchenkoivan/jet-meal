@@ -1,7 +1,7 @@
 "use client";
 
-import { Modal } from "../Modal/Modal";
 import type { ReactNode } from "react";
+import { Modal } from "../Modal/Modal";
 
 export type AppConfirmModalProps = {
   open: boolean;
@@ -9,6 +9,8 @@ export type AppConfirmModalProps = {
   children?: ReactNode;
   okText?: string;
   cancelText?: string;
+  /** Красная кнопка подтверждения (например удаление / закрытие). */
+  okDanger?: boolean;
   onOk?: () => void;
   onCancel?: () => void;
 };
@@ -22,6 +24,7 @@ export function AppConfirmModal({
   children,
   okText = "Понятно",
   cancelText = "Отмена",
+  okDanger,
   onOk,
   onCancel,
 }: AppConfirmModalProps) {
@@ -33,6 +36,7 @@ export function AppConfirmModal({
       onCancel={onCancel}
       okText={okText}
       cancelText={cancelText}
+      okButtonProps={okDanger ? { danger: true } : undefined}
       destroyOnHidden
     >
       {children}

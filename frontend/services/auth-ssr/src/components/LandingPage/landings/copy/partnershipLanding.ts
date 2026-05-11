@@ -5,8 +5,7 @@ export const partnershipLandingMedia = {
 
 export const partnershipLandingCopy = {
   title: "Сотрудничество с Jet Meal",
-  intro:
-    "Подключайте точку, курьерский сервис или рекламу — выберите кабинет:",
+  intro: "Подключайте точку, курьерский сервис или рекламу — выберите кабинет:",
   outro: "",
   links: [
     { key: "restaurant", label: "Для ресторанов" },

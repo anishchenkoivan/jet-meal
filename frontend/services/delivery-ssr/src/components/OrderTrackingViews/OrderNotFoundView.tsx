@@ -1,19 +1,21 @@
 import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
-import { Title, Paragraph } from "@jet-meal/ui-lib/src/components/Typography/Typography";
-import styles from "./orderTracking.module.css";
+import {
+  Paragraph,
+  Title,
+} from "@jet-meal/ui-lib/src/components/Typography/Typography";
 
 export function OrderNotFoundView() {
   return (
-    <div className={styles["wrap"]}>
-      <div className={styles["panel"]}>
-        <Title level={3} className={styles["lead"]}>
+    <div className="flex flex-col pb-2">
+      <div className="[background:var(--ant-color-bg-container,#fff)] rounded-xl p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <Title level={3} className="!mt-0 !mb-4">
           Заказ не найден
         </Title>
         <Paragraph type="secondary">
-          Проверьте ссылку или номер заказа. Если вы перешли из письма, запросите новое письмо в
-          поддержке.
+          Проверьте ссылку или номер заказа. Если вы перешли из письма,
+          запросите новое письмо в поддержке.
         </Paragraph>
-        <div className={styles["actions"]}>
+        <div className="flex flex-wrap gap-3 mt-5">
           <Button type="primary" href="/my/orders">
             К моим заказам
           </Button>

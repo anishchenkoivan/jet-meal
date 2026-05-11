@@ -1,22 +1,35 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 
-const CatalogFiltersMobileDrawerContext = createContext(false);
+export type MobileFiltersDrawerController = {
+  closeDrawer: () => void;
+  /** Синхронизация шапки/стейта снаружи после сброса (как бывший футер дроуера). */
+  afterFilterReset: () => void;
+};
 
-/** Оборачивает тело мобильного дроуера фильтров: скрывает нижние «Готово»/«Сбросить» внутри `CatalogFilters` (они в футере `NavListBlock`). */
-export function CatalogFiltersMobileDrawerScope({
+const MobileFiltersDrawerControllerContext =
+  createContext<MobileFiltersDrawerController | null>(null);
+
+/** Оборачивает тело мобильного дроуера фильтров каталога: закрытие после «Готово» / сброса. */
+export function MobileFiltersDrawerProvider({
   children,
+  closeDrawer,
+  afterFilterReset,
 }: {
   children: ReactNode;
+  closeDrawer: () => void;
+  afterFilterReset: () => void;
 }) {
   return (
-    <CatalogFiltersMobileDrawerContext.Provider value={true}>
+    <MobileFiltersDrawerControllerContext.Provider
+      value={{ closeDrawer, afterFilterReset }}
+    >
       {children}
-    </CatalogFiltersMobileDrawerContext.Provider>
+    </MobileFiltersDrawerControllerContext.Provider>
   );
 }
 
-export function useCatalogFiltersInMobileDrawer(): boolean {
-  return useContext(CatalogFiltersMobileDrawerContext);
+export function useMobileFiltersDrawerController(): MobileFiltersDrawerController | null {
+  return useContext(MobileFiltersDrawerControllerContext);
 }

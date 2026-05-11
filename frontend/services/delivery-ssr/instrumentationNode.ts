@@ -1,7 +1,8 @@
 import { registerNodeSDK } from "@jet-meal/opentelemetry/src/instrumentation/registerNodeSDK";
 import { registerNodeTelemetry } from "@jet-meal/opentelemetry/src/serverInstrumentation/registerNodeTelemetry";
 
-const serviceName = process.env["OTEL_SERVICE_NAME"] ?? "@jet-meal/delivery-ssr";
+const serviceName =
+  process.env["OTEL_SERVICE_NAME"] ?? "@jet-meal/delivery-ssr";
 const serviceVersion = process.env["npm_package_version"];
 
 const hasOtlp =

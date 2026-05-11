@@ -8,6 +8,7 @@ services:
   - id: delivery-ssr
     routes:
       - /admin/delivery
+      - /admin/delivery/workflow
       - /my/orders
       - /my/order
   - id: restaurant-ssr

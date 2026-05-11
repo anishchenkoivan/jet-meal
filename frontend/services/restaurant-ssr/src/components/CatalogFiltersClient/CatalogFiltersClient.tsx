@@ -1,42 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { CatalogFilters } from "../CatalogFilters/CatalogFilters";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  CatalogFilters,
-  type FilterOption,
-} from "@jet-meal/ui-lib/src/components/CatalogFilters/CatalogFilters";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   CATALOG_POPULAR_TAG_VALUES,
   CATALOG_TAG_OPTIONS,
 } from "../../lib/catalog-tag-options";
-
-const CITY_OPTIONS: FilterOption[] = [
-  { value: "", label: "Любой" },
-  { value: "moscow", label: "Москва" },
-  { value: "spb", label: "Санкт-Петербург" },
-];
-
-const TAG_CATALOG: FilterOption[] = [...CATALOG_TAG_OPTIONS];
-
-const DELIVERY_TIME_OPTIONS: FilterOption[] = [
-  { value: "", label: "Любое" },
-  { value: "15", label: "До 15 минут" },
-  { value: "30", label: "До 30 минут" },
-  { value: "60", label: "До часа" },
-  { value: "today", label: "Сегодня" },
-];
+import {
+  FILTER_CITY_OPTIONS,
+  FILTER_DELIVERY_TIME_OPTIONS,
+} from "../../lib/shared-catalog-filter-options";
 
 function parseTagsParam(raw: string | null): string[] {
   if (!raw?.trim()) {
     return [];
   }
-  return raw.split(",").map((s) => s.trim()).filter(Boolean);
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 export type CatalogFiltersMobileHandlers = {
   apply: () => void;
   reset: () => void;
+  setSearch: (value: string) => void;
 };
 
 export type CatalogFiltersClientProps = {
@@ -49,7 +38,9 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
   const searchParams = useSearchParams();
 
   const [searchValue, setSearchValue] = useState("");
+  const searchValueRef = useRef("");
   const [restaurantSearch, setRestaurantSearch] = useState("");
+  const restaurantSearchRef = useRef("");
   const [cityValue, setCityValue] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagSearch, setTagSearch] = useState("");
@@ -57,8 +48,12 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
   const [deliveryWish, setDeliveryWish] = useState("");
 
   const syncFromUrl = useCallback(() => {
-    setSearchValue(searchParams.get("q") ?? "");
-    setRestaurantSearch(searchParams.get("rq") ?? "");
+    const q = searchParams.get("q") ?? "";
+    const rq = searchParams.get("rq") ?? "";
+    searchValueRef.current = q;
+    restaurantSearchRef.current = rq;
+    setSearchValue(q);
+    setRestaurantSearch(rq);
     setCityValue(searchParams.get("city") ?? "");
     setSelectedTags(parseTagsParam(searchParams.get("tags")));
     setTagSearch("");
@@ -72,15 +67,19 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
+    // Read from refs to get the latest values even when called in the same
+    // tick as setSearch (before the state update is flushed).
+    const q = searchValueRef.current;
+    const rq = restaurantSearchRef.current;
 
-    if (searchValue.trim()) {
-      params.set("q", searchValue.trim());
+    if (q.trim()) {
+      params.set("q", q.trim());
     } else {
       params.delete("q");
     }
 
-    if (restaurantSearch.trim()) {
-      params.set("rq", restaurantSearch.trim());
+    if (rq.trim()) {
+      params.set("rq", rq.trim());
     } else {
       params.delete("rq");
     }
@@ -118,18 +117,11 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
 
     const qs = params.toString();
     router.push(qs ? `?${qs}` : "?");
-  }, [
-    router,
-    searchParams,
-    searchValue,
-    restaurantSearch,
-    cityValue,
-    selectedTags,
-    deliveryTimeValue,
-    deliveryWish,
-  ]);
+  }, [router, searchParams, cityValue, selectedTags, deliveryTimeValue, deliveryWish]);
 
   const resetFilters = useCallback(() => {
+    searchValueRef.current = "";
+    restaurantSearchRef.current = "";
     setSearchValue("");
     setRestaurantSearch("");
     setCityValue("");
@@ -140,9 +132,14 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
     router.push("?");
   }, [router]);
 
+  const setSearch = useCallback((v: string) => {
+    searchValueRef.current = v;
+    setSearchValue(v);
+  }, []);
+
   useLayoutEffect(() => {
-    registerMobileHandlers?.({ apply: updateURL, reset: resetFilters });
-  }, [registerMobileHandlers, updateURL, resetFilters]);
+    registerMobileHandlers?.({ apply: updateURL, reset: resetFilters, setSearch });
+  }, [registerMobileHandlers, updateURL, resetFilters, setSearch]);
 
   return (
     <CatalogFilters
@@ -155,18 +152,18 @@ export function CatalogFiltersClient(props: CatalogFiltersClientProps = {}) {
       onRestaurantSearchChange={setRestaurantSearch}
       restaurantSearchPlaceholder="Название ресторана"
       cityLabel="Город проживания"
-      cityOptions={CITY_OPTIONS}
+      cityOptions={FILTER_CITY_OPTIONS}
       cityValue={cityValue}
       onCityChange={setCityValue}
       filtersLabel="Фильтры"
-      tagCatalogOptions={TAG_CATALOG}
+      tagCatalogOptions={[...CATALOG_TAG_OPTIONS]}
       popularTagValues={[...CATALOG_POPULAR_TAG_VALUES]}
       selectedTagValues={selectedTags}
       onSelectedTagValuesChange={setSelectedTags}
       tagSearchValue={tagSearch}
       onTagSearchChange={setTagSearch}
       deliveryTimeLabel="Время доставки"
-      deliveryTimeOptions={DELIVERY_TIME_OPTIONS}
+      deliveryTimeOptions={FILTER_DELIVERY_TIME_OPTIONS}
       deliveryTimeValue={deliveryTimeValue}
       onDeliveryTimeChange={(v) => {
         setDeliveryTimeValue(v);

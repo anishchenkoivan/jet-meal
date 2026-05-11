@@ -28,22 +28,14 @@ export function CartDrawer({ onCheckout }: CartDrawerProps) {
       title={getDrawerTitle()}
       defaultCollapsed={true}
       footer={
-        <div style={{ 
-          fontSize: '14px', 
-          color: '#8c8c8c',
-          textAlign: 'center' 
-        }}>
-          {getTotalItems() > 0 
+        <div className="text-sm text-[#8c8c8c] text-center">
+          {getTotalItems() > 0
             ? `${getTotalItems()} товаров в корзине`
-            : "Корзина пуста"
-          }
+            : "Корзина пуста"}
         </div>
       }
     >
-      <OrderCard 
-        onCheckout={handleCheckout}
-        showClearButton={true}
-      />
+      <OrderCard onCheckout={handleCheckout} showClearButton={true} />
     </AdaptiveDrawer>
   );
 }

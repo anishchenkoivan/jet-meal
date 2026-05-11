@@ -1,5 +1,4 @@
-import "@jet-meal/ui-lib/src/css/jet-meal-fonts.css";
-import "@jet-meal/ui-lib/src/css/antdStorybook.css";
+import "../app/globals.css";
 
 import type { Preview } from "@storybook/nextjs-vite";
 import { AntdProvider } from "../../../packages/ui-lib/src/components/AntdProvider/AntdProvider";
@@ -13,7 +12,7 @@ const preview: Preview = {
     (Story) => (
       <AntdProvider>
         <ApolloProvider>
-          <div style={{ minHeight: "100vh" }}>
+          <div className="min-h-screen">
             <Story />
           </div>
         </ApolloProvider>

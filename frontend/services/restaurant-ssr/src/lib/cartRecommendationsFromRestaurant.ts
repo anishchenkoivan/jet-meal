@@ -1,5 +1,6 @@
 import type { CartRecommendationItem } from "@jet-meal/restaurant-ui";
 import type { Restaurant } from "../types/restaurant";
+import { primaryBlockImage } from "./contentBlockImages";
 
 function parsePriceRub(raw?: string | null): number {
   if (!raw) {
@@ -28,7 +29,7 @@ export function buildCartRecommendationsFromRestaurant(
           id: block.id,
           name: block.title,
           priceRub: parsePriceRub(block.subtitle),
-          imageUrl: block.image,
+          imageUrl: primaryBlockImage(block),
         });
       }
     }

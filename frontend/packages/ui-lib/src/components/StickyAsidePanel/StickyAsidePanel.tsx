@@ -2,22 +2,35 @@
 
 import cx from "classnames";
 import type { ReactNode } from "react";
-import styles from "./StickyAsidePanel.module.css";
 
 export type StickyAsidePanelProps = {
   children: ReactNode;
   /** `aria-label` панели (корзина, фильтры, адрес и т.д.) */
   ariaLabel: string;
   className?: string;
+  /** Для `aria-controls` у кнопки «Фильтры» на мобильной ширине */
+  id?: string;
 };
 
 /**
  * Карточка для липкого слота (`PageTwoColumnSticky` → `stickySlot`).
- * Высота по умолчанию берётся из `--page-two-col-aside-max-height` на предке (см. `PageTwoColumnSticky`).
+ * Высота: заполняет доступную высоту колонки (регион main между шапкой и футером), без `100dvh`.
  */
-export function StickyAsidePanel({ children, ariaLabel, className }: StickyAsidePanelProps) {
+export function StickyAsidePanel({
+  children,
+  ariaLabel,
+  className,
+  id,
+}: StickyAsidePanelProps) {
   return (
-    <aside className={cx(styles["panel"], className)} aria-label={ariaLabel}>
+    <aside
+      id={id}
+      className={cx(
+        "box-border flex h-full min-h-0 max-h-full min-w-0 flex-col p-4 border [border-color:var(--ant-color-border-secondary,#f0f0f0)] [border-radius:var(--ant-border-radius-lg,8px)] [background:var(--ant-color-bg-container,#fff)]",
+        className,
+      )}
+      aria-label={ariaLabel}
+    >
       {children}
     </aside>
   );

@@ -75,7 +75,10 @@ export function createMockImageTransport(
       }
       return realTransport(src, ctx);
     }
-    await sleep(options.kind === "ok" ? Math.min(delay, 200) : delay, ctx.signal);
+    await sleep(
+      options.kind === "ok" ? Math.min(delay, 200) : delay,
+      ctx.signal,
+    );
     if (ctx.signal.aborted) {
       return { kind: "error", message: "Aborted" };
     }

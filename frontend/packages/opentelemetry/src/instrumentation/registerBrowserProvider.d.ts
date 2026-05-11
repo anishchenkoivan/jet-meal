@@ -14,4 +14,6 @@ export type BrowserProviderHandle = {
   shutdown(): Promise<void>;
 };
 
-export declare function registerBrowserProvider(options: BrowserProviderOptions): BrowserProviderHandle;
+export declare function registerBrowserProvider(
+  options: BrowserProviderOptions,
+): BrowserProviderHandle;

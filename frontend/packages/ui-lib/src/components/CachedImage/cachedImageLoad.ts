@@ -1,6 +1,6 @@
 import type { CachedImageLoadResult } from "./cache";
 import { deleteCachedImageEntry } from "./cache";
-import { defaultImageTransport } from "./defaultImageTransport";
+import type { defaultImageTransport } from "./defaultImageTransport";
 
 export type CachedImageTransport = typeof defaultImageTransport;
 

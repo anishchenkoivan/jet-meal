@@ -2,28 +2,6 @@
 
 import { GeoMarkersFrame } from "@jet-meal/ui-lib/src/components/GeoMarkersFrame/GeoMarkersFrame";
 import { useEffect, useRef, useState } from "react";
-import styles from "./YandexDeliveryTrackingMap.module.css";
-
-declare global {
-  interface Window {
-    ymaps?: {
-      ready: (cb: () => void) => void;
-      Map: new (
-        el: HTMLElement,
-        state: { center: number[]; zoom: number; controls?: string[] },
-      ) => YandexMapInstance;
-      Placemark: new (
-        geometry: number[],
-        properties?: Record<string, unknown>,
-        options?: { preset?: string; zIndex?: number },
-      ) => YandexPlacemark;
-      route: (
-        referencePoints: number[][],
-        routeParams?: Record<string, unknown>,
-      ) => Promise<YandexRouteResult>;
-    };
-  }
-}
 
 type YandexMapInstance = {
   destroy: () => void;
@@ -49,10 +27,12 @@ function loadYandexScript(apiKey: string): Promise<void> {
   if (typeof window === "undefined") {
     return Promise.resolve();
   }
-  if (window.ymaps) {
+  if ((window as unknown as { ymaps?: unknown }).ymaps) {
     return Promise.resolve();
   }
-  const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
+  const existing = document.getElementById(
+    SCRIPT_ID,
+  ) as HTMLScriptElement | null;
   if (existing?.dataset["loaded"] === "1") {
     return Promise.resolve();
   }
@@ -80,6 +60,7 @@ export type YandexDeliveryTrackingMapProps = {
 
 /**
  * Карта: маршрут ресторан → адрес доставки и метка курьера (Яндекс.Карты 2.1).
+ * Пока грузится API — сразу показываем статичную схему `GeoMarkersFrame`, без «пустого» блока.
  */
 export function YandexDeliveryTrackingMap({
   apiKey,
@@ -91,8 +72,11 @@ export function YandexDeliveryTrackingMap({
   const hostRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<YandexMapInstance | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
+    setLoadError(null);
+    setMapReady(false);
     if (!apiKey.trim() || !hostRef.current) {
       return;
     }
@@ -107,17 +91,40 @@ export function YandexDeliveryTrackingMap({
     void (async () => {
       try {
         await loadYandexScript(apiKey);
-        if (cancelled || !window.ymaps || !hostRef.current) {
+        if (cancelled || !(window as { ymaps?: unknown }).ymaps || !hostRef.current) {
           return;
         }
         await new Promise<void>((r) => {
-          window.ymaps!.ready(() => r());
+          (window as unknown as { ymaps: { ready: (cb: () => void) => void } })
+            .ymaps.ready(() => r());
         });
         if (cancelled || !hostRef.current) {
           return;
         }
 
-        const ymaps = window.ymaps!;
+        const ymaps = (
+          window as unknown as {
+            ymaps: {
+              Map: new (
+                el: HTMLElement,
+                state: {
+                  center: number[];
+                  zoom: number;
+                  controls?: string[];
+                },
+              ) => YandexMapInstance;
+              Placemark: new (
+                geometry: number[],
+                properties?: Record<string, unknown>,
+                options?: { preset?: string; zIndex?: number },
+              ) => YandexPlacemark;
+              route: (
+                referencePoints: number[][],
+                routeParams?: Record<string, unknown>,
+              ) => Promise<YandexRouteResult>;
+            };
+          }
+        ).ymaps;
         const map = new ymaps.Map(hostRef.current, {
           center,
           zoom: 14,
@@ -154,6 +161,9 @@ export function YandexDeliveryTrackingMap({
         if (bounds) {
           map.setBounds(bounds, { checkZoomRange: true, zoomMargin: 28 });
         }
+        if (!cancelled) {
+          setMapReady(true);
+        }
       } catch {
         if (!cancelled) {
           setLoadError("Не удалось построить маршрут или загрузить карту");
@@ -173,7 +183,15 @@ export function YandexDeliveryTrackingMap({
       }
       el.innerHTML = "";
     };
-  }, [apiKey, pickup.lat, pickup.lng, dropoff.lat, dropoff.lng, courier.lat, courier.lng]);
+  }, [
+    apiKey,
+    pickup.lat,
+    pickup.lng,
+    dropoff.lat,
+    dropoff.lng,
+    courier.lat,
+    courier.lng,
+  ]);
 
   const markers = [
     {
@@ -200,17 +218,21 @@ export function YandexDeliveryTrackingMap({
     longitude: (pickup.lng + dropoff.lng) / 2,
   };
 
+  const fallbackClass = ["flex flex-col gap-3", className]
+    .filter(Boolean)
+    .join(" ");
+
   if (!apiKey.trim()) {
     return (
-      <div className={[styles["fallback"], className].filter(Boolean).join(" ")}>
+      <div className={fallbackClass}>
         <GeoMarkersFrame
           center={frameCenter}
           markers={markers}
           ariaLabel="Схема маршрута без интерактивной карты"
         />
-        <p className={styles["fallbackHint"]}>
-          Задайте <code>NEXT_PUBLIC_YANDEX_MAPS_API_KEY</code>, чтобы показать Яндекс.Карты с
-          маршрутом и курьером.
+        <p className="m-0 text-sm [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))]">
+          Задайте <code>NEXT_PUBLIC_YANDEX_MAPS_API_KEY</code>, чтобы показать
+          Яндекс.Карты с маршрутом и курьером.
         </p>
       </div>
     );
@@ -218,22 +240,47 @@ export function YandexDeliveryTrackingMap({
 
   if (loadError) {
     return (
-      <div className={[styles["fallback"], className].filter(Boolean).join(" ")}>
+      <div className={fallbackClass}>
         <GeoMarkersFrame
           center={frameCenter}
           markers={markers}
           ariaLabel="Схема маршрута"
         />
-        <p className={styles["fallbackHint"]}>{loadError}</p>
+        <p className="m-0 text-sm [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))]">
+          {loadError}
+        </p>
       </div>
     );
   }
 
+  const mapHostClass = [
+    "absolute inset-0 [background:var(--ant-color-fill-quaternary,#f0f0f0)]",
+    mapReady ? "z-[2]" : "z-0",
+  ].join(" ");
+
   return (
-    <div
-      ref={hostRef}
-      className={[styles["mapHost"], className].filter(Boolean).join(" ")}
-      aria-label="Карта доставки"
-    />
+    <div className={fallbackClass}>
+      <div
+        className={[
+          "relative w-full min-h-[320px] h-[min(52vh,480px)] rounded-xl overflow-hidden",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <div ref={hostRef} className={mapHostClass} aria-label="Карта доставки" />
+        {!mapReady ? (
+          <div className="absolute inset-0 z-[1] flex flex-col [background:var(--ant-color-bg-container,#fff)]">
+            <GeoMarkersFrame
+              center={frameCenter}
+              markers={markers}
+              ariaLabel="Схема маршрута до загрузки карты"
+            />
+            <p className="m-0 mt-auto px-2 pb-2 text-center text-xs [color:var(--ant-color-text-secondary,rgba(0,0,0,0.55))]">
+              Загрузка карты…
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,17 @@
+{
+  "name": "@jet-meal/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./foundation.css": "./src/foundation.css",
+    "./globals.css": "./src/globals.css"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "catalog:",
+    "tailwindcss": "catalog:"
+  },
+  "peerDependencies": {
+    "antd": "*"
+  }
+}

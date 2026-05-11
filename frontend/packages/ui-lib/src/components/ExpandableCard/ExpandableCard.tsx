@@ -1,11 +1,10 @@
 "use client";
 
-import { DownIcon } from "../Icons/Icons";
-import { CachedImage } from "../CachedImage/CachedImage";
 import cx from "classnames";
 import type { MouseEvent, ReactNode } from "react";
 import { useState } from "react";
-import styles from "./ExpandableCard.module.css";
+import { CachedImage } from "../CachedImage/CachedImage";
+import { DownIcon } from "../Icons/Icons";
 
 export type ExpandableCardMode = "catalog" | "restaurant";
 
@@ -35,6 +34,12 @@ export type ExpandableCardProps = {
   meta?: string;
   thumbnailUrl?: string;
   thumbnailAlt?: string;
+  /** Если задан — вместо {@link CachedImage} по `thumbnailUrl`. */
+  thumbnailSlot?: ReactNode;
+  /** Не показывать колонку превью (например если галерея вынесена выше). */
+  thumbnailHidden?: boolean;
+  /** Не показывать заголовок в шапке карточки (цена при `price` остаётся). */
+  hideTitle?: boolean;
   description?: string;
   expandedContent?: ReactNode;
   defaultExpanded?: boolean;
@@ -68,6 +73,8 @@ export function ExpandableCard({
   meta,
   thumbnailUrl,
   thumbnailAlt,
+  thumbnailSlot,
+  thumbnailHidden = false,
   description,
   expandedContent,
   defaultExpanded,
@@ -76,6 +83,7 @@ export function ExpandableCard({
   disabled = false,
   className,
   disableExpansion = false,
+  hideTitle = false,
   onCardNavigate,
   catalogFooterEnd,
   restaurantFooterStart,
@@ -86,8 +94,7 @@ export function ExpandableCard({
   const isControlled = controlledExpanded !== undefined;
   const isExpanded = isControlled ? controlledExpanded : internalExpanded;
 
-  const hasPanel =
-    !disableExpansion && Boolean(description || expandedContent);
+  const hasPanel = !disableExpansion && Boolean(description || expandedContent);
   const showInlineDescription = Boolean(
     disableExpansion && description?.trim(),
   );
@@ -123,9 +130,7 @@ export function ExpandableCard({
   const footerSlot =
     mode === "catalog" ? catalogFooterEnd : restaurantFooterStart;
 
-  const showBottomBar = Boolean(
-    footerSlot || (hasPanel && !disableExpansion),
-  );
+  const showBottomBar = Boolean(footerSlot || (hasPanel && !disableExpansion));
 
   const cardCursor =
     onCardNavigate || hasPanel
@@ -136,16 +141,28 @@ export function ExpandableCard({
 
   return (
     <div
-      className={cx(styles["card"], className)}
+      className={cx(
+        "relative box-border w-full max-w-[min(760px,100%)] mx-auto flex flex-col gap-0 p-3 rounded-xl border [border-color:var(--jm-color-border-secondary,#f0f0f0)] [background:var(--jm-color-bg-container,#fff)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] [transition:border-color_0.2s_ease,box-shadow_0.2s_ease] hover:[border-color:var(--jm-color-border-secondary,#e0e0e0)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
+        className,
+      )}
       onClick={handleCardClick}
       data-expanded={isExpanded ? "true" : "false"}
       data-has-panel={hasPanel ? "true" : "false"}
       data-mode={mode}
       style={{ cursor: cardCursor }}
     >
-      <div className={styles["mediaRow"]}>
-        {thumbnailUrl ? (
-          <div className={styles["thumb"]}>
+      <div
+        className={cx(
+          "flex flex-row gap-3 items-start",
+          !thumbnailHidden && "min-h-[88px]",
+        )}
+      >
+        {!thumbnailHidden && thumbnailSlot ? (
+          <div className="relative flex-shrink-0 w-[88px] h-[88px] rounded-[10px] overflow-hidden [background:var(--jm-color-fill-quaternary,#f5f5f5)]">
+            {thumbnailSlot}
+          </div>
+        ) : !thumbnailHidden && thumbnailUrl ? (
+          <div className="flex-shrink-0 w-[88px] h-[88px] rounded-[10px] overflow-hidden [background:var(--jm-color-fill-quaternary,#f5f5f5)]">
             <CachedImage
               src={thumbnailUrl}
               alt={thumbnailAlt ?? title}
@@ -153,32 +170,48 @@ export function ExpandableCard({
               loading="lazy"
             />
           </div>
-        ) : (
-          <div className={styles["thumbPlaceholder"]} aria-hidden />
-        )}
-        <div className={styles["headerBlock"]}>
-          <div className={styles["titleRow"]}>
+        ) : !thumbnailHidden ? (
+          <div
+            className="flex-shrink-0 w-[88px] h-[88px] rounded-[10px] [background:var(--jm-color-fill-quaternary,#f5f5f5)]"
+            aria-hidden
+          />
+        ) : null}
+        <div className="flex-1 min-w-0 flex flex-col gap-1 pr-[2px]">
+          <div className="flex flex-row items-start justify-start gap-2 flex-nowrap">
             {rating ? (
-              <span className={styles["rating"]} aria-label={`Рейтинг ${rating}`}>
+              <span
+                className="flex-shrink-0 mt-[1px] text-[13px] font-semibold leading-[1.35] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] whitespace-nowrap"
+                aria-label={`Рейтинг ${rating}`}
+              >
                 ⭐ {rating}
               </span>
             ) : null}
-            <div className={styles["titleCluster"]}>
-              <h3 className={styles["title"]}>{title}</h3>
+            <div className="flex flex-row flex-wrap items-baseline gap-x-1 flex-[1_1_auto] min-w-0">
+              {!hideTitle ? (
+                <h3 className="m-0 text-[15px] font-semibold leading-[1.35] [color:var(--jm-color-text,rgba(0,0,0,0.88))] flex-[0_1_auto] min-w-0">
+                  {title}
+                </h3>
+              ) : (
+                <span className="sr-only">{title}</span>
+              )}
               {pinDeliveryNextToTitle && averageDelivery ? (
-                <span className={styles["deliveryTail"]}>
+                <span className="text-[13px] font-normal leading-[1.35] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] whitespace-normal">
                   {" "}
                   — доставка: {averageDelivery}
                 </span>
               ) : null}
             </div>
-            {price ? <div className={styles["price"]}>{price}</div> : null}
+            {price ? (
+              <div className="flex-shrink-0 ml-auto text-[15px] font-bold leading-[1.35] [color:var(--jm-color-primary,#1677ff)] whitespace-nowrap">
+                {price}
+              </div>
+            ) : null}
           </div>
           {subtitle ? (
-            <p className={styles["subtitle"]}>
+            <p className="m-0 text-[13px] leading-[1.4] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))]">
               <span>{subtitle}</span>
               {!pinDeliveryNextToTitle && averageDelivery ? (
-                <span className={styles["deliveryTail"]}>
+                <span className="text-[13px] font-normal leading-[1.35] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] whitespace-normal">
                   {" "}
                   — доставка: {averageDelivery}
                 </span>
@@ -186,20 +219,25 @@ export function ExpandableCard({
             </p>
           ) : null}
           {showInlineDescription ? (
-            <p className={styles["inlineDesc"]}>{description}</p>
+            <p className="m-0 text-sm leading-[1.5] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))]">
+              {description}
+            </p>
           ) : null}
           {tags && tags.length > 0 ? (
-            <div className={styles["tagBlock"]}>
-              <span className={styles["tagHash"]} aria-hidden>
+            <div className="flex flex-row flex-wrap items-baseline gap-x-[10px] gap-y-1 w-full">
+              <span
+                className="flex-shrink-0 m-0 p-0 text-[13px] font-bold not-italic leading-[1.5] [color:var(--jm-color-text-tertiary,rgba(0,0,0,0.45))]"
+                aria-hidden
+              >
                 #
               </span>
-              <ul className={styles["tagRow"]}>
+              <ul className="flex flex-wrap gap-x-[10px] gap-y-1 m-0 p-0 list-none items-baseline flex-[1_1_auto] min-w-0">
                 {tags.map((t) => (
-                  <li key={t.value} className={styles["tagRowItem"]}>
+                  <li key={t.value} className="m-0 p-0 list-none">
                     {onTagClick ? (
                       <button
                         type="button"
-                        className={styles["tagText"]}
+                        className="m-0 p-0 font-[inherit] text-[13px] italic leading-[1.5] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] bg-none border-none cursor-pointer no-underline hover:[color:var(--jm-color-primary,#1677ff)] hover:underline"
                         onClick={(e) => {
                           e.stopPropagation();
                           onTagClick(t.value);
@@ -209,10 +247,7 @@ export function ExpandableCard({
                       </button>
                     ) : (
                       <span
-                        className={cx(
-                          styles["tagText"],
-                          styles["tagTextStatic"],
-                        )}
+                        className="m-0 p-0 font-[inherit] text-[13px] italic leading-[1.5] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] bg-none border-none cursor-default no-underline"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {t.label}
@@ -223,19 +258,28 @@ export function ExpandableCard({
               </ul>
             </div>
           ) : null}
-          {meta ? <p className={styles["meta"]}>{meta}</p> : null}
+          {meta ? (
+            <p className="m-0 text-xs leading-[1.35] [color:var(--jm-color-text-tertiary,rgba(0,0,0,0.45))]">
+              {meta}
+            </p>
+          ) : null}
         </div>
       </div>
 
       {hasPanel ? (
         <div
-          className={cx(styles["panel"], isExpanded && styles["panelOpen"])}
+          className={cx(
+            "grid [grid-template-rows:0fr] [transition:grid-template-rows_0.22s_ease] overflow-hidden",
+            isExpanded && "[grid-template-rows:1fr]",
+          )}
           role="region"
           aria-hidden={!isExpanded}
         >
-          <div className={styles["panelInner"]}>
+          <div className="min-h-0 pt-2 pb-1 flex flex-col gap-2">
             {description ? (
-              <p className={styles["descBody"]}>{description}</p>
+              <p className="m-0 text-sm leading-[1.5] [color:var(--jm-color-text-secondary,rgba(0,0,0,0.65))] whitespace-pre-wrap">
+                {description}
+              </p>
             ) : null}
             {expandedContent}
           </div>
@@ -243,26 +287,43 @@ export function ExpandableCard({
       ) : null}
 
       {showBottomBar ? (
-        <div className={styles["bottomBar"]}>
-          <div className={styles["bottomBarLeft"]}>
-            <span className={styles["bottomBarCellSpacer"]} />
+        <div
+          className={cx(
+            "grid grid-cols-[1fr_auto_1fr] items-center gap-2 pt-2 min-h-[28px] [transition:margin-top_0.22s_ease]",
+            hasPanel && !isExpanded
+              ? "-mt-[38px]"
+              : hasPanel && isExpanded
+                ? "-mt-[6px]"
+                : "mt-[6px]",
+          )}
+        >
+          <div className="flex justify-start items-center min-w-0">
+            <span className="inline-block w-px h-px overflow-hidden [clip:rect(0_0_0_0)] opacity-0" />
           </div>
           {hasPanel && !disabled ? (
-            <div className={styles["bottomBarCenter"]} aria-hidden>
+            <div
+              className="flex justify-center items-center min-w-[18px] pointer-events-none opacity-55"
+              aria-hidden
+            >
               <DownIcon
                 className={cx(
-                  styles["chevron"],
-                  isExpanded && styles["chevronOpen"],
+                  "w-[18px] h-[18px] [color:var(--jm-color-text-tertiary,rgba(0,0,0,0.45))] [transition:transform_0.2s_ease]",
+                  isExpanded && "rotate-180",
                 )}
               />
             </div>
           ) : (
-            <div className={styles["bottomBarCenter"]} aria-hidden>
-              <span className={styles["bottomBarCellSpacer"]} />
+            <div
+              className="flex justify-center items-center min-w-[18px] pointer-events-none opacity-55"
+              aria-hidden
+            >
+              <span className="inline-block w-px h-px overflow-hidden [clip:rect(0_0_0_0)] opacity-0" />
             </div>
           )}
-          <div className={styles["bottomBarRight"]}>
-            {footerSlot ?? <span className={styles["bottomBarCellSpacer"]} />}
+          <div className="flex justify-end items-center min-w-0 text-right">
+            {footerSlot ?? (
+              <span className="inline-block w-px h-px overflow-hidden [clip:rect(0_0_0_0)] opacity-0" />
+            )}
           </div>
         </div>
       ) : null}

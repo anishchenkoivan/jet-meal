@@ -27,7 +27,9 @@ function parsePriceRub(raw?: string | null): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-export function RestaurantDetailPage({ restaurant }: RestaurantDetailPageProps) {
+export function RestaurantDetailPage({
+  restaurant,
+}: RestaurantDetailPageProps) {
   const { lines, setPageRestaurant, setRecommendations, setCheckoutHref } =
     useRestaurantCart();
   const [bookOpen, setBookOpen] = useState(false);
@@ -80,7 +82,7 @@ export function RestaurantDetailPage({ restaurant }: RestaurantDetailPageProps) 
   const p = restaurant.preview;
 
   return (
-    <PageContentShell>
+    <PageContentShell className="min-h-0 flex-1 overflow-hidden">
       <PageTwoColumnSticky
         includeSideSlot
         sideSlotPosition="end"
@@ -90,7 +92,10 @@ export function RestaurantDetailPage({ restaurant }: RestaurantDetailPageProps) 
               restaurant={restaurant}
               onBookClick={() => setBookOpen(true)}
             />
-            <RestaurantMenuBody restaurant={restaurant} parsePriceRub={parsePriceRub} />
+            <RestaurantMenuBody
+              restaurant={restaurant}
+              parsePriceRub={parsePriceRub}
+            />
           </>
         }
         side={<RestaurantCartSidebar />}

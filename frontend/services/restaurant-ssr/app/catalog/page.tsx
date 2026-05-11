@@ -1,5 +1,5 @@
-import { fetchCatalogItems } from "../../src/lib/gql-wrapper";
 import { CatalogPage } from "../../src/containers/CatalogPage/CatalogPage";
+import { fetchCatalogItems } from "../../src/lib/gql-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,10 @@ export default async function CatalogPageRoute({
 
   const tagsRaw = typeof sp["tags"] === "string" ? sp["tags"] : undefined;
   const tagIds = tagsRaw
-    ? tagsRaw.split(",").map((s) => s.trim()).filter(Boolean)
+    ? tagsRaw
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
     : undefined;
 
   const dtRaw = typeof sp["dt"] === "string" ? sp["dt"] : undefined;

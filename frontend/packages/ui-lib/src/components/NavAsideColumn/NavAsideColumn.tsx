@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import styles from "./NavAsideColumn.module.css";
 
 export type NavAsideColumnProps = {
   children: ReactNode;
@@ -11,9 +10,9 @@ export type NavAsideColumnProps = {
 /** Колонка боковой панели (`NavListBlock`): тело + опциональный подвал. */
 export function NavAsideColumn({ children, footer }: NavAsideColumnProps) {
   return (
-    <div className={styles["root"]}>
+    <div className="w-full">
       {children}
-      {footer ? <div className={styles["footer"]}>{footer}</div> : null}
+      {footer ? <div className="block mt-2">{footer}</div> : null}
     </div>
   );
 }

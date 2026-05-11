@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroSlideShell } from "../HeroSlideShell/HeroSlideShell";
 import { restaurantsLandingMedia } from "../copy/restaurantsLanding";
+import { HeroSlideShell } from "../HeroSlideShell/HeroSlideShell";
 import { RestaurantsLandingText } from "./RestaurantsLandingText";
 
 export function RestaurantsLandingSlide() {

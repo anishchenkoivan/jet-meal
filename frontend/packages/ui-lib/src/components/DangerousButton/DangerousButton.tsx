@@ -1,12 +1,11 @@
 "use client";
 
-import { Button, Typography } from "antd";
-import { Modal } from "../Modal/Modal";
 import type { ButtonProps } from "antd";
+import { Button, Typography } from "antd";
 import cx from "classnames";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
-import styles from "./DangerousButton.module.css";
+import { Modal } from "../Modal/Modal";
 
 export type DangerousButtonProps = {
   children: ReactNode;
@@ -55,7 +54,7 @@ export function DangerousButton({
     <>
       {trigger === "link" ? (
         <Typography.Link
-          className={cx(styles["link"])}
+          className={cx("inline")}
           onClick={handleOpen}
           role="button"
         >
@@ -77,7 +76,7 @@ export function DangerousButton({
         okButtonProps={{ danger: true }}
         destroyOnHidden
       >
-        <p className={cx(styles["bodyText"])}>{confirmText}</p>
+        <p className="m-0 leading-[1.55]">{confirmText}</p>
       </Modal>
     </>
   );

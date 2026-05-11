@@ -57,7 +57,12 @@ export function AccountSignedIn({ login, expiresAtMs, sessionId }: Props) {
               marginBottom: 12,
             }}
           >
-            <Button type="link" danger onClick={logout} style={{ paddingInline: 4 }}>
+            <Button
+              type="link"
+              danger
+              onClick={logout}
+              style={{ paddingInline: 4 }}
+            >
               Выйти
             </Button>
             <Typography.Title level={3} style={{ margin: 0, flex: 1 }}>
@@ -95,11 +100,7 @@ export function AccountSignedIn({ login, expiresAtMs, sessionId }: Props) {
         </Typography.Paragraph>
 
         <Space wrap>
-          <Button
-            type="primary"
-            icon={<ShoppingOutlined />}
-            onClick={() => router.push("/my/orders")}
-          >
+          <Button type="primary" icon={<ShoppingOutlined />} href="/my/orders">
             Мои заказы
           </Button>
           <Button

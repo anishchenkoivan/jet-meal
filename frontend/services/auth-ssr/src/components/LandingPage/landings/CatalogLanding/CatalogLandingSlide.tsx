@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroSlideShell } from "../HeroSlideShell/HeroSlideShell";
 import { catalogLandingMedia } from "../copy/catalogLanding";
+import { HeroSlideShell } from "../HeroSlideShell/HeroSlideShell";
 import { CatalogLandingText } from "./CatalogLandingText";
 
 export function CatalogLandingSlide() {

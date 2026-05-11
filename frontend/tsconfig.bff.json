@@ -10,13 +10,7 @@
     "lib": ["ESNext"],
 
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules"
-      }
-    ]
+    "emitDecoratorMetadata": true
   },
   "exclude": ["**/node_modules"],
   "ts-node": {

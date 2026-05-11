@@ -115,13 +115,13 @@ export function MyProfileForm() {
           <Input placeholder="Город" />
         </Form.Item>
         <Form.Item label="Адрес доставки" name="address">
-          <Input.TextArea
-            rows={3}
-            placeholder="Улица, дом, подъезд, домофон"
-          />
+          <Input.TextArea rows={3} placeholder="Улица, дом, подъезд, домофон" />
         </Form.Item>
         <Form.Item label="Комментарий курьеру" name="comment">
-          <Input.TextArea rows={2} placeholder="Например, не звонить в домофон" />
+          <Input.TextArea
+            rows={2}
+            placeholder="Например, не звонить в домофон"
+          />
         </Form.Item>
         <Space align="center" wrap>
           <Button type="primary" htmlType="submit">

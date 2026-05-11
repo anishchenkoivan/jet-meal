@@ -1,9 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Col } from "@jet-meal/ui-lib/src/components/Col/Col";
 import { Catalog } from "@jet-meal/ui-lib/src/components/Catalog/Catalog";
+import { Col } from "@jet-meal/ui-lib/src/components/Col/Col";
 import { ExpandableCard } from "@jet-meal/ui-lib/src/components/ExpandableCard/ExpandableCard";
+import { useRouter } from "next/navigation";
 import type { Restaurant } from "../../types/restaurant";
 
 function addressLine(r: Restaurant): string {
@@ -33,8 +33,7 @@ export function RestaurantsGridClient({
             value: label,
             label,
           })) ?? undefined;
-        const rating =
-          p?.rating != null ? String(p.rating) : undefined;
+        const rating = p?.rating != null ? String(p.rating) : undefined;
 
         return (
           <Col key={restaurant.id} xs={24}>

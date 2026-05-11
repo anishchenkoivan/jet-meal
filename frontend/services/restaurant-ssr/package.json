@@ -14,6 +14,7 @@
   "dependencies": {
     "@ant-design/nextjs-registry": "catalog:",
     "@apollo/client": "catalog:",
+    "@jet-meal/design-system": "workspace:*",
     "@jet-meal/opentelemetry": "workspace:*",
     "@jet-meal/restaurant-ui": "workspace:*",
     "@jet-meal/ui-lib": "workspace:*",
@@ -25,9 +26,11 @@
   },
   "devDependencies": {
     "@storybook/nextjs-vite": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "jsdom": "catalog:",
     "storybook": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "@types/react": "catalog:",

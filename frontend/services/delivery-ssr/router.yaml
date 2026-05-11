@@ -11,5 +11,6 @@ spawn:
     - "dev"
 routes:
   - path: /admin/delivery
+  - path: /admin/delivery/workflow
   - path: /my/orders
   - path: /my/order

@@ -3,11 +3,11 @@
 import type { CartRecommendationItem } from "@jet-meal/restaurant-ui";
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useMemo,
   useState,
-  type ReactNode,
 } from "react";
 
 export type RestaurantCartLine = {
@@ -56,9 +56,7 @@ const genId = () =>
 export function RestaurantCartProvider({ children }: { children: ReactNode }) {
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [restaurantName, setRestaurantName] = useState<string | null>(null);
-  const [pageRestaurantId, setPageRestaurantId] = useState<string | null>(
-    null,
-  );
+  const [pageRestaurantId, setPageRestaurantId] = useState<string | null>(null);
   const [pageRestaurantName, setPageRestaurantName] = useState<string | null>(
     null,
   );
@@ -68,10 +66,13 @@ export function RestaurantCartProvider({ children }: { children: ReactNode }) {
   >([]);
   const [checkoutHref, setCheckoutHref] = useState<string | null>(null);
 
-  const setPageRestaurant = useCallback((id: string | null, name: string | null) => {
-    setPageRestaurantId(id);
-    setPageRestaurantName(name);
-  }, []);
+  const setPageRestaurant = useCallback(
+    (id: string | null, name: string | null) => {
+      setPageRestaurantId(id);
+      setPageRestaurantName(name);
+    },
+    [],
+  );
 
   const addOne = useCallback(
     ({
@@ -121,9 +122,7 @@ export function RestaurantCartProvider({ children }: { children: ReactNode }) {
       if (quantity <= 0) {
         return prev.filter((l) => l.dishId !== dishId);
       }
-      return prev.map((l) =>
-        l.dishId === dishId ? { ...l, quantity } : l,
-      );
+      return prev.map((l) => (l.dishId === dishId ? { ...l, quantity } : l));
     });
   }, []);
 
@@ -195,7 +194,9 @@ export function RestaurantCartProvider({ children }: { children: ReactNode }) {
 export function useRestaurantCart() {
   const ctx = useContext(RestaurantCartContext);
   if (!ctx) {
-    throw new Error("useRestaurantCart must be used within RestaurantCartProvider");
+    throw new Error(
+      "useRestaurantCart must be used within RestaurantCartProvider",
+    );
   }
   return ctx;
 }

@@ -1,4 +1,4 @@
-import type { Money } from './common';
+import type { Money } from "./common";
 
 // Cart types for temporary ordering within restaurant
 export interface CartLine {

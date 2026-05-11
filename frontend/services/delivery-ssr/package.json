@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "catalog:",
+    "@jet-meal/design-system": "workspace:*",
     "@jet-meal/opentelemetry": "workspace:*",
     "@jet-meal/ui-lib": "workspace:*",
     "classnames": "catalog:",
@@ -18,8 +19,10 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
 }

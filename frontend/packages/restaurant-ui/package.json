@@ -13,7 +13,7 @@
     "react": "catalog:",
     "@types/react": "catalog:",
     "classnames": "catalog:",
-     "@jet-meal/ui-lib": "workspace:*"
+    "@jet-meal/ui-lib": "workspace:*"
   },
   "devDependencies": {
     "typescript": "catalog:"

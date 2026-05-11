@@ -1,30 +1,28 @@
 "use client";
 
-import { CloseIcon, MenuIcon } from "../Icons/Icons";
-import { Dropdown } from "antd";
-import { MobileDrawer, MOBILE_DRAWER_BELOW_HEADER_Z_INDEX } from "../MobileDrawer/MobileDrawer";
-import {
-  SINGLE_MOBILE_DRAWER_HEADER_NAV_KEY,
-  useOptionalSingleMobileDrawer,
-} from "../SingleMobileDrawer/SingleMobileDrawerProvider";
 import cx from "classnames";
-import { useCallback, useState } from "react";
-import type { HeaderTab, LinkRenderProps } from "./HeaderTypes";
+import { AppDropdown } from "../AppDropdown/AppDropdown";
+import { useCallback } from "react";
+import { useDrawer } from "../DrawerProvider/DrawerProvider";
+import { CloseIcon, MenuIcon } from "../Icons/Icons";
 import { HeaderMobileNavDrawerBody } from "./HeaderMobileNavDrawerBody";
-import styles from "./Header.module.css";
 
-export type { HeaderSubmenuItem, HeaderTab, LinkRenderProps } from "./HeaderTypes";
+export type {
+  HeaderSubmenuItem,
+  HeaderTab,
+  LinkRenderProps,
+} from "./HeaderTypes";
 
 export const HEADER_DESKTOP_MIN_PX = 768;
 
-export const HEADER_MOBILE_DRAWER_Z_INDEX = MOBILE_DRAWER_BELOW_HEADER_Z_INDEX;
+const HEADER_NAV_DRAWER_ID = "header-nav";
 
 function DefaultLink({
   href,
   className,
   children,
   onClick,
-}: LinkRenderProps) {
+}: import("./HeaderTypes").LinkRenderProps) {
   return (
     <a href={href} className={className} onClick={onClick}>
       {children}
@@ -33,68 +31,72 @@ function DefaultLink({
 }
 
 export type HeaderProps = {
-  tabs: HeaderTab[];
+  tabs: import("./HeaderTypes").HeaderTab[];
   selectedKey?: string;
-  LinkComponent?: React.ComponentType<LinkRenderProps>;
-  mobileDrawerTopOffsetPx?: number;
+  LinkComponent?: React.ComponentType<import("./HeaderTypes").LinkRenderProps>;
 };
 
 export function Header({
   tabs,
   selectedKey,
   LinkComponent = DefaultLink,
-  mobileDrawerTopOffsetPx = 64,
 }: HeaderProps) {
-  const singleDrawer = useOptionalSingleMobileDrawer();
-  const [localOpen, setLocalOpen] = useState(false);
+  const { open, close, isOpen } = useDrawer();
 
-  const navKey = SINGLE_MOBILE_DRAWER_HEADER_NAV_KEY;
-  const navOpen = singleDrawer ? singleDrawer.isActive(navKey) : localOpen;
+  const navOpen = isOpen(HEADER_NAV_DRAWER_ID);
 
   const closeNav = useCallback(() => {
-    if (singleDrawer) {
-      singleDrawer.close();
-    } else {
-      setLocalOpen(false);
-    }
-  }, [singleDrawer]);
+    close();
+  }, [close]);
 
-  const toggleNav = () => {
-    if (singleDrawer) {
-      singleDrawer.toggle(navKey);
+  const toggleNav = useCallback(() => {
+    if (navOpen) {
+      close();
     } else {
-      setLocalOpen((v) => !v);
+      open(
+        HEADER_NAV_DRAWER_ID,
+        <HeaderMobileNavDrawerBody
+          tabs={tabs}
+          selectedKey={selectedKey}
+          LinkComponent={LinkComponent}
+          onNavigate={closeNav}
+        />,
+        { replace: true },
+      );
     }
-  };
+  }, [navOpen, open, close, closeNav, tabs, selectedKey, LinkComponent]);
 
   return (
     <>
-      <nav className={cx(styles["desktopNav"])} aria-label="Основное меню">
+      <nav
+        className="hidden wide:flex flex-1 flex-wrap items-center justify-start gap-y-0 min-w-0"
+        aria-label="Основное меню"
+      >
         {tabs.map((tab) => {
           const active =
             selectedKey === tab.key ||
             tab.submenu?.some((s) => selectedKey === s.key);
           if (tab.submenu?.length) {
             return (
-              <span key={tab.key} className={styles["navItemRow"]}>
+              <span key={tab.key} className="inline-flex items-center shrink-0">
                 {tab.dividerBefore ? (
                   <span
-                    className={styles["navDivider"]}
+                    className="self-center shrink-0 w-px h-[22px] mr-[10px] ml-[6px] rounded-[1px] [background:var(--ant-color-border,#d9d9d9)]"
                     aria-hidden
                   />
                 ) : null}
-                <Dropdown
+                <AppDropdown
                   trigger={["hover", "click"]}
                   placement="bottomLeft"
-                  classNames={{ root: styles["desktopDropdown"] }}
                   menu={{
-                    className: styles["desktopDropdownMenu"],
+                    className:
+                      "min-w-[200px] !p-[6px] !rounded-xl border border-[var(--ant-color-border-secondary,#f0f0f0)] shadow-[0_6px_16px_0_rgba(0,0,0,0.08),0_3px_6px_-4px_rgba(0,0,0,0.12),0_9px_28px_8px_rgba(0,0,0,0.05)]",
                     items: tab.submenu.map((item) => ({
                       key: item.key,
                       label: (
                         <LinkComponent
                           href={item.href}
-                          className={styles["desktopDropdownLink"]}
+                          className="block px-3 py-[10px] text-sm leading-[1.45] [color:var(--ant-color-text,rgba(0,0,0,0.88))] no-underline rounded-lg transition-colors duration-200 hover:[color:var(--ant-color-primary,#1677ff)]"
                         >
                           {item.label}
                         </LinkComponent>
@@ -106,27 +108,29 @@ export function Header({
                     tabIndex={0}
                     role="button"
                     className={cx(
-                      styles["navLink"],
-                      styles["navLinkDropdownTrigger"],
-                      active && styles["navLinkActive"],
+                      "inline-flex items-center px-[14px] py-[10px] -mb-px border-b-2 border-transparent text-sm leading-[1.5] [color:var(--ant-color-text,rgba(0,0,0,0.88))] no-underline transition-colors duration-200 hover:[color:var(--ant-color-primary,#1677ff)] cursor-pointer border-0 bg-transparent font-[inherit]",
+                      active && "font-medium [border-bottom-color:var(--ant-color-primary,#1677ff)]",
                     )}
                   >
                     {tab.label}
                   </span>
-                </Dropdown>
+                </AppDropdown>
               </span>
             );
           }
           return (
-            <span key={tab.key} className={styles["navItemRow"]}>
+            <span key={tab.key} className="inline-flex items-center shrink-0">
               {tab.dividerBefore ? (
-                <span className={styles["navDivider"]} aria-hidden />
+                <span
+                  className="self-center shrink-0 w-px h-[22px] mr-[10px] ml-[6px] rounded-[1px] [background:var(--ant-color-border,#d9d9d9)]"
+                  aria-hidden
+                />
               ) : null}
               <LinkComponent
                 href={tab.href}
                 className={cx(
-                  styles["navLink"],
-                  selectedKey === tab.key && styles["navLinkActive"],
+                  "inline-flex items-center px-[14px] py-[10px] -mb-px border-b-2 border-transparent text-sm leading-[1.5] [color:var(--ant-color-text,rgba(0,0,0,0.88))] no-underline transition-colors duration-200 hover:[color:var(--ant-color-primary,#1677ff)]",
+                  selectedKey === tab.key && "font-medium [border-bottom-color:var(--ant-color-primary,#1677ff)]",
                 )}
               >
                 {tab.label}
@@ -136,31 +140,16 @@ export function Header({
         })}
       </nav>
 
-      <div className={cx(styles["mobileNav"])}>
+      <div className="flex wide:hidden shrink-0 items-center">
         <button
           type="button"
-          className={cx(styles["menuToggle"])}
+          className="box-border inline-flex shrink-0 items-center justify-center w-10 h-10 p-0 m-0 border-0 [border-radius:var(--ant-border-radius-sm,6px)] bg-transparent [color:var(--ant-color-text,rgba(0,0,0,0.88))] text-[18px] leading-none cursor-pointer [-webkit-tap-highlight-color:transparent] hover:[background:var(--ant-color-fill-secondary,rgba(0,0,0,0.06))] focus-visible:outline-2 focus-visible:[outline-color:var(--ant-color-primary,#1677ff)] focus-visible:outline-offset-2"
           aria-label={navOpen ? "Закрыть меню" : "Открыть меню"}
           aria-expanded={navOpen}
           onClick={toggleNav}
         >
           {navOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
-        {!singleDrawer ? (
-          <MobileDrawer
-            open={localOpen}
-            onClose={() => setLocalOpen(false)}
-            topOffsetPx={mobileDrawerTopOffsetPx}
-            zIndex={HEADER_MOBILE_DRAWER_Z_INDEX}
-          >
-            <HeaderMobileNavDrawerBody
-              tabs={tabs}
-              selectedKey={selectedKey}
-              LinkComponent={LinkComponent}
-              onNavigate={closeNav}
-            />
-          </MobileDrawer>
-        ) : null}
       </div>
     </>
   );

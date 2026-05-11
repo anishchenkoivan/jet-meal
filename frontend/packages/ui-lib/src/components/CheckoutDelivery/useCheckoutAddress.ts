@@ -1,13 +1,13 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  type CheckoutSavedAddress,
   readLastCheckoutAddressId,
   readSavedCheckoutAddresses,
   upsertAddressAsLast,
-  type CheckoutSavedAddress,
 } from "./deliveryAddressStorage";
 import { reverseGeocodeDisplayName } from "./reverseGeocode";
-import { useCallback, useEffect, useMemo, useState } from "react";
 
 const genAddressId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -31,6 +31,8 @@ export type CheckoutAddressModel = {
   persist: () => void;
   onUseGeo: () => void;
   pickSaved: (a: CheckoutSavedAddress) => void;
+  isGeocoding: boolean;
+  setMapCoordsAndGeocode: (lat: number, lng: number, knownLabel?: string) => void;
 };
 
 export function useCheckoutAddress(): CheckoutAddressModel {
@@ -44,6 +46,8 @@ export function useCheckoutAddress(): CheckoutAddressModel {
   const [addressLine, setAddressLine] = useState("");
   const [mapLat, setMapLat] = useState(MOSCOW.latitude);
   const [mapLng, setMapLng] = useState(MOSCOW.longitude);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const geoAbortRef = useRef<AbortController | null>(null);
 
   const reload = useCallback(() => {
     setAddresses(readSavedCheckoutAddresses());
@@ -151,6 +155,32 @@ export function useCheckoutAddress(): CheckoutAddressModel {
     setMapLng(lng);
   }, []);
 
+  const setMapCoordsAndGeocode = useCallback(
+    (lat: number, lng: number, knownLabel?: string) => {
+      setMapLat(lat);
+      setMapLng(lng);
+      if (knownLabel !== undefined) {
+        setAddressLine(knownLabel);
+        return;
+      }
+      if (geoAbortRef.current) geoAbortRef.current.abort();
+      const ac = new AbortController();
+      geoAbortRef.current = ac;
+      setIsGeocoding(true);
+      reverseGeocodeDisplayName(lat, lng, ac.signal)
+        .then((label) => {
+          if (!ac.signal.aborted) {
+            if (label) setAddressLine(label);
+            setIsGeocoding(false);
+          }
+        })
+        .catch(() => {
+          if (!ac.signal.aborted) setIsGeocoding(false);
+        });
+    },
+    [],
+  );
+
   return {
     addressLine,
     setAddressLine,
@@ -166,5 +196,7 @@ export function useCheckoutAddress(): CheckoutAddressModel {
     persist,
     onUseGeo,
     pickSaved,
+    isGeocoding,
+    setMapCoordsAndGeocode,
   };
 }

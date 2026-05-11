@@ -3,8 +3,7 @@
 import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import { ExpandableCard } from "@jet-meal/ui-lib/src/components/ExpandableCard/ExpandableCard";
 import { useCart } from "../../providers/CartProvider";
-import type { MenuItem } from "../../types/restaurant";
-import type { Restaurant } from "../../types/restaurant";
+import type { MenuItem, Restaurant } from "../../types/restaurant";
 
 export interface MenuItemCardProps {
   item: MenuItem;
@@ -94,14 +93,7 @@ export function MenuItemCard({
       description={showExtendedDescription ? item.description : undefined}
       expandedContent={
         extendedInfo ? (
-          <div
-            style={{
-              fontSize: "13px",
-              color: "#8c8c8c",
-              lineHeight: "1.4",
-              whiteSpace: "pre-line",
-            }}
-          >
+          <div className="text-[13px] text-[#8c8c8c] leading-[1.4] whitespace-pre-line">
             {extendedInfo}
           </div>
         ) : null

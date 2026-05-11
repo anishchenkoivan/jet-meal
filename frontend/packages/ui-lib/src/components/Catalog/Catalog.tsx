@@ -1,9 +1,7 @@
 "use client";
 
 import { Empty, Row } from "antd";
-import cx from "classnames";
 import type { ReactNode } from "react";
-import styles from "./Catalog.module.css";
 
 export type CatalogProps = {
   /** Пустой список — показываем `Empty` (или `null` при `emptyDescription === null`). */
@@ -14,11 +12,7 @@ export type CatalogProps = {
   emptyDescription?: ReactNode | null;
 };
 
-export function Catalog({
-  isEmpty,
-  children,
-  emptyDescription,
-}: CatalogProps) {
+export function Catalog({ isEmpty, children, emptyDescription }: CatalogProps) {
   if (isEmpty) {
     if (emptyDescription === null) {
       return null;
@@ -27,16 +21,11 @@ export function Catalog({
       emptyDescription !== undefined
         ? emptyDescription
         : "Ничего не найдено, попробуйте позже";
-    return (
-      <Empty
-        className={cx(styles["empty"])}
-        description={description}
-      />
-    );
+    return <Empty className="mt-0" description={description} />;
   }
 
   return (
-    <div className={cx(styles["wrap"])}>
+    <div className="mt-0 min-w-0 overflow-x-hidden">
       <Row gutter={[16, 16]}>{children}</Row>
     </div>
   );

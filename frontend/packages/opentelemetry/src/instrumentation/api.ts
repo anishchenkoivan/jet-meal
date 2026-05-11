@@ -35,7 +35,11 @@ export function createServiceLogger(serviceName: string, loggerName?: string) {
  * Create a meter with service context.
  * Convenience wrapper that includes service name in meter name.
  */
-export function createServiceMeter(serviceName: string, meterName?: string, version?: string) {
+export function createServiceMeter(
+  serviceName: string,
+  meterName?: string,
+  version?: string,
+) {
   const name = meterName ? `${serviceName}.${meterName}` : serviceName;
   return getMeter(name, version);
 }

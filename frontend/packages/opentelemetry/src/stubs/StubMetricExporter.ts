@@ -1,4 +1,4 @@
-import { ExportResultCode, type ExportResult } from "@opentelemetry/core";
+import { type ExportResult, ExportResultCode } from "@opentelemetry/core";
 import {
   AggregationTemporality,
   type InstrumentType,
@@ -22,12 +22,12 @@ export class StubMetricExporter implements PushMetricExporter {
     resultCallback: (result: ExportResult) => void,
   ): Promise<void> {
     if (this._debug && metrics.scopeMetrics.length > 0) {
-      console.debug('[StubMetricExporter] Would export metrics:', {
+      console.debug("[StubMetricExporter] Would export metrics:", {
         resource: metrics.resource,
-        scopeMetrics: metrics.scopeMetrics.map(scope => ({
+        scopeMetrics: metrics.scopeMetrics.map((scope) => ({
           scope: scope.scope,
           metricsCount: scope.metrics.length,
-          metrics: scope.metrics.map(metric => ({
+          metrics: scope.metrics.map((metric) => ({
             descriptor: metric.descriptor,
             dataPointType: metric.dataPointType,
             dataPoints: metric.dataPoints.length,
@@ -42,17 +42,19 @@ export class StubMetricExporter implements PushMetricExporter {
 
   async forceFlush(): Promise<void> {
     if (this._debug) {
-      console.debug('[StubMetricExporter] Force flush called');
+      console.debug("[StubMetricExporter] Force flush called");
     }
   }
 
   async shutdown(): Promise<void> {
     if (this._debug) {
-      console.debug('[StubMetricExporter] Shutdown called');
+      console.debug("[StubMetricExporter] Shutdown called");
     }
   }
 
-  selectAggregationTemporality(_instrumentType: InstrumentType): AggregationTemporality {
+  selectAggregationTemporality(
+    _instrumentType: InstrumentType,
+  ): AggregationTemporality {
     // Return cumulative for all instruments (similar to OTLP)
     return AggregationTemporality.CUMULATIVE;
   }

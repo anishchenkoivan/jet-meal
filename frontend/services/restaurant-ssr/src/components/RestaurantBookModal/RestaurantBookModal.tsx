@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { message } from "@jet-meal/ui-lib/src/antdMessage";
 import { Button } from "@jet-meal/ui-lib/src/components/Button/Button";
 import { Divider } from "@jet-meal/ui-lib/src/components/Divider/Divider";
 import { Modal } from "@jet-meal/ui-lib/src/components/Modal/Modal";
 import { TimeInput } from "@jet-meal/ui-lib/src/components/TimeInput/TimeInput";
 import { Typography } from "@jet-meal/ui-lib/src/components/Typography/Typography";
+import { useEffect, useState } from "react";
 
 export type RestaurantBookModalProps = {
   open: boolean;
@@ -43,7 +43,7 @@ export function RestaurantBookModal({
       open={open}
       onCancel={onClose}
       footer={null}
-      destroyOnClose
+      destroyOnHidden
     >
       <Typography.Paragraph style={{ marginBottom: 8 }}>
         Вначале укажите время
@@ -79,7 +79,12 @@ export function RestaurantBookModal({
       >
         Или позвоните по номеру:
       </Typography.Text>
-      <Typography.Link href={telHref(phone)} copyable strong style={{ fontSize: 18 }}>
+      <Typography.Link
+        href={telHref(phone)}
+        copyable
+        strong
+        style={{ fontSize: 18 }}
+      >
         {phone}
       </Typography.Link>
     </Modal>

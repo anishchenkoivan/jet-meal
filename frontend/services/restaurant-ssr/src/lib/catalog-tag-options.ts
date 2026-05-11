@@ -2,7 +2,10 @@
  * Справочник тегов каталога: значения в URL (`tags=`) и в `CatalogMenuItem.dishTags`.
  * Единый источник для фильтров и карточек.
  */
-export type CatalogTagOption = { readonly value: string; readonly label: string };
+export type CatalogTagOption = {
+  readonly value: string;
+  readonly label: string;
+};
 
 export const CATALOG_TAG_OPTIONS: readonly CatalogTagOption[] = [
   { value: "diet", label: "Диетическое" },
@@ -18,7 +21,8 @@ export const CATALOG_TAG_OPTIONS: readonly CatalogTagOption[] = [
   { value: "comfort", label: "Домашняя кухня" },
   { value: "low_cal", label: "Низкокалорийное" },
   { value: "sea", label: "Морепродукты" },
-  { value: "ukrainian", label: "Украинская кухня" },
+  { value: "fastfood", label: "Фастфуд" },
+  { value: "snack", label: "Закуски" },
   { value: "vegetarian", label: "Вегетарианское" },
   { value: "main_course", label: "Второе" },
   { value: "sushi", label: "Суши и роллы" },

@@ -1,9 +1,18 @@
 import { metrics } from "@opentelemetry/api";
 import { logs } from "@opentelemetry/api-logs";
 import { resourceFromAttributes } from "@opentelemetry/resources";
-import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
-import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
-import { MeterProvider, PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
+import {
+  BatchLogRecordProcessor,
+  LoggerProvider,
+} from "@opentelemetry/sdk-logs";
+import {
+  MeterProvider,
+  PeriodicExportingMetricReader,
+} from "@opentelemetry/sdk-metrics";
+import {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_VERSION,
+} from "@opentelemetry/semantic-conventions";
 import { StubLogExporter } from "../stubs/StubLogExporter";
 import { StubMetricExporter } from "../stubs/StubMetricExporter";
 
@@ -48,9 +57,7 @@ export function registerNodeSDK(options: NodeSDKOptions): NodeSDKHandle {
   // Set up logger provider with stub exporter
   const loggerProvider = new LoggerProvider({
     resource,
-    processors: [
-      new BatchLogRecordProcessor(new StubLogExporter({ debug })),
-    ],
+    processors: [new BatchLogRecordProcessor(new StubLogExporter({ debug }))],
   });
   logs.setGlobalLoggerProvider(loggerProvider);
 
@@ -67,7 +74,7 @@ export function registerNodeSDK(options: NodeSDKOptions): NodeSDKHandle {
   metrics.setGlobalMeterProvider(meterProvider);
 
   if (debug) {
-    console.debug('[NodeSDK] Registered with stub exporters', {
+    console.debug("[NodeSDK] Registered with stub exporters", {
       serviceName: options.serviceName,
       serviceVersion: options.serviceVersion,
       metricInterval: interval,
@@ -79,7 +86,7 @@ export function registerNodeSDK(options: NodeSDKOptions): NodeSDKHandle {
     meterProvider,
     async shutdown(): Promise<void> {
       if (debug) {
-        console.debug('[NodeSDK] Shutting down');
+        console.debug("[NodeSDK] Shutting down");
       }
       await Promise.all([loggerProvider.shutdown(), meterProvider.shutdown()]);
       registered = false;
