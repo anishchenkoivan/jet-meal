@@ -72,6 +72,7 @@ jobs:
       - name: Build docker-image
         run: |
           ssh deploy-server << 'EOF'
+            cd ~/jet-meal
             docker build -t ${{ github.event.inputs.service }}-service:latest -f services/businesses/Dockerfile .
           EOF
       
@@ -80,6 +81,7 @@ jobs:
           ssh deploy-server << 'EOF'
             for i in $(find services/businesses/k8s/ -type f -name *.yaml)
             do
+              cd ~/jet-meal
               kubectl apply -f $i
             done
           EOF
