@@ -1,0 +1,17 @@
+import type { TelemetryOptions } from "../../telemetryOptions";
+import { joinOtlpUrl } from "../../utils/joinOtlpUrl";
+
+export function resolveNodeOtlpMetricsUrl(options: TelemetryOptions): string {
+  if (options.metricsEndpoint) {
+    return options.metricsEndpoint;
+  }
+  const fromEnv = process.env["OTEL_EXPORTER_OTLP_METRICS_ENDPOINT"];
+  if (fromEnv) {
+    return fromEnv;
+  }
+  const base =
+    options.otlpBaseUrl ??
+    process.env["OTEL_EXPORTER_OTLP_ENDPOINT"] ??
+    "http://localhost:4318";
+  return joinOtlpUrl(base, "/v1/metrics");
+}

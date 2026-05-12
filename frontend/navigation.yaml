@@ -1,0 +1,21 @@
+services:
+  - id: auth-ssr
+    routes:
+      - /
+      - /account
+      - /my
+      - /admin
+  - id: delivery-ssr
+    routes:
+      - /admin/delivery
+      - /admin/delivery/workflow
+      - /my/orders
+      - /my/order
+  - id: restaurant-ssr
+    routes:
+      - /restaurants
+      - /catalog
+      - /restaurant
+      - /admin/restaurants
+      - /admin/restaurant
+      - /api

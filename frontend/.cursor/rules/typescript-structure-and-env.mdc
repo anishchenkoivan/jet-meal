@@ -1,0 +1,31 @@
+---
+description: TS file layout, naming, types as .d.ts, env, workspace packages
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript structure
+
+- **One main export per file** where practical; helpers live in **`utils/`** or feature folders (`serverInstrumentation`, `clientInstrumentation`, …).
+- **Filenames and folder names: `camelCase`**, matching the primary symbol (e.g. `registerNodeTelemetry.ts`, `joinOtlpUrl.ts`).
+- **Colocate tests and stories** with the unit under test: `Component.tsx` + `Component.spec.ts` (or `.spec.tsx`) + `Component.stories.tsx` in the **same folder** — no `src/stories/` tree.
+- **Storybook (Next services):** use **`@storybook/nextjs` only** as the framework dependency; import `Meta`, `StoryObj`, `Preview`, `StorybookConfig` from **`@storybook/nextjs`**. Do **not** add **`@storybook/react`** as a direct dependency (Next framework already pulls what it needs transitively).
+- **Types:** no `*.types.ts`. Use **`.d.ts`** for type-only surfaces (e.g. `registerNodeTelemetry.d.ts` merged with `registerNodeTelemetry.ts`, or standalone `telemetryOptions.d.ts`). Shared types: one `.d.ts` module (not a `types/*.ts` tree).
+
+# Private workspace libraries (`private: true`, `workspace:*`)
+
+- **Do not add `package.json` `exports`**. Consumers import **directly from source paths** under the package (e.g. `@jet-meal/opentelemetry/src/serverInstrumentation/registerNodeTelemetry.ts` or the path your bundler/tsconfig resolves).
+- **No publish/build pipeline** for these packages unless explicitly requested; **`typecheck`** only is enough.
+
+# `process.env`
+
+- **Bracket access:** `process.env['OTEL_EXPORTER_OTLP_LOGS_ENDPOINT']` (not dot), for TS4111 / index signatures.
+
+# Imports (no path aliases)
+
+- **Do not use TS/Next path aliases** (`@/`, `~`, `#`, etc.). **No `compilerOptions.paths`** for app source in services.
+- **Use relative imports only** (`../`, `../../`, …) from each file to its dependencies.
+
+# Formatting
+
+- **Biome** in `frontend/`: align with `frontend/biome.json`.

@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.bff.json",
+  "include": ["src"]
+}

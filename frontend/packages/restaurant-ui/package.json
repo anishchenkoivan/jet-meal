@@ -1,0 +1,21 @@
+{
+  "name": "@jet-meal/restaurant-ui",
+  "version": "1.0.0",
+  "description": "UI components and types for restaurant functionality",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "biome check src/",
+    "lint:fix": "biome check --write src/"
+  },
+  "dependencies": {
+    "react": "catalog:",
+    "@types/react": "catalog:",
+    "classnames": "catalog:",
+    "@jet-meal/ui-lib": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

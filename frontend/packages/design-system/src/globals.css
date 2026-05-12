@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "./foundation.css";
+
+/* Shared workspace UI — для Storybook и пакетов без своего app/globals.css */
+@source "../ui-lib/src";
+@source "../restaurant-ui/src";

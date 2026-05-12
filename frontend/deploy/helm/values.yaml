@@ -1,0 +1,36 @@
+replicaCount: 2
+
+image:
+  repository: ""
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 80
+  targetPort: 3000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Plain env vars (baked-in NEXT_PUBLIC_* and runtime vars)
+env: []
+# - name: NEXT_PUBLIC_GRAPHQL_URL
+#   value: https://api.example.com/graphql
+
+# Refs to existing ConfigMaps / Secrets
+envFrom: []
+# - configMapRef:
+#     name: my-config
+# - secretRef:
+#     name: my-secret

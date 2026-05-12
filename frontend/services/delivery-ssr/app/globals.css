@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@jet-meal/design-system/foundation.css";
+
+@source "../src";
+@source ".";
+@source "../../../packages/ui-lib/src";

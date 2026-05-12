@@ -1,0 +1,17 @@
+---
+description: Jet Meal repo layout and frontend monorepo
+alwaysApply: true
+---
+
+# Repository layout
+
+- **`frontend/`** — pnpm workspace: `pnpm-workspace.yaml` lists `packages/*` and `services/*`.
+- **`frontend/pnpm-workspace.yaml`** — **`catalog:`** holds pinned dependency versions; workspace `package.json` files use `"catalog:"` for those deps.
+- **`frontend/packages/`** — shared **private** workspace libraries; **no `exports`** in `package.json` — services import **from source** via `workspace:*` + **relative paths** into `packages/...` where needed.
+- **`@jet-meal/ui-lib`** — Ant Design shell (layout / headers / footer / nav); **Storybook** in that package: `pnpm --filter @jet-meal/ui-lib storybook:start` (port **6007**). **`adminka-ssr`** Storybook stays on **6006** for app-level stories.
+- **`frontend/services/`** — deployable apps (`adminka-ssr` = Next, `adminka-bff` = Nest).
+- **Root TS configs** under `frontend/`: `tsconfig.checks.json` (strict shared checks), `tsconfig.ssr.json`, `tsconfig.bff.json`, `tsconfig.base.json`.
+- **Tooling (frontend root):** Biome (`biome.json`), root `package.json` scripts `typecheck` / `lint` / `build` over workspaces.
+- **CI:** `.github/workflows/frontend-ci.yml` runs in `frontend/` (install, typecheck, lint, build).
+
+When adding code, prefer matching existing service/package names and the catalog pattern above.

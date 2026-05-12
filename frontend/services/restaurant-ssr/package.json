@@ -1,0 +1,39 @@
+{
+  "name": "@jet-meal/restaurant-ssr",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "tsc": "tsc",
+    "unit": "vitest run",
+    "storybook:start": "storybook dev -p 6006",
+    "storybook:build": "storybook build"
+  },
+  "dependencies": {
+    "@ant-design/nextjs-registry": "catalog:",
+    "@apollo/client": "catalog:",
+    "@jet-meal/design-system": "workspace:*",
+    "@jet-meal/opentelemetry": "workspace:*",
+    "@jet-meal/restaurant-ui": "workspace:*",
+    "@jet-meal/ui-lib": "workspace:*",
+    "classnames": "catalog:",
+    "graphql": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@storybook/nextjs-vite": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "jsdom": "catalog:",
+    "storybook": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}
