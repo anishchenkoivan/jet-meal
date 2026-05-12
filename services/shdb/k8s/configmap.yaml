@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shdb-config
+  namespace: jet-meal
+data:
+  shdb.frames: "1000"

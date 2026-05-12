@@ -104,6 +104,10 @@ int main() {
   crow::SimpleApp app;
   DbLocks locks;
 
+  CROW_ROUTE(app, "/health").methods(crow::HTTPMethod::GET)([]() {
+    return crow::response(200);
+  });
+
   CROW_ROUTE(app, "/sql-query")
       .methods(crow::HTTPMethod::POST)([&](const crow::request& req) {
         auto db_path_it = req.headers.find("X-DB-Name");

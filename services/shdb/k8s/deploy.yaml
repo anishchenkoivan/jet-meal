@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shdb-service
+  namespace: jet-meal
+  labels:
+    app: shdb-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shdb-service
+  template:
+    metadata:
+      labels:
+        app: shdb-service
+    spec:
+      containers:
+        - name: shdb-service
+          image: shdb-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SHDB_FRAMES
+              valueFrom:
+                configMapKeyRef:
+                  name: shdb-config
+                  key: shdb.frames
+          volumeMounts:
+            - name: shdb-storage
+              mountPath: /var/lib/shdb/data
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
