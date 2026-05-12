@@ -63,18 +63,11 @@ def _serialize(doc: dict[str, Any]) -> dict[str, Any]:
 class NotificationRepository:
     def __init__(self, settings: Settings) -> None:
         self._client = MongoClient(settings.mongo_uri)
-        self._events: Collection = self._client[settings.mongo_db][settings.mongo_collection]
         self._notifications: Collection = self._client[settings.mongo_db][
             settings.mongo_notifications_collection
         ]
-        self._events.create_index("event_id", unique=True, sparse=True)
         self._notifications.create_index("event_id", unique=True, sparse=True)
         self._notifications.create_index([("user_id", ASCENDING), ("created_at", DESCENDING)])
-
-    def save_event(self, payload: dict[str, Any]) -> None:
-        if "received_at" not in payload:
-            payload = {**payload, "received_at": _utcnow().isoformat()}
-        self._events.insert_one(payload)
 
     def save_notification_from_kafka(self, payload: dict[str, Any]) -> None:
         now = _utcnow()

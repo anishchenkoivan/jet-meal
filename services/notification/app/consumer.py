@@ -98,16 +98,15 @@ class NotificationConsumer:
             if not isinstance(payload, dict):
                 raise ValueError("Message payload must be a JSON object")
 
-            self._repository.save_event(payload)
             if payload.get("user_id"):
                 try:
                     self._repository.save_notification_from_kafka(payload)
                 except DuplicateKeyError:
                     logger.warning("Duplicate user notification skipped (event_id)")
+            else:
+                logger.debug("Kafka message skipped: no user_id for notification projection")
             snapshot = self._state.snapshot()
             self._state.update(processed_messages=snapshot["processed_messages"] + 1, last_error=None)
-        except DuplicateKeyError:
-            logger.warning("Duplicate notification event skipped")
         except Exception as exc:
             logger.warning("Failed to process message: %s", exc)
             snapshot = self._state.snapshot()

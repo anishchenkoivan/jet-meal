@@ -62,7 +62,6 @@ services:
       KAFKA_AUTO_OFFSET_RESET: earliest
       MONGO_URI: mongodb://mongo:27017
       MONGO_DB: notifications
-      MONGO_COLLECTION: events
       MONGO_NOTIFICATIONS_COLLECTION: notifications
     ports:
       - "8081:8080"

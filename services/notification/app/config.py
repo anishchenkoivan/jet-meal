@@ -16,5 +16,4 @@ class Settings:
 
     mongo_uri: str = os.getenv("MONGO_URI", "mongodb://mongo:27017")
     mongo_db: str = os.getenv("MONGO_DB", "notifications")
-    mongo_collection: str = os.getenv("MONGO_COLLECTION", "events")
     mongo_notifications_collection: str = os.getenv("MONGO_NOTIFICATIONS_COLLECTION", "notifications")
