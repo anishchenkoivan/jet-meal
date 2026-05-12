@@ -29,15 +29,31 @@ async def lifespan(_: FastAPI):
     repository.close()
 
 
-app = FastAPI(title="Notification Service", version="0.1.0", lifespan=lifespan)
+_OPENAPI_TAGS = [
+    {"name": "Health", "description": "Liveness and readiness probes."},
+    {"name": "Operations", "description": "Kafka consumer diagnostics."},
+    {"name": "Notifications", "description": "User notification CRUD."},
+]
+
+app = FastAPI(
+    title="Notification Service",
+    version="0.1.0",
+    lifespan=lifespan,
+    openapi_tags=_OPENAPI_TAGS,
+    description=(
+        "REST API for the notification microservice. "
+        "Checked-in contract: `services/notification/docs/api.yaml`. "
+        "Live schema: [/openapi.json](/openapi.json), Swagger UI: [/docs](/docs)."
+    ),
+)
 
 
-@app.get("/health/live")
+@app.get("/health/live", tags=["Health"])
 def liveness() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/health/ready")
+@app.get("/health/ready", tags=["Health"])
 def readiness() -> dict[str, Any]:
     consumer_state = consumer.state.snapshot()
     mongo_ok = repository.ping()
@@ -49,12 +65,12 @@ def readiness() -> dict[str, Any]:
     }
 
 
-@app.get("/stats")
+@app.get("/stats", tags=["Operations"])
 def stats() -> dict[str, Any]:
     return consumer.state.snapshot()
 
 
-@app.post("/notifications", response_model=NotificationOut, status_code=201)
+@app.post("/notifications", response_model=NotificationOut, status_code=201, tags=["Notifications"])
 def create_notification(body: NotificationCreate) -> NotificationOut:
     data = body.model_dump(exclude_none=True)
     try:
@@ -67,7 +83,7 @@ def create_notification(body: NotificationCreate) -> NotificationOut:
     return NotificationOut(**doc)
 
 
-@app.get("/notifications/{notification_id}", response_model=NotificationOut)
+@app.get("/notifications/{notification_id}", response_model=NotificationOut, tags=["Notifications"])
 def get_notification(notification_id: str) -> NotificationOut:
     doc = repository.get_notification(notification_id)
     if not doc:
@@ -75,7 +91,7 @@ def get_notification(notification_id: str) -> NotificationOut:
     return NotificationOut(**doc)
 
 
-@app.get("/users/{user_id}/notifications", response_model=list[NotificationOut])
+@app.get("/users/{user_id}/notifications", response_model=list[NotificationOut], tags=["Notifications"])
 def list_user_notifications(
     user_id: str,
     skip: int = Query(0, ge=0),
@@ -85,7 +101,7 @@ def list_user_notifications(
     return [NotificationOut(**d) for d in docs]
 
 
-@app.patch("/notifications/{notification_id}", response_model=NotificationOut)
+@app.patch("/notifications/{notification_id}", response_model=NotificationOut, tags=["Notifications"])
 def update_notification(notification_id: str, body: NotificationUpdate) -> NotificationOut:
     patch = body.model_dump(exclude_unset=True)
     if not patch:
@@ -99,7 +115,7 @@ def update_notification(notification_id: str, body: NotificationUpdate) -> Notif
     return NotificationOut(**doc)
 
 
-@app.delete("/notifications/{notification_id}", status_code=204)
+@app.delete("/notifications/{notification_id}", status_code=204, tags=["Notifications"])
 def delete_notification(notification_id: str) -> None:
     if not repository.delete_notification(notification_id):
         raise HTTPException(status_code=404, detail="Notification not found")
