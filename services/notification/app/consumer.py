@@ -99,6 +99,11 @@ class NotificationConsumer:
                 raise ValueError("Message payload must be a JSON object")
 
             self._repository.save_event(payload)
+            if payload.get("user_id"):
+                try:
+                    self._repository.save_notification_from_kafka(payload)
+                except DuplicateKeyError:
+                    logger.warning("Duplicate user notification skipped (event_id)")
             snapshot = self._state.snapshot()
             self._state.update(processed_messages=snapshot["processed_messages"] + 1, last_error=None)
         except DuplicateKeyError:
