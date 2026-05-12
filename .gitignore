@@ -6,16 +6,14 @@
 .cache/
 dist/
 
-
 node_modules/
 
 .DS_Store
 
-libraries/cpp/penguin_malloc/build*
-libraries/c/facil-io-router/build*
-libraries/c/jetenv/build*
-services/shdb/build*
-services/businesses/build*
-services/businesses/venv*
 **/compile_commands.json
 **/__pycache__/
+**/venv/
+**/build/
+**/build-debug/
+**/build-release/
+**/.claude/
