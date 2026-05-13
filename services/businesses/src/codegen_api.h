@@ -11,6 +11,7 @@
 #include "fiobj.h"
 
 typedef struct api_gen_meal_s {
+  const char* mealId;
   const char* mealName;
   const char* mealDescription;
   const char* mealPictureId;
@@ -40,13 +41,15 @@ typedef struct api_gen_v1_remove_meal_from_menu_request_s {
 } api_gen_v1_remove_meal_from_menu_request_t;
 
 typedef struct api_gen_v1_add_meal_to_menu_response_s {
-  const char* meal_id;
-  api_gen_menu_t menu;
+  const char* mealId;
 } api_gen_v1_add_meal_to_menu_response_t;
 
 typedef struct api_gen_v1_add_meal_to_menu_request_s {
   const char* businessId;
-  api_gen_meal_t meal;
+  const char* mealName;
+  const char* mealDescription;
+  const char* mealPictureId;
+  int64_t price;
 } api_gen_v1_add_meal_to_menu_request_t;
 
 typedef struct api_gen_v1_list_meals_response_s {
@@ -78,7 +81,7 @@ typedef struct api_gen_v1_update_business_request_s {
 } api_gen_v1_update_business_request_t;
 
 typedef struct api_gen_v1_create_business_response_s {
-  const char* business_id;
+  const char* businessId;
 } api_gen_v1_create_business_response_t;
 
 typedef struct api_gen_v1_create_business_request_s {

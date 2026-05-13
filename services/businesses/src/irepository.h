@@ -22,7 +22,7 @@ typedef struct ibusinesses_repository_vtable_s {
 
 typedef struct imeals_repository_vtable_s {
   // Returns id of inserted meal or DB_ERROR
-  size_t (*insert_meal)(void *self, size_t business_id, api_gen_meal_t *meal);
+  size_t (*insert_meal)(void *self, api_gen_v1_add_meal_to_menu_request_t *meal);
 
   // Returns count of affected rows or DB_ERROR
   size_t (*delete_meal)(void *self, size_t business_id, size_t meal_id);

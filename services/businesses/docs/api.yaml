@@ -161,10 +161,10 @@ components:
     V1CreateBusinessResponse:
       type: object
       properties:
-        business_id:
+        businessId:
           type: string
       required:
-        - business_id
+        - businessId
 
     V1UpdateBusinessRequest:
       type: object
@@ -238,23 +238,33 @@ components:
         businessId:
           type: string
           description: ID of the business to add the meal to
-        meal:
-          $ref: '#/components/schemas/Meal'
+        mealName:
+          type: string
+          description: Name of the meal
+        mealDescription:
+          type: string
+          description: Description of the meal
+        mealPictureId:
+          type: string
+          description: Id for meal picture in media service
+        price:
+          type: number
+          description: Price of the meal
       required:
         - businessId
-        - meal
+        - mealName
+        - mealDescription
+        - mealPictureId
+        - price
 
     V1AddMealToMenuResponse:
       type: object
       properties:
-        meal_id:
+        mealId:
           type: string
           description: ID of the newly created meal
-        menu:
-          $ref: '#/components/schemas/Menu'
       required:
-        - meal_id
-        - menu
+        - mealId
 
     V1RemoveMealFromMenuRequest:
       type: object
@@ -311,6 +321,8 @@ components:
     Meal:
       type: object
       properties:
+        mealId:
+          type: string
         mealName:
           type: string
           description: Name of the meal
@@ -324,6 +336,7 @@ components:
           type: number
           description: Price of the meal
       required:
+        - mealId
         - mealName
         - mealDescription
         - mealPictureId
