@@ -5,10 +5,10 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from kafka import KafkaConsumer
-from pymongo.errors import DuplicateKeyError
+from pydantic import ValidationError
 
 from app.config import Settings
-from app.storage import NotificationRepository
+from app.order_changed_message import OrderChangedMessage
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +37,8 @@ class ConsumerState:
 
 
 class NotificationConsumer:
-    def __init__(self, settings: Settings, repository: NotificationRepository) -> None:
+    def __init__(self, settings: Settings) -> None:
         self._settings = settings
-        self._repository = repository
         self._state = ConsumerState()
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
@@ -98,15 +97,22 @@ class NotificationConsumer:
             if not isinstance(payload, dict):
                 raise ValueError("Message payload must be a JSON object")
 
-            if payload.get("user_id"):
-                try:
-                    self._repository.save_notification_from_kafka(payload)
-                except DuplicateKeyError:
-                    logger.warning("Duplicate user notification skipped (event_id)")
-            else:
-                logger.debug("Kafka message skipped: no user_id for notification projection")
+            msg = OrderChangedMessage.model_validate(payload)
+            logger.debug(
+                "OrderChangedMessage event_type=%s order_id=%s user_id=%s",
+                msg.event_type,
+                msg.order_id,
+                msg.user_id,
+            )
             snapshot = self._state.snapshot()
             self._state.update(processed_messages=snapshot["processed_messages"] + 1, last_error=None)
+        except ValidationError as exc:
+            logger.warning("Kafka payload does not match OrderChangedMessage: %s", exc)
+            snapshot = self._state.snapshot()
+            self._state.update(
+                failed_messages=snapshot["failed_messages"] + 1,
+                last_error=str(exc),
+            )
         except Exception as exc:
             logger.warning("Failed to process message: %s", exc)
             snapshot = self._state.snapshot()

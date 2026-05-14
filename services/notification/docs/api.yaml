@@ -4,7 +4,10 @@ info:
   version: 0.1.0
   description: |
     HTTP API for the notification microservice: health checks, Kafka consumer stats,
-    and CRUD for user notifications stored in MongoDB.
+    and CRUD for **per-user notification context** (which notification channels are enabled
+    and related settings). The consumer listens to the **shared order lifecycle Kafka topic**
+    (order status events for the whole lifetime, same stream as other services), not a notification-specific queue.
+    Payload shape matches ``OrderChangedMessage`` from order-kafka; this service does not store those payloads in MongoDB.
 
     Interactive docs are served by the app at `/docs` and machine-readable schema at `/openapi.json`.
     This file is the checked-in contract; keep it aligned with `app/main.py` and `app/schemas.py`.
@@ -19,9 +22,9 @@ tags:
   - name: Health
     description: Liveness and readiness probes
   - name: Operations
-    description: Kafka consumer diagnostics
-  - name: Notifications
-    description: User notification CRUD
+    description: Kafka consumer diagnostics (order lifecycle topic via KAFKA_TOPIC)
+  - name: Notification context
+    description: Per-user notification preferences (CRUD)
 
 paths:
   /health/live:
@@ -63,72 +66,104 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConsumerState"
 
-  /notifications:
+  /users/{user_id}/notification-context:
     post:
-      tags: [Notifications]
-      summary: Create notification (API path)
-      operationId: createNotification
+      tags: [Notification context]
+      summary: Create notification context for a user
+      description: |
+        Inserts the first document for this user. Returns 409 if a context already exists
+        (use PUT to replace or PATCH to merge).
+      operationId: createNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationCreate"
+              $ref: "#/components/schemas/NotificationContextCreate"
       responses:
         "201":
-          description: Notification created
+          description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationOut"
+                $ref: "#/components/schemas/NotificationContextOut"
         "409":
-          description: Duplicate event_id
+          description: Context already exists for this user
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDetail"
         "422":
           description: Validation error
-
-  /notifications/{notification_id}:
     get:
-      tags: [Notifications]
-      summary: Get notification by id
-      operationId: getNotification
+      tags: [Notification context]
+      summary: Get notification context for a user
+      operationId: getNotificationContext
       parameters:
-        - $ref: "#/components/parameters/NotificationId"
+        - $ref: "#/components/parameters/UserId"
       responses:
         "200":
-          description: Notification found
+          description: Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationOut"
+                $ref: "#/components/schemas/NotificationContextOut"
         "404":
           description: Not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDetail"
-    patch:
-      tags: [Notifications]
-      summary: Update notification
-      operationId: updateNotification
+    put:
+      tags: [Notification context]
+      summary: Replace channel map for a user
+      description: Full replace of `channels`. Context must already exist (create with POST first).
+      operationId: replaceNotificationContext
       parameters:
-        - $ref: "#/components/parameters/NotificationId"
+        - $ref: "#/components/parameters/UserId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationUpdate"
+              $ref: "#/components/schemas/NotificationContextReplace"
       responses:
         "200":
-          description: Updated notification
+          description: Updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationOut"
+                $ref: "#/components/schemas/NotificationContextOut"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+        "422":
+          description: Validation error
+    patch:
+      tags: [Notification context]
+      summary: Merge keys into channels
+      description: Shallow-merge request `channels` into the stored map. Context must exist.
+      operationId: patchNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationContextPatch"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationContextOut"
         "404":
           description: Not found
           content:
@@ -138,11 +173,11 @@ paths:
         "422":
           description: Validation error
     delete:
-      tags: [Notifications]
-      summary: Delete notification
-      operationId: deleteNotification
+      tags: [Notification context]
+      summary: Delete notification context for a user
+      operationId: deleteNotificationContext
       parameters:
-        - $ref: "#/components/parameters/NotificationId"
+        - $ref: "#/components/parameters/UserId"
       responses:
         "204":
           description: Deleted
@@ -153,53 +188,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDetail"
 
-  /users/{user_id}/notifications:
-    get:
-      tags: [Notifications]
-      summary: List notifications for a user
-      operationId: listUserNotifications
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: skip
-          in: query
-          required: false
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-        - name: limit
-          in: query
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 200
-            default: 50
-      responses:
-        "200":
-          description: Paginated list (newest first)
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/NotificationOut"
-        "422":
-          description: Invalid query parameters
-
 components:
   parameters:
-    NotificationId:
-      name: notification_id
+    UserId:
+      name: user_id
       in: path
       required: true
       schema:
         type: string
-        description: MongoDB ObjectId as hex string
+        minLength: 1
+      description: External user identifier
 
   schemas:
     LivenessResponse:
@@ -236,91 +234,49 @@ components:
         consumer:
           $ref: "#/components/schemas/ConsumerState"
 
-    NotificationCreate:
+    NotificationContextCreate:
       type: object
-      required: [user_id]
+      properties:
+        channels:
+          type: object
+          additionalProperties: true
+          description: >
+            Map of channel name to enabled flag or nested settings (e.g. email, push, sms).
+            Shape will align with the shared Kafka / domain schema from the team PR.
+          default: {}
+
+    NotificationContextReplace:
+      type: object
+      properties:
+        channels:
+          type: object
+          additionalProperties: true
+          default: {}
+
+    NotificationContextPatch:
+      type: object
+      properties:
+        channels:
+          type: object
+          additionalProperties: true
+          description: Keys to merge into the existing channels map (shallow merge).
+          default: {}
+
+    NotificationContextOut:
+      type: object
+      required: [user_id, channels, created_at, updated_at]
       properties:
         user_id:
           type: string
-          minLength: 1
-        title:
-          type: string
-          nullable: true
-        body:
-          type: string
-          nullable: true
-        channel:
-          type: string
-          nullable: true
-        context:
+        channels:
           type: object
           additionalProperties: true
-          nullable: true
-        event_id:
-          type: string
-          nullable: true
-
-    NotificationUpdate:
-      type: object
-      properties:
-        title:
-          type: string
-          nullable: true
-        body:
-          type: string
-          nullable: true
-        channel:
-          type: string
-          nullable: true
-        context:
-          type: object
-          additionalProperties: true
-          nullable: true
-        read:
-          type: boolean
-          nullable: true
-
-    NotificationOut:
-      type: object
-      required:
-        - id
-        - user_id
-        - context
-        - read
-        - created_at
-        - updated_at
-      properties:
-        id:
-          type: string
-        user_id:
-          type: string
-        title:
-          type: string
-          nullable: true
-        body:
-          type: string
-          nullable: true
-        channel:
-          type: string
-          nullable: true
-        context:
-          type: object
-          additionalProperties: true
-        read:
-          type: boolean
-        event_id:
-          type: string
-          nullable: true
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        source:
-          type: string
-          nullable: true
-          description: e.g. api or kafka
 
     ErrorDetail:
       type: object

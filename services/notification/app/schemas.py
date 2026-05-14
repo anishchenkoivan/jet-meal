@@ -4,32 +4,26 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class NotificationCreate(BaseModel):
-    user_id: str = Field(min_length=1)
-    title: str | None = None
-    body: str | None = None
-    channel: str | None = None
-    context: dict[str, Any] | None = None
-    event_id: str | None = None
+class NotificationContextCreate(BaseModel):
+    """Body for POST: create preferences for this user (409 if already exists)."""
+
+    channels: dict[str, Any] = Field(default_factory=dict)
 
 
-class NotificationUpdate(BaseModel):
-    title: str | None = None
-    body: str | None = None
-    channel: str | None = None
-    context: dict[str, Any] | None = None
-    read: bool | None = None
+class NotificationContextReplace(BaseModel):
+    """Body for PUT: replace the whole channel map."""
+
+    channels: dict[str, Any] = Field(default_factory=dict)
 
 
-class NotificationOut(BaseModel):
-    id: str
+class NotificationContextPatch(BaseModel):
+    """Body for PATCH: shallow-merge these keys into existing ``channels``."""
+
+    channels: dict[str, Any] = Field(default_factory=dict)
+
+
+class NotificationContextOut(BaseModel):
     user_id: str
-    title: str | None
-    body: str | None
-    channel: str | None
-    context: dict[str, Any]
-    read: bool
-    event_id: str | None
+    channels: dict[str, Any]
     created_at: datetime
     updated_at: datetime
-    source: str | None = None

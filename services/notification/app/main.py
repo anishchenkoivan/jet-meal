@@ -2,13 +2,18 @@ import logging
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from pymongo.errors import DuplicateKeyError
 
 from app.config import Settings
 from app.consumer import NotificationConsumer
-from app.schemas import NotificationCreate, NotificationOut, NotificationUpdate
-from app.storage import NotificationRepository
+from app.schemas import (
+    NotificationContextCreate,
+    NotificationContextOut,
+    NotificationContextPatch,
+    NotificationContextReplace,
+)
+from app.storage import NotificationContextRepository
 
 settings = Settings()
 
@@ -17,8 +22,15 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
 )
 
-repository = NotificationRepository(settings)
-consumer = NotificationConsumer(settings, repository)
+repository = NotificationContextRepository(settings)
+consumer = NotificationConsumer(settings)
+
+
+def _require_nonempty_user_id(user_id: str) -> str:
+    uid = user_id.strip()
+    if not uid:
+        raise HTTPException(status_code=422, detail="user_id must not be empty")
+    return uid
 
 
 @asynccontextmanager
@@ -31,8 +43,16 @@ async def lifespan(_: FastAPI):
 
 _OPENAPI_TAGS = [
     {"name": "Health", "description": "Liveness and readiness probes."},
-    {"name": "Operations", "description": "Kafka consumer diagnostics."},
-    {"name": "Notifications", "description": "User notification CRUD."},
+    {
+        "name": "Operations",
+        "description": "Kafka consumer diagnostics (subscribes to the order lifecycle topic, configurable via KAFKA_TOPIC).",
+    },
+    {
+        "name": "Notification context",
+        "description": (
+            "Per-user notification preferences (which channels are enabled, addresses, etc.). "
+        ),
+    },
 ]
 
 app = FastAPI(
@@ -70,52 +90,74 @@ def stats() -> dict[str, Any]:
     return consumer.state.snapshot()
 
 
-@app.post("/notifications", response_model=NotificationOut, status_code=201, tags=["Notifications"])
-def create_notification(body: NotificationCreate) -> NotificationOut:
-    data = body.model_dump(exclude_none=True)
+@app.post(
+    "/users/{user_id}/notification-context",
+    response_model=NotificationContextOut,
+    status_code=201,
+    tags=["Notification context"],
+)
+def create_notification_context(user_id: str, body: NotificationContextCreate) -> NotificationContextOut:
+    user_id = _require_nonempty_user_id(user_id)
     try:
-        new_id = repository.create_notification(data)
+        repository.create(user_id, body.channels)
     except DuplicateKeyError:
-        raise HTTPException(status_code=409, detail="Notification with this event_id already exists") from None
-    doc = repository.get_notification(new_id)
+        raise HTTPException(
+            status_code=409,
+            detail="Notification context already exists for this user; use PUT or PATCH",
+        ) from None
+    doc = repository.get(user_id)
     if not doc:
-        raise HTTPException(status_code=500, detail="Failed to read created notification") from None
-    return NotificationOut(**doc)
+        raise HTTPException(status_code=500, detail="Failed to read created context") from None
+    return NotificationContextOut(**doc)
 
 
-@app.get("/notifications/{notification_id}", response_model=NotificationOut, tags=["Notifications"])
-def get_notification(notification_id: str) -> NotificationOut:
-    doc = repository.get_notification(notification_id)
+@app.get(
+    "/users/{user_id}/notification-context",
+    response_model=NotificationContextOut,
+    tags=["Notification context"],
+)
+def get_notification_context(user_id: str) -> NotificationContextOut:
+    user_id = _require_nonempty_user_id(user_id)
+    doc = repository.get(user_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    return NotificationOut(**doc)
+        raise HTTPException(status_code=404, detail="Notification context not found")
+    return NotificationContextOut(**doc)
 
 
-@app.get("/users/{user_id}/notifications", response_model=list[NotificationOut], tags=["Notifications"])
-def list_user_notifications(
-    user_id: str,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
-) -> list[NotificationOut]:
-    docs = repository.list_notifications_for_user(user_id, skip=skip, limit=limit)
-    return [NotificationOut(**d) for d in docs]
-
-
-@app.patch("/notifications/{notification_id}", response_model=NotificationOut, tags=["Notifications"])
-def update_notification(notification_id: str, body: NotificationUpdate) -> NotificationOut:
-    patch = body.model_dump(exclude_unset=True)
-    if not patch:
-        doc = repository.get_notification(notification_id)
-        if not doc:
-            raise HTTPException(status_code=404, detail="Notification not found")
-        return NotificationOut(**doc)
-    doc = repository.update_notification(notification_id, patch)
+@app.put(
+    "/users/{user_id}/notification-context",
+    response_model=NotificationContextOut,
+    tags=["Notification context"],
+)
+def replace_notification_context(user_id: str, body: NotificationContextReplace) -> NotificationContextOut:
+    user_id = _require_nonempty_user_id(user_id)
+    doc = repository.replace(user_id, body.channels)
     if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    return NotificationOut(**doc)
+        raise HTTPException(
+            status_code=404,
+            detail="Notification context not found; create it with POST first",
+        )
+    return NotificationContextOut(**doc)
 
 
-@app.delete("/notifications/{notification_id}", status_code=204, tags=["Notifications"])
-def delete_notification(notification_id: str) -> None:
-    if not repository.delete_notification(notification_id):
-        raise HTTPException(status_code=404, detail="Notification not found")
+@app.patch(
+    "/users/{user_id}/notification-context",
+    response_model=NotificationContextOut,
+    tags=["Notification context"],
+)
+def patch_notification_context(user_id: str, body: NotificationContextPatch) -> NotificationContextOut:
+    user_id = _require_nonempty_user_id(user_id)
+    doc = repository.patch_merge_channels(user_id, body.channels)
+    if not doc:
+        raise HTTPException(
+            status_code=404,
+            detail="Notification context not found; create it with POST first",
+        )
+    return NotificationContextOut(**doc)
+
+
+@app.delete("/users/{user_id}/notification-context", status_code=204, tags=["Notification context"])
+def delete_notification_context(user_id: str) -> None:
+    user_id = _require_nonempty_user_id(user_id)
+    if not repository.delete(user_id):
+        raise HTTPException(status_code=404, detail="Notification context not found")
