@@ -211,9 +211,8 @@ void v1_add_meal_handler(http_s *request) {
   fiobj_free(body);
 
   assert(g_meals_repository.vtable.insert_meal != NULL);
-  size_t id = g_meals_repository.vtable.insert_meal(
-      (void *)&g_meals_repository, atoi(request_body.businessId),
-      &request_body.meal);
+  size_t id = g_meals_repository.vtable.insert_meal((void *)&g_meals_repository,
+                                                    &request_body);
 
   if (id == DB_ERROR) {
     api_gen_v1_add_meal_to_menu_request_cleanup(request_body);
@@ -224,16 +223,8 @@ void v1_add_meal_handler(http_s *request) {
   char str_id[ID_LEN];
   snprintf(str_id, sizeof(str_id), "%zu", id);
 
-  api_gen_meal_t response_meal = {
-      .mealName = request_body.meal.mealName,
-      .mealDescription = request_body.meal.mealDescription,
-      .mealPictureId = request_body.meal.mealPictureId,
-  };
-  api_gen_meals_list_t meals = {.buffer = &response_meal, .size = 1};
-  api_gen_menu_t menu = {.meals = meals};
   api_gen_v1_add_meal_to_menu_response_t response = {
-      .meal_id = str_id,
-      .menu = menu,
+      .mealId = str_id,
   };
 
   FIOBJ response_fiobj =

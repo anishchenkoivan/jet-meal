@@ -174,19 +174,16 @@ api_gen_business_t get_business(void *self, size_t business_id) {
   return business;
 }
 
-size_t insert_meal(void *self, size_t business_id, api_gen_meal_t *meal) {
+size_t insert_meal(void *self, api_gen_v1_add_meal_to_menu_request_t *req) {
   const char *query = "INSERT INTO meals (business_id, meal_name, "
                       "meal_description, meal_picture_id, price) "
                       "VALUES ($1, $2, $3, $4, $5) RETURNING id";
 
-  char business_id_str[ID_LEN];
-  snprintf(business_id_str, sizeof(business_id_str), "%zu", business_id);
-
   char price_str[32];
-  snprintf(price_str, sizeof(price_str), "%ld", meal->price);
+  snprintf(price_str, sizeof(price_str), "%ld", req->price);
 
-  const char *params[] = {business_id_str, meal->mealName,
-                          meal->mealDescription, meal->mealPictureId,
+  const char *params[] = {req->businessId, req->mealName,
+                          req->mealDescription, req->mealPictureId,
                           price_str};
 
   PGconn *conn = meals_repo_get_connection(self);
@@ -207,7 +204,7 @@ size_t insert_meal(void *self, size_t business_id, api_gen_meal_t *meal) {
 
 api_gen_meals_list_t get_meals_by_business(void *self, size_t business_id) {
   const char *query =
-      "SELECT meal_name, meal_description, meal_picture_id, price "
+      "SELECT id, meal_name, meal_description, meal_picture_id, price "
       "FROM meals WHERE business_id = $1";
 
   char id_str[ID_LEN];
@@ -232,10 +229,11 @@ api_gen_meals_list_t get_meals_by_business(void *self, size_t business_id) {
   result.buffer = malloc(sizeof(api_gen_meal_t) * nrows);
 
   for (int i = 0; i < nrows; i++) {
-    result.buffer[i].mealName = strdup(PQgetvalue(res, i, 0));
-    result.buffer[i].mealDescription = strdup(PQgetvalue(res, i, 1));
-    result.buffer[i].mealPictureId = strdup(PQgetvalue(res, i, 2));
-    result.buffer[i].price = atol(PQgetvalue(res, i, 3));
+    result.buffer[i].mealId = strdup(PQgetvalue(res, i, 0));
+    result.buffer[i].mealName = strdup(PQgetvalue(res, i, 1));
+    result.buffer[i].mealDescription = strdup(PQgetvalue(res, i, 2));
+    result.buffer[i].mealPictureId = strdup(PQgetvalue(res, i, 3));
+    result.buffer[i].price = atol(PQgetvalue(res, i, 4));
   }
 
   PQclear(res);
