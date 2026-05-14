@@ -32,6 +32,8 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
     healthcheck:
       test: ["CMD-SHELL", "mongosh --eval 'db.adminCommand(\"ping\")' --quiet || exit 1"]
       interval: 10s
@@ -63,6 +65,8 @@ services:
       MONGO_URI: mongodb://mongo:27017
       MONGO_DB: notifications
       MONGO_CONTEXT_COLLECTION: notification_context
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_HTTP_TIMEOUT_SEC: ${TELEGRAM_HTTP_TIMEOUT_SEC:-15}
     ports:
       - "8081:8080"
     healthcheck:
@@ -75,3 +79,6 @@ services:
         limits:
           cpus: "0.7"
           memory: 512M
+
+volumes:
+  mongo_data:
