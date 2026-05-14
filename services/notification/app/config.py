@@ -17,3 +17,6 @@ class Settings:
     mongo_uri: str = os.getenv("MONGO_URI", "mongodb://mongo:27017")
     mongo_db: str = os.getenv("MONGO_DB", "notifications")
     mongo_context_collection: str = os.getenv("MONGO_CONTEXT_COLLECTION", "notification_context")
+
+    telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    telegram_http_timeout_sec: float = float(os.getenv("TELEGRAM_HTTP_TIMEOUT_SEC", "15"))

@@ -9,6 +9,9 @@ from pydantic import ValidationError
 
 from app.config import Settings
 from app.order_changed_message import OrderChangedMessage
+from app.order_notification_text import format_order_changed_telegram
+from app.storage import NotificationContextRepository
+from app.telegram_notifier import TelegramNotifierError, extract_telegram_chat_id, send_message
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,9 @@ class ConsumerState:
     running: bool = False
     processed_messages: int = 0
     failed_messages: int = 0
+    telegram_sent: int = 0
+    telegram_skipped: int = 0
+    telegram_failed: int = 0
     last_error: str | None = None
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
@@ -32,13 +38,17 @@ class ConsumerState:
                 "running": self.running,
                 "processed_messages": self.processed_messages,
                 "failed_messages": self.failed_messages,
+                "telegram_sent": self.telegram_sent,
+                "telegram_skipped": self.telegram_skipped,
+                "telegram_failed": self.telegram_failed,
                 "last_error": self.last_error,
             }
 
 
 class NotificationConsumer:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, repository: NotificationContextRepository) -> None:
         self._settings = settings
+        self._repository = repository
         self._state = ConsumerState()
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
@@ -104,8 +114,13 @@ class NotificationConsumer:
                 msg.order_id,
                 msg.user_id,
             )
+            self._send_telegram_if_configured(msg)
+
             snapshot = self._state.snapshot()
-            self._state.update(processed_messages=snapshot["processed_messages"] + 1, last_error=None)
+            self._state.update(
+                processed_messages=snapshot["processed_messages"] + 1,
+                last_error=None,
+            )
         except ValidationError as exc:
             logger.warning("Kafka payload does not match OrderChangedMessage: %s", exc)
             snapshot = self._state.snapshot()
@@ -120,3 +135,44 @@ class NotificationConsumer:
                 failed_messages=snapshot["failed_messages"] + 1,
                 last_error=str(exc),
             )
+
+    def _send_telegram_if_configured(self, msg: OrderChangedMessage) -> None:
+        token = self._settings.telegram_bot_token.strip()
+        if not token:
+            snap = self._state.snapshot()
+            self._state.update(telegram_skipped=snap["telegram_skipped"] + 1)
+            logger.debug("TELEGRAM_BOT_TOKEN not set; skip Telegram for user_id=%s", msg.user_id)
+            return
+
+        doc = self._repository.get(msg.user_id)
+        if not doc:
+            snap = self._state.snapshot()
+            self._state.update(telegram_skipped=snap["telegram_skipped"] + 1)
+            logger.info("No notification context for user_id=%s; skip Telegram", msg.user_id)
+            return
+
+        chat_id = extract_telegram_chat_id(doc.get("channels"))
+        if not chat_id:
+            snap = self._state.snapshot()
+            self._state.update(telegram_skipped=snap["telegram_skipped"] + 1)
+            logger.info("No telegram.chat_id in context for user_id=%s; skip Telegram", msg.user_id)
+            return
+
+        text = format_order_changed_telegram(msg)
+        try:
+            send_message(
+                bot_token=token,
+                chat_id=chat_id,
+                text=text,
+                timeout_sec=self._settings.telegram_http_timeout_sec,
+            )
+            snap = self._state.snapshot()
+            self._state.update(telegram_sent=snap["telegram_sent"] + 1)
+            logger.info("Telegram sent for user_id=%s order_id=%s", msg.user_id, msg.order_id)
+        except TelegramNotifierError as exc:
+            snap = self._state.snapshot()
+            self._state.update(
+                telegram_failed=snap["telegram_failed"] + 1,
+                last_error=str(exc),
+            )
+            logger.warning("Telegram send failed for user_id=%s: %s", msg.user_id, exc)

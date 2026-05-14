@@ -23,7 +23,7 @@ logging.basicConfig(
 )
 
 repository = NotificationContextRepository(settings)
-consumer = NotificationConsumer(settings)
+consumer = NotificationConsumer(settings, repository)
 
 
 def _require_nonempty_user_id(user_id: str) -> str:

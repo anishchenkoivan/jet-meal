@@ -210,7 +210,7 @@ components:
 
     ConsumerState:
       type: object
-      required: [running, processed_messages, failed_messages]
+      required: [running, processed_messages, failed_messages, telegram_sent, telegram_skipped, telegram_failed]
       properties:
         running:
           type: boolean
@@ -218,6 +218,15 @@ components:
           type: integer
         failed_messages:
           type: integer
+        telegram_sent:
+          type: integer
+          description: Successful sendMessage calls to Telegram
+        telegram_skipped:
+          type: integer
+          description: Skipped (no bot token, no user context, or no telegram.chat_id)
+        telegram_failed:
+          type: integer
+          description: Telegram API or network errors
         last_error:
           type: string
           nullable: true
@@ -241,8 +250,8 @@ components:
           type: object
           additionalProperties: true
           description: >
-            Map of channel name to enabled flag or nested settings (e.g. email, push, sms).
-            Shape will align with the shared Kafka / domain schema from the team PR.
+            Per-channel settings. For Telegram delivery, set
+            ``{"telegram": {"chat_id": "<your chat id>"}}``.
           default: {}
 
     NotificationContextReplace:
