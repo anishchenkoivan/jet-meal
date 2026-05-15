@@ -8,6 +8,7 @@ from pymongo.errors import DuplicateKeyError
 from app.config import Settings
 from app.consumer import NotificationConsumer
 from app.schemas import (
+    NotificationChannels,
     NotificationContextCreate,
     NotificationContextOut,
     NotificationContextPatch,
@@ -24,6 +25,10 @@ logging.basicConfig(
 
 repository = NotificationContextRepository(settings)
 consumer = NotificationConsumer(settings, repository)
+
+
+def _channels_payload(channels: NotificationChannels) -> dict[str, Any]:
+    return channels.model_dump(mode="json", exclude_none=True)
 
 
 def _require_nonempty_user_id(user_id: str) -> str:
@@ -99,7 +104,7 @@ def stats() -> dict[str, Any]:
 def create_notification_context(user_id: str, body: NotificationContextCreate) -> NotificationContextOut:
     user_id = _require_nonempty_user_id(user_id)
     try:
-        repository.create(user_id, body.channels)
+        repository.create(user_id, _channels_payload(body.channels))
     except DuplicateKeyError:
         raise HTTPException(
             status_code=409,
@@ -131,7 +136,7 @@ def get_notification_context(user_id: str) -> NotificationContextOut:
 )
 def replace_notification_context(user_id: str, body: NotificationContextReplace) -> NotificationContextOut:
     user_id = _require_nonempty_user_id(user_id)
-    doc = repository.replace(user_id, body.channels)
+    doc = repository.replace(user_id, _channels_payload(body.channels))
     if not doc:
         raise HTTPException(
             status_code=404,
@@ -147,7 +152,7 @@ def replace_notification_context(user_id: str, body: NotificationContextReplace)
 )
 def patch_notification_context(user_id: str, body: NotificationContextPatch) -> NotificationContextOut:
     user_id = _require_nonempty_user_id(user_id)
-    doc = repository.patch_merge_channels(user_id, body.channels)
+    doc = repository.patch_merge_channels(user_id, _channels_payload(body.channels))
     if not doc:
         raise HTTPException(
             status_code=404,

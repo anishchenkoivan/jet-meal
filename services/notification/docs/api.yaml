@@ -243,32 +243,48 @@ components:
         consumer:
           $ref: "#/components/schemas/ConsumerState"
 
+    TelegramContext:
+      type: object
+      required: [chat_id]
+      description: Telegram Bot API delivery settings for one user.
+      properties:
+        chat_id:
+          description: Telegram chat id (private chat, group, or channel).
+          oneOf:
+            - type: string
+            - type: integer
+          example: "1111111111"
+
+    NotificationChannels:
+      type: object
+      description: |
+        Map of channel name to channel-specific settings.
+        Keys are channel identifiers; values match the corresponding context schema.
+      properties:
+        telegram:
+          $ref: "#/components/schemas/TelegramContext"
+      additionalProperties: true
+
     NotificationContextCreate:
       type: object
       properties:
         channels:
-          type: object
-          additionalProperties: true
-          description: >
-            Per-channel settings. For Telegram delivery, set
-            ``{"telegram": {"chat_id": "<your chat id>"}}``.
+          $ref: "#/components/schemas/NotificationChannels"
           default: {}
 
     NotificationContextReplace:
       type: object
       properties:
         channels:
-          type: object
-          additionalProperties: true
+          $ref: "#/components/schemas/NotificationChannels"
           default: {}
 
     NotificationContextPatch:
       type: object
       properties:
         channels:
-          type: object
-          additionalProperties: true
-          description: Keys to merge into the existing channels map (shallow merge).
+          $ref: "#/components/schemas/NotificationChannels"
+          description: Keys to shallow-merge into the stored channels map.
           default: {}
 
     NotificationContextOut:
@@ -278,8 +294,7 @@ components:
         user_id:
           type: string
         channels:
-          type: object
-          additionalProperties: true
+          $ref: "#/components/schemas/NotificationChannels"
         created_at:
           type: string
           format: date-time
