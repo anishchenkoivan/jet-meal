@@ -1,23 +1,23 @@
-name: Deploy service
+name: Deploy Infrastructure
 
 on:
   workflow_dispatch:
     inputs:
-      service:
+      component:
         type: choice
-        description: 'Select service to deploy'
+        description: 'Select component to deploy'
         required: true
         options:
-          - businesses
-          - billing
-          - order
-          - user_service
-          - shdb
+          - all
+          - monitoring
+          - s3
+          - kafka
+          - redis
+          - frontend
 
 jobs:
   notify-start:
     name: Send start notification
-    environment: ${{ github.event.inputs.service }}
     runs-on: ubuntu-latest
     
     steps:
@@ -28,15 +28,14 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           parse-mode: html
           message: |
-            <b>🚀 Release ${{ github.event.inputs.service }} started</b>
+            <b>🚀 Infrastructure deployment started: ${{ github.event.inputs.component }}</b>
 
             🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>
 
   deploy:
-    name: Deploy
+    name: Deploy ${{ github.event.inputs.component }}
     runs-on: ubuntu-latest
     needs: notify-start
-    environment: ${{ github.event.inputs.service }}
 
     steps:
       - name: Checkout code
@@ -69,21 +68,63 @@ jobs:
             git pull
           EOF
 
-      - name: Build docker-image
+      - name: Deploy monitoring
+        if: github.event.inputs.component == 'all' || github.event.inputs.component == 'monitoring'
         run: |
-          SERVICE=${{ github.event.inputs.service }}
-          SERVICE_DIR="services/$SERVICE"
-          ssh deploy-server << EOF
+          ssh deploy-server << 'EOF'
             cd ~/jet-meal
-            docker build -t $SERVICE-service:latest -f $SERVICE_DIR/Dockerfile .
+            kubectl apply -k deploy/monitoring/
           EOF
-      
-      - name: Deploy k8s manifests
+
+      - name: Deploy S3
+        if: github.event.inputs.component == 'all' || github.event.inputs.component == 's3'
         run: |
-          SERVICE=${{ github.event.inputs.service }}
-          ssh deploy-server << EOF
+          ssh deploy-server << 'EOF'
             cd ~/jet-meal
-            kubectl apply -f services/$SERVICE/k8s/
+            kubectl apply -k deploy/s3/
+          EOF
+
+      - name: Deploy Kafka
+        if: github.event.inputs.component == 'all' || github.event.inputs.component == 'kafka'
+        run: |
+          ssh deploy-server << 'EOF'
+            cd ~/jet-meal
+            kubectl apply -k deploy/kafka/
+          EOF
+
+      - name: Deploy Redis
+        if: github.event.inputs.component == 'all' || github.event.inputs.component == 'redis'
+        run: |
+          ssh deploy-server << 'EOF'
+            cd ~/jet-meal
+            kubectl apply -k deploy/redis/
+          EOF
+
+      - name: Deploy Frontend
+        if: github.event.inputs.component == 'all' || github.event.inputs.component == 'frontend'
+        run: |
+          ssh deploy-server << 'EOF'
+            cd ~/jet-meal
+            kubectl apply -f frontend/k8s/auth-ssr.yaml
+            kubectl apply -f frontend/k8s/delivery-ssr.yaml
+            kubectl apply -f frontend/k8s/restaurant-ssr.yaml
+            kubectl apply -f frontend/k8s/ingress.yaml
+          EOF
+
+      - name: Verify deployment
+        run: |
+          ssh deploy-server << 'EOF'
+            echo "=== Monitoring namespace ==="
+            kubectl get pods -n monitoring
+            echo ""
+            echo "=== S3 namespace ==="
+            kubectl get pods -n s3
+            echo ""
+            echo "=== Kafka namespace ==="
+            kubectl get pods -n kafka
+            echo ""
+            echo "=== Redis ==="
+            kubectl get pods -n jet-meal | grep redis
           EOF
 
   notify-success:
@@ -101,7 +142,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           parse-mode: html
           message: |
-            <b>✅ Release ${{ github.event.inputs.service }} completed successfully</b>
+            <b>✅ Infrastructure deployment completed: ${{ github.event.inputs.component }}</b>
 
             🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>
 
@@ -120,6 +161,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           parse-mode: html
           message: |
-            <b>❌ Release to ${{ github.event.inputs.service }} failed</b>
+            <b>❌ Infrastructure deployment failed: ${{ github.event.inputs.component }}</b>
 
             🔗 <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View Workflow</a>

@@ -9,6 +9,6 @@ data:
   spring.datasource.password: "TODO_secrets"
   spring.data.redis.host: "redis"
   spring.data.redis.port: "6379"
-  spring.kafka.bootstrap-servers: "kafka:9092"
+  spring.kafka.bootstrap-servers: "kafka.kafka.svc.cluster.local:9092"
   order.kafka.topic: "order.changed"
   order.clients.business-service-url: "http://businesses-service"

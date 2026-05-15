@@ -4,5 +4,5 @@ metadata:
   name: billing-config
   namespace: jet-meal
 data:
-  postgres.dsn: "host=postgres port=5432 dbname=billing user=billing password=billing"
+  postgres.dsn: "host=billing-postgres-db.jet-meal.svc.cluster.local port=5432 dbname=billing user=billing password=billing"
   billing.port: "8080"

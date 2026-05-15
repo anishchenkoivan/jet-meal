@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monitoring-auth
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-htpasswd
+    nginx.ingress.kubernetes.io/auth-realm: "Monitoring Access"
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monitoring-htpasswd
+  namespace: monitoring
+type: Opaque
+data:
+  # Generate with: htpasswd -nb admin prompassword | base64
+  # Default: admin/prompassword
+  auth: YWRtaW46JGFwcjEkaGJQTlNNTGgkL1cxS1ZNZnQuZGxOQTg2L3VIZzAK
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus-ingress
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-htpasswd
+    nginx.ingress.kubernetes.io/auth-realm: "Prometheus Access"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - prometheus.jet-meal.ru
+      secretName: monitoring-tls
+  rules:
+    - host: prometheus.jet-meal.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus
+                port:
+                  number: 9090
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-htpasswd
+    nginx.ingress.kubernetes.io/auth-realm: "Grafana Access"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - grafana.jet-meal.ru
+      secretName: monitoring-tls
+  rules:
+    - host: grafana.jet-meal.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: s3
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-htpasswd
+    nginx.ingress.kubernetes.io/auth-realm: "MinIO Access"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - minio.jet-meal.ru
+      secretName: minio-tls
+  rules:
+    - host: minio.jet-meal.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000

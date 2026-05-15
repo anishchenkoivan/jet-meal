@@ -1,0 +1,109 @@
+# Cert-Manager installation (optional - for automatic TLS)
+# Install cert-manager:
+# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@jet-meal.ru
+    privateKeySecretRef:
+      name: letsencrypt-account-key
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jet-meal-tls
+  namespace: frontend
+spec:
+  secretName: jet-meal-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - jet-meal.ru
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jet-meal-tls
+  namespace: jet-meal
+spec:
+  secretName: jet-meal-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - api.jet-meal.ru
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: monitoring-tls
+  namespace: monitoring
+spec:
+  secretName: monitoring-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - prometheus.jet-meal.ru
+    - grafana.jet-meal.ru
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-tls
+  namespace: s3
+spec:
+  secretName: minio-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - minio.jet-meal.ru
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jet-meal-frontend-tls
+  namespace: frontend
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - jet-meal.ru
+        - api.jet-meal.ru
+      secretName: jet-meal-tls
+  rules:
+    - host: jet-meal.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-ssr
+                port:
+                  number: 80
+    - host: api.jet-meal.ru
+      http:
+        paths:
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: businesses-service
+                port:
+                  number: 80
