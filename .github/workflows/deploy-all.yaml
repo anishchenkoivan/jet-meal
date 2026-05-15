@@ -142,6 +142,13 @@ jobs:
             kubectl apply -k deploy/kafka/
           EOF
 
+      - name: Deploy Redis
+        run: |
+          ssh deploy-server << 'EOF'
+            cd ~/jet-meal
+            kubectl apply -k deploy/redis/
+          EOF
+
   verify:
     name: Verify deployment
     runs-on: ubuntu-latest
@@ -164,6 +171,9 @@ jobs:
             echo ""
             echo "=== kafka namespace ==="
             kubectl get pods -n kafka
+            echo ""
+            echo "=== redis ==="
+            kubectl get pods -n jet-meal | grep redis
             echo ""
             echo "=== Services ==="
             kubectl get svc -n jet-meal
