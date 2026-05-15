@@ -1,0 +1,237 @@
+openapi: 3.0.3
+info:
+  title: Jet Meal Order API
+  version: 0.0.1
+  description: CRUD for orders; menu item keys are string identifiers (varchar 36), same shape as restaurant and user references.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Orders
+    description: Order lifecycle
+paths:
+  /api/v1/orders:
+    post:
+      tags: [Orders]
+      operationId: createOrder
+      summary: Create order
+      description: Emits a `created` event type (see ADR 01)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+    get:
+      tags: [Orders]
+      operationId: listOrders
+      summary: List orders
+      description: When activeOnly=true, reads from the Redis cache of active orders
+      parameters:
+        - name: activeOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponse'
+  /api/v1/orders/{id}:
+    get:
+      tags: [Orders]
+      operationId: getOrder
+      summary: Get order by id
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+    put:
+      tags: [Orders]
+      operationId: updateOrder
+      summary: Replace order (full update)
+      description: Emits `updated`, `cancelled`, or `finished` event types depending on status (see ADR 01)
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+    patch:
+      tags: [Orders]
+      operationId: patchOrder
+      summary: Partially update order
+      description: Emits `updated`, `cancelled`, or `finished` event types depending on status (see ADR 01)
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchOrderRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+    delete:
+      tags: [Orders]
+      operationId: deleteOrder
+      summary: Delete order
+      description: Removes the order and emits a `cancelled` event (see ADR 01)
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '204':
+          description: No content
+components:
+  parameters:
+    OrderId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    EntityId36:
+      type: string
+      minLength: 36
+      maxLength: 36
+      description: External reference stored as varchar(36), typically a UUID string
+    MenuItems:
+      type: object
+      description: Map of menu item id (varchar 36) to quantity
+      additionalProperties:
+        type: integer
+        format: int32
+        minimum: 1
+    CreateOrderRequest:
+      type: object
+      required:
+        - userId
+        - restaurantId
+        - menuItems
+      properties:
+        userId:
+          $ref: '#/components/schemas/EntityId36'
+        restaurantId:
+          $ref: '#/components/schemas/EntityId36'
+        status:
+          type: string
+          description: Defaults to PENDING when omitted; includes FINISHED when the order is completed.
+        menuItems:
+          $ref: '#/components/schemas/MenuItems'
+        comment:
+          type: string
+          description: Optional delivery or order notes
+    UpdateOrderRequest:
+      type: object
+      required:
+        - userId
+        - restaurantId
+        - status
+        - menuItems
+      properties:
+        userId:
+          $ref: '#/components/schemas/EntityId36'
+        restaurantId:
+          $ref: '#/components/schemas/EntityId36'
+        status:
+          type: string
+        menuItems:
+          $ref: '#/components/schemas/MenuItems'
+        comment:
+          type: string
+        courierId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Assigned courier; omit or null keeps existing on PUT merge
+    PatchOrderRequest:
+      type: object
+      description: All fields optional; omitted fields are left unchanged
+      properties:
+        userId:
+          $ref: '#/components/schemas/EntityId36'
+        restaurantId:
+          $ref: '#/components/schemas/EntityId36'
+        status:
+          type: string
+        menuItems:
+          $ref: '#/components/schemas/MenuItems'
+        comment:
+          type: string
+        courierId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Assigned courier when set
+    OrderResponse:
+      type: object
+      required:
+        - id
+        - userId
+        - restaurantId
+        - status
+        - totalCost
+        - menuItems
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          $ref: '#/components/schemas/EntityId36'
+        restaurantId:
+          $ref: '#/components/schemas/EntityId36'
+        courierId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null until a courier is assigned
+        status:
+          type: string
+        totalCost:
+          type: number
+          description: Total computed from business menu prices
+        menuItems:
+          $ref: '#/components/schemas/MenuItems'
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
