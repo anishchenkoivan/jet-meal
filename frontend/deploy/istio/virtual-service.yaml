@@ -4,7 +4,7 @@ metadata:
   name: jet-meal-frontend
 spec:
   hosts:
-    - jet.meal
+    - jet-meal.ru
   gateways:
     - jet-meal-frontend
   http:

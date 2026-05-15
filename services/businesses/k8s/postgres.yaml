@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pvc
+  name: businesses-postgres-pvc
   namespace: jet-meal
 spec:
   accessModes:
@@ -46,7 +46,7 @@ spec:
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: postgres-pvc
+            claimName: businesses-postgres-pvc
 
 ---
 

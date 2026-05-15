@@ -11,7 +11,7 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - jet.meal
+        - jet-meal.ru
     # Раскомментировать при наличии TLS:
     # - port:
     #     number: 443
@@ -21,4 +21,4 @@ spec:
     #     mode: SIMPLE
     #     credentialName: jet-meal-tls
     #   hosts:
-    #     - jet.meal
+    #     - jet-meal.ru
