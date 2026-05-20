@@ -8,7 +8,7 @@
 
 ### Система и нагрузка
 
-Kubernetes-кластер с неймспейсами приложений `frontend` и `jet-meal`, инфраструктурными неймспейсами `kafka`, `s3`, `monitoring`. Внешний трафик принимает **NGINX Ingress** с TLS (`jet-meal-tls`): хосты **jet-meal.ru** (фронтенд) и **api.jet-meal.ru** (GraphQL API).
+Kubernetes-кластер с неймспейсами приложений `frontend` и `jet-meal`, инфраструктурными неймспейсами `kafka`, `s3`, `monitoring`. Внешний трафик принимает **NGINX Ingress** с TLS (`jet-meal-tls`), хост **jet-meal.ru**.
 
 Нагрузка преобладает на чтение: каталог ресторанов и карточки меню, пики в обед и вечером. Записи сосредоточены в order-service: PostgreSQL, Redis-кэш активных заказов, события в Kafka.
 
@@ -19,7 +19,7 @@ Kubernetes-кластер с неймспейсами приложений `fron
 | auth-ssr x2 | Аутентификация, профиль, `/account`, `/my`, `/admin`, `/` | Нет | Через Ingress |
 | delivery-ssr x2 | Интерфейс заказов `/my/orders`, `/my/order`, `/admin/delivery` | Нет | Через Ingress |
 | restaurant-ssr x2 | Витрина `/restaurants`, `/catalog`, `/admin/restaurants` | Нет | Через Ingress |
-| businesses-service x2 | Рестораны и меню, GraphQL на `api.jet-meal.ru` | Нет | Через Ingress |
+| businesses-service x2 | Рестораны и меню, GraphQL | Нет | Нет |
 | order-service x2 | Заказы, Liquibase-миграции, Redis-кэш, producer `order.changed` | Нет | Нет |
 | user-service x2 | Пользователи | Нет | Нет |
 | billing-service x2 | Биллинг | Нет | Нет |
@@ -99,7 +99,7 @@ Critical path: пользователь -> NGINX Ingress -> SSR -> businesses-se
 
 | # | Сигнал | Метрика | Порог | Окно |
 |---|---|---|---|---|
-| 1 | Latency | p99 времени ответа Ingress по `jet-meal.ru` и `api.jet-meal.ru` | > 500 ms | 5 мин |
+| 1 | Latency | p99 времени ответа Ingress по `jet-meal.ru` | > 500 ms | 5 мин |
 | 2 | Errors | Доля HTTP 5xx от всех ответов Ingress | > 1 % | 5 мин |
 | 3 | Traffic | RPS на Ingress ниже 50% от медианы предыдущего часа | - | 15 мин |
 | 4 | Saturation | Consumer lag топика `order.changed` | > 1000 сообщений | 15 мин |
