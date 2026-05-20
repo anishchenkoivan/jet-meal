@@ -1,4 +1,4 @@
-# JetMeal — Доступность сервиса
+# JetMeal - Доступность сервиса
 
 ## 1. Целевая доступность системы
 
@@ -13,24 +13,21 @@
 
 > **Почему не 99.99%?**
 > Команда 5 человек, MVP, ограниченный бюджет.
-> 99.9% — разумный баланс между стоимостью и надёжностью на старте.
+> 99.9% - разумный баланс между стоимостью и надёжностью на старте.
 
 ---
 
 ## 2. RPO и RTO для критичных компонентов
 
-**RPO (Recovery Point Objective)** — допустимая потеря данных (сколько времени назад).
-**RTO (Recovery Time Objective)** — время восстановления после сбоя.
-
 | Компонент | RPO | RTO | Обоснование |
 |-----------|-----|-----|-------------|
-| Order Service | 0 сек | < 30 сек | Потеря оплаченного заказа — прямой финансовый ущерб. < 0.000001% |
-| Payment Service | 0 сек | < 30 сек | Финансовые данные — нельзя потерять ни одну запись |
+| Order Service | 0 сек | < 30 сек | Потеря оплаченного заказа - прямой финансовый ущерб. < 0.000001% |
+| Payment Service | 0 сек | < 30 сек | Финансовые данные - нельзя потерять ни одну запись |
 | User/Auth Service | 1 мин | < 1 мин | Без авторизации не работает ни один сервис |
 | Business/Menu Service | 5 мин | < 2 мин | Меню меняется редко, небольшая потеря допустима |
-| Tracking/Delivery | 30 сек | < 1 мин | Активные заказы критичны, история — нет |
+| Tracking/Delivery | 30 сек | < 1 мин | Активные заказы критичны, история - нет |
 | Geo Service | 5 мин | < 2 мин | Данные маршрутов восстановимы пересчётом |
-| Notifications Service | 5 мин | < 5 мин | Уведомление с задержкой — не катастрофа |
+| Notifications Service | 5 мин | < 5 мин | Уведомление с задержкой - не катастрофа |
 | Statistics Service | 1 час | < 1 часа | Аналитика некритична для работы бизнеса |
 
 ---
@@ -41,18 +38,18 @@
 
 | Компонент               | Стратегия              | Геораспределение | Причина |
 |-------------------------|------------------------|------------------|--------------------------------------------------|
-| Order Service           | Active/Active          | Этап 2+          | Stateless логика, состояние в PG и Redis |
-| Payment Service         | Active/Standby (hot)   | Этап 2+          | Риск двойного списания при split-brain |
-| User/Auth Service       | Active/Active          | Этап 2+          | Stateless JWT-токены, PG — A/S |
-| Business/Menu Service   | Active/Active          | Этап 2+          | Read-heavy, данные кешируются в Redis |
-| Tracking/Delivery       | A/A (Redis) + A/S (PG) | Этап 2+          | Горячий путь через Redis, история в PG |
-| Geo Service             | Active/Active          | Этап 2+          | Stateless вычисления маршрутов |
-| Notifications Service   | Active/Active          | Этап 2+          | Idempotent отправка, потеря одного уведомления допустима |
-| Statistics Service      | Active/Standby (warm)  | Этап 3           | Некритичный сервис, экономия на инфре |
+| Order Service           | Active/Active          | не на этапе MVP          | Stateless логика, состояние в PG и Redis |
+| Payment Service         | Active/Standby (hot)   | не на этапе MVP          | Риск двойного списания при split-brain |
+| User/Auth Service       | Active/Active          | не на этапе MVP          | Stateless JWT-токены, PG - A/S |
+| Business/Menu Service   | Active/Active          | не на этапе MVP          | Read-heavy, данные кешируются в Redis |
+| Tracking/Delivery       | A/A (Redis) + A/S (PG) | не на этапе MVP          | Горячий путь через Redis, история в PG |
+| Geo Service             | Active/Active          | не на этапе MVP          | Stateless вычисления маршрутов |
+| Notifications Service   | Active/Active          | не на этапе MVP          | Idempotent отправка, потеря одного уведомления допустима |
+| Statistics Service      | Active/Standby (warm)  | далеко после MVP          | Некритичный сервис, экономия на инфре |
 
 ---
 
-### 3.2 Payment Service — Active/Standby
+### 3.2 Payment Service - Active/Standby
 
 Выбрана стратегия **Active/Standby**, потому что Active/Active создаёт риск split-brain
 и двойного списания средств с карты пользователя.
@@ -77,15 +74,15 @@ flowchart TD
 Механизм переключения:
 
 1. Standby отслеживает heartbeat от Active каждые 5 секунд
-2. После 30 секунд без ответа — инициирует failover
-3. VIP переезжает на Standby — пользователи продолжают работу
+2. После 30 секунд без ответа - инициирует failover
+3. VIP переезжает на Standby - пользователи продолжают работу
 4. Бывший Active при восстановлении становится новым Standby
 
 
-### 3.3 Order Service — Active/Active
+### 3.3 Order Service - Active/Active
 
 Бизнес-логика stateless (оркестрация через Kafka), состояние хранится в PostgreSQL и Redis.
-При падении одного пода Load Balancer мгновенно переключает трафик — failover не нужен.
+При падении одного пода Load Balancer мгновенно переключает трафик - failover не нужен.
 
 ```mermaid
 flowchart TD
@@ -100,22 +97,22 @@ flowchart TD
     O1 & O2 & O3 --> K[[Kafka\nасинхронные события]]
 ```
 
-### 3.4 Tracking Service — гибридная стратегия
+### 3.4 Tracking Service - гибридная стратегия
 
 Высокий RPS на чтение статуса заказа (5500 RPS) требует разделения:
 
-- Redis A/A — горячий путь, актуальные координаты курьера (RPO = 30 сек)
-- PostgreSQL A/S — история чекпоинтов, данные о курьерах (async репликация)
+- Redis A/A - горячий путь, актуальные координаты курьера (RPO = 30 сек)
+- PostgreSQL A/S - история чекпоинтов, данные о курьерах (async репликация)
 
 ### 3.5 Геораспределённость
 
-Этап 1 — MVP (Q1–Q2): один регион
+Этап 1 - MVP (Q1–Q2): один регион
 
 ```mermaid
 flowchart TD
     U([Пользователи]) --> DC
 
-    subgraph DC[Москва — единственный регион]
+    subgraph DC[Москва - единственный регион]
         LB[Load Balancer]
         APP[Микросервисы\nK8s кластер]
         PG[(PostgreSQL\nPrimary + Standby)]
@@ -131,7 +128,7 @@ flowchart TD
 
 Почему один регион достаточно на старте:
 
->   Москва — 80% целевой аудитории (из допущений)
+>   Москва - 80% целевой аудитории (из допущений)
 >   Команда 5 человек: геораспределение кратно увеличивает сложность
 >   99.9% uptime достижимо в одном ЦОД с резервированием
 >   Бюджет ограничен
@@ -143,7 +140,7 @@ flowchart TD
 - Высокая latency для пользователей из других регионов
 
 
-Этап 2 — Рост (Q3–Q4): read-реплики и CDN
+Этап 2 - Рост (Q3–Q4): read-реплики и CDN
 
 ```mermaid
 flowchart TD
@@ -151,7 +148,7 @@ flowchart TD
 
     DNS --> LB_A & LB_B
 
-    subgraph A[Регион А — Москва]
+    subgraph A[Регион А - Москва]
         LB_A[Load Balancer]
         APP_A[Микросервисы]
         PGM[(PostgreSQL\nPrimary\nзапись)]
@@ -160,7 +157,7 @@ flowchart TD
         APP_A --> PGM & RDA
     end
 
-    subgraph B[Регион Б — Екатеринбург]
+    subgraph B[Регион Б - Екатеринбург]
         LB_B[Load Balancer]
         APP_B[Микросервисы\nread-only режим]
         PGR[(PostgreSQL\nReplica\nтолько чтение)]
@@ -177,11 +174,11 @@ flowchart TD
 
 Правила маршрутизации:
 
-- Запись (создать заказ, оплата) → всегда Регион А (Москва)
-- Чтение (меню, история заказов, статус) → ближайший регион
-- Картинки → CDN глобально, без обращения к бэкенду
+- Запись (создать заказ, оплата) -> всегда Регион А (Москва)
+- Чтение (меню, история заказов, статус) -> ближайший регион
+- Картинки -> CDN глобально, без обращения к бэкенду
 
-Этап 3 — СНГ: полная геораспределённость
+Этап 3 - СНГ: полная геораспределённость
 
 ```mermaid
 flowchart TD
@@ -189,17 +186,17 @@ flowchart TD
 
     GTM --> RU & KZ & BY
 
-    subgraph RU[🇷🇺 Россия\nМосква]
+    subgraph RU[Россия\nМосква]
         APP_RU[Микросервисы]
         DB_RU[(PostgreSQL\nPrimary)]
     end
 
-    subgraph KZ[🇰🇿 Казахстан\nАлматы]
+    subgraph KZ[Казахстан\nАлматы]
         APP_KZ[Микросервисы]
         DB_KZ[(PostgreSQL\nLocal Primary)]
     end
 
-    subgraph BY[🇧🇾 Беларусь\nМинск]
+    subgraph BY[Беларусь\nМинск]
         APP_BY[Микросервисы]
         DB_BY[(PostgreSQL\nLocal Primary)]
     end
@@ -210,7 +207,7 @@ flowchart TD
 Причины отдельных инстансов:
 
 > Локальные платёжные системы (Kaspi, ЕРИП)
-> Data sovereignty — данные граждан хранятся локально
+> Data sovereignty - данные граждан хранятся локально
 > Снижение latency для пользователей
 
 
@@ -232,7 +229,7 @@ flowchart TD
 
 **Почему воскресенье 03:00–05:00:**
 - Пиковая нагрузка (НФТ-003): 13:00–16:00 и 19:00–21:00
-- Воскресная ночь — минимальное количество активных заказов
+- Воскресная ночь - минимальное количество активных заказов
 - 2-часовой запас перед возможным утренним трафиком
 
 | Время | Действие |
@@ -276,7 +273,7 @@ flowchart TD
 
 ### 4.4 Как минимизируем простой уже сейчас
 
-Stateless сервисы — Rolling Update без остановки трафика
+Stateless сервисы - Rolling Update без остановки трафика
 
 ```mermaid
 sequenceDiagram
@@ -323,3 +320,4 @@ timeline
         Zero-downtime migrations               : Стандарт для всех изменений
         Maintenance window                     : Только экстренные случаи
 ```
+
