@@ -11,7 +11,6 @@ spec:
   tls:
     - hosts:
         - jet-meal.ru
-        - api.jet-meal.ru
       secretName: jet-meal-tls
   rules:
     - host: jet-meal.ru
@@ -99,30 +98,5 @@ spec:
             backend:
               service:
                 name: auth-ssr
-                port:
-                  number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: jet-meal-api
-  namespace: jet-meal
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - api.jet-meal.ru
-      secretName: jet-meal-tls
-  rules:
-    - host: api.jet-meal.ru
-      http:
-        paths:
-          - path: /v1
-            pathType: Prefix
-            backend:
-              service:
-                name: businesses-service
                 port:
                   number: 80
