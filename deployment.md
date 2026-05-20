@@ -8,7 +8,7 @@
 
 ### Система и нагрузка
 
-Kubernetes-кластер с неймспейсами приложений `frontend` и `jet-meal`, инфраструктурными неймспейсами `kafka`, `s3`, `monitoring`. Внешний трафик принимает **NGINX Ingress** с TLS (`jet-meal-tls`), хост **jet-meal.ru**.
+Kubernetes-кластер с неймспейсами приложений `jet-meal` и `frontend`, инфраструктурными неймспейсами `kafka`, `s3`, `monitoring`. Внешний трафик принимает **NGINX Ingress** с TLS (`jet-meal-tls`), хост **jet-meal.ru**.
 
 Нагрузка преобладает на чтение: каталог ресторанов и карточки меню, пики в обед и вечером. Записи сосредоточены в order-service: PostgreSQL, Redis-кэш активных заказов, события в Kafka.
 
@@ -43,9 +43,9 @@ Kubernetes-кластер с неймспейсами приложений `fron
 
 На каждое приложение два Deployment (`*-stable` и `*-canary`) и два ClusterIP Service. Основной Ingress направляет трафик на stable-Service. Второй Ingress на тот же хост и path содержит аннотации `nginx.ingress.kubernetes.io/canary: "true"` и `nginx.ingress.kubernetes.io/canary-weight` с долей трафика на новую сборку. При деградации по ошибкам или задержкам `canary-weight` выставляют в `0`. После стабильных метрик вес поднимают до 100; в следующем релизе canary-Deployment переименовывают в единственный stable.
 
-### businesses-service, user-service, billing-service: Rolling Update
+### businesses-service, user-service, billing-service: Canary
 
-Deployment с двумя репликами, стратегия `RollingUpdate`. Новые поды проходят readiness-пробу, затем Endpoints обновляется и старые поды снимаются. Две версии кода кратко сосуществуют на одной схеме, миграции PostgreSQL только в стиле expand-contract.
+На каждый сервис два Deployment (`*-stable` и `*-canary`) и два ClusterIP Service. Ingress направляет долю трафика на canary через аннотации `nginx.ingress.kubernetes.io/canary: "true"` и `nginx.ingress.kubernetes.io/canary-weight`. При деградации `canary-weight` выставляют в `0`. После стабильных метрик вес поднимают до 100; в следующем релизе canary-Deployment становится единственным stable. Миграции PostgreSQL только в стиле expand-contract.
 
 ### order-service: Rolling Update
 
