@@ -16,13 +16,13 @@ Kubernetes-кластер с неймспейсами приложений `jet-
 
 | Компонент | Ответственность | Stateful | Публичный |
 |---|---|---|---|
-| auth-ssr x2 | Аутентификация, профиль, `/account`, `/my`, `/admin`, `/` | Нет | Через Ingress |
-| delivery-ssr x2 | Интерфейс заказов `/my/orders`, `/my/order`, `/admin/delivery` | Нет | Через Ingress |
-| restaurant-ssr x2 | Витрина `/restaurants`, `/catalog`, `/admin/restaurants` | Нет | Через Ingress |
-| businesses-service x2 | Рестораны и меню, GraphQL | Нет | Нет |
-| order-service x2 | Заказы, Liquibase-миграции, Redis-кэш, producer `order.changed` | Нет | Нет |
-| user-service x2 | Пользователи | Нет | Нет |
-| billing-service x2 | Биллинг | Нет | Нет |
+| auth-ssr x2-10 | Аутентификация, профиль, `/account`, `/my`, `/admin`, `/` | Нет | Через Ingress |
+| delivery-ssr x2-10 | Интерфейс заказов `/my/orders`, `/my/order`, `/admin/delivery` | Нет | Через Ingress |
+| restaurant-ssr x2-10 | Витрина `/restaurants`, `/catalog`, `/admin/restaurants` | Нет | Через Ingress |
+| businesses-service x20 | Рестораны и меню, GraphQL | Нет | Нет |
+| order-service x30 | Заказы, Liquibase-миграции, Redis-кэш, producer `order.changed` | Нет | Нет |
+| user-service x20 | Пользователи | Нет | Нет |
+| billing-service x20 | Биллинг | Нет | Нет |
 | shdb-service x1 | BLOB-хранилище на файловом томе | Да (PVC) | Нет |
 | redis x1 | Кэш активных заказов | Да (PVC) | Нет |
 | PostgreSQL StatefulSet x1 на сервис | Персистентность businesses, order, user, billing | Да (PVC) | Нет |
