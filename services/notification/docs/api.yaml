@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  title: Notification Service API
+  version: 0.1.0
+  description: |
+    HTTP API for the notification microservice: health checks, Kafka consumer stats,
+    and CRUD for **per-user notification context** (which notification channels are enabled
+    and related settings). The consumer listens to the **shared order lifecycle Kafka topic**
+    (order status events for the whole lifetime, same stream as other services), not a notification-specific queue.
+    Payload shape matches ``OrderChangedMessage`` from order-kafka; this service does not store those payloads in MongoDB.
+
+    Interactive docs are served by the app at `/docs` and machine-readable schema at `/openapi.json`.
+    This file is the checked-in contract; keep it aligned with `app/main.py` and `app/schemas.py`.
+
+servers:
+  - url: http://localhost:8081
+    description: Docker Compose (host port mapped to container 8080)
+  - url: http://localhost:8080
+    description: Direct run inside container or local uvicorn without port mapping
+
+tags:
+  - name: Health
+    description: Liveness and readiness probes
+  - name: Operations
+    description: Kafka consumer diagnostics (order lifecycle topic via KAFKA_TOPIC)
+  - name: Notification context
+    description: Per-user notification preferences (CRUD)
+
+paths:
+  /health/live:
+    get:
+      tags: [Health]
+      summary: Liveness probe
+      operationId: liveness
+      responses:
+        "200":
+          description: Service process is up
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LivenessResponse"
+
+  /health/ready:
+    get:
+      tags: [Health]
+      summary: Readiness probe
+      operationId: readiness
+      responses:
+        "200":
+          description: Dependencies status (MongoDB + Kafka consumer thread)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadinessResponse"
+
+  /stats:
+    get:
+      tags: [Operations]
+      summary: Kafka consumer statistics
+      operationId: consumerStats
+      responses:
+        "200":
+          description: Current consumer counters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumerState"
+
+  /users/{user_id}/notification-context:
+    post:
+      tags: [Notification context]
+      summary: Create notification context for a user
+      description: |
+        Inserts the first document for this user. Returns 409 if a context already exists
+        (use PUT to replace or PATCH to merge).
+      operationId: createNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationContextCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationContextOut"
+        "409":
+          description: Context already exists for this user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+        "422":
+          description: Validation error
+    get:
+      tags: [Notification context]
+      summary: Get notification context for a user
+      operationId: getNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200":
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationContextOut"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+    put:
+      tags: [Notification context]
+      summary: Replace channel map for a user
+      description: Full replace of `channels`. Context must already exist (create with POST first).
+      operationId: replaceNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationContextReplace"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationContextOut"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+        "422":
+          description: Validation error
+    patch:
+      tags: [Notification context]
+      summary: Merge keys into channels
+      description: Shallow-merge request `channels` into the stored map. Context must exist.
+      operationId: patchNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationContextPatch"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationContextOut"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+        "422":
+          description: Validation error
+    delete:
+      tags: [Notification context]
+      summary: Delete notification context for a user
+      operationId: deleteNotificationContext
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetail"
+
+components:
+  parameters:
+    UserId:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+      description: External user identifier
+
+  schemas:
+    LivenessResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          example: ok
+
+    ConsumerState:
+      type: object
+      required: [running, processed_messages, failed_messages, telegram_sent, telegram_skipped, telegram_failed]
+      properties:
+        running:
+          type: boolean
+        processed_messages:
+          type: integer
+        failed_messages:
+          type: integer
+        telegram_sent:
+          type: integer
+          description: Successful sendMessage calls to Telegram
+        telegram_skipped:
+          type: integer
+          description: Skipped (no bot token, no user context, or no telegram.chat_id)
+        telegram_failed:
+          type: integer
+          description: Telegram API or network errors
+        last_error:
+          type: string
+          nullable: true
+
+    ReadinessResponse:
+      type: object
+      required: [status, mongo_ok, consumer]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        mongo_ok:
+          type: boolean
+        consumer:
+          $ref: "#/components/schemas/ConsumerState"
+
+    TelegramContext:
+      type: object
+      required: [chat_id]
+      description: Telegram Bot API delivery settings for one user.
+      properties:
+        chat_id:
+          description: Telegram chat id (private chat, group, or channel).
+          oneOf:
+            - type: string
+            - type: integer
+          example: "1111111111"
+
+    NotificationChannels:
+      type: object
+      description: |
+        Map of channel name to channel-specific settings.
+        Keys are channel identifiers; values match the corresponding context schema.
+      properties:
+        telegram:
+          $ref: "#/components/schemas/TelegramContext"
+      additionalProperties: true
+
+    NotificationContextCreate:
+      type: object
+      properties:
+        channels:
+          $ref: "#/components/schemas/NotificationChannels"
+          default: {}
+
+    NotificationContextReplace:
+      type: object
+      properties:
+        channels:
+          $ref: "#/components/schemas/NotificationChannels"
+          default: {}
+
+    NotificationContextPatch:
+      type: object
+      properties:
+        channels:
+          $ref: "#/components/schemas/NotificationChannels"
+          description: Keys to shallow-merge into the stored channels map.
+          default: {}
+
+    NotificationContextOut:
+      type: object
+      required: [user_id, channels, created_at, updated_at]
+      properties:
+        user_id:
+          type: string
+        channels:
+          $ref: "#/components/schemas/NotificationChannels"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ErrorDetail:
+      type: object
+      properties:
+        detail:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
