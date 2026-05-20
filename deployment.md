@@ -6,6 +6,8 @@
 
 ## 1.1. Описание развёртывания
 
+![Диаграмма развёртывания Jet Meal](docs/diagrams/jet-meal-deployment.png)
+
 ### Система и нагрузка
 
 Kubernetes-кластер с неймспейсами приложений `jet-meal` и `frontend`, инфраструктурными неймспейсами `kafka`, `s3`, `monitoring`. Внешний трафик принимает **NGINX Ingress** с TLS (`jet-meal-tls`), хост **jet-meal.ru**.
