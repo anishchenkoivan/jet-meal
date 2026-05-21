@@ -2,7 +2,7 @@
 
 ## 1.1. Описание развёртывания
 
-![Диаграмма развёртывания Jet Meal](docs/diagrams/jet-meal-deployment.png)
+![Диаграмма развёртывания Jet Meal](./diagrams/jet-meal-deployment.png)
 
 ### Система и нагрузка
 
