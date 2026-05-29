@@ -1,6 +1,0 @@
-image:
-  repository: REGISTRY/jet-meal/delivery-ssr
-
-env:
-  - name: NEXT_PUBLIC_YANDEX_MAPS_API_KEY
-    value: ""
