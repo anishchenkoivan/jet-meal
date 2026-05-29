@@ -16,3 +16,4 @@ node_modules/
 **/build-debug/
 **/build-release/
 **/.claude/
+**/target/
