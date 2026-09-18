@@ -21,7 +21,8 @@ static const char *http_method_strings[] = {
   "PUT",
   "DELETE",
   "PATCH",
-  "HEAD"
+  "HEAD",
+  "QUERY"
 };
 
 void fio_router_register_midleware(bool (*callback)(http_s *));
