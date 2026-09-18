@@ -12,6 +12,7 @@ typedef enum http_method_e {
   HTTP_DELETE,
   HTTP_PATCH,
   HTTP_HEAD,
+  HTTP_QUERY,
   HTTP_METHODS_COUNT
 } http_method_t;
 
